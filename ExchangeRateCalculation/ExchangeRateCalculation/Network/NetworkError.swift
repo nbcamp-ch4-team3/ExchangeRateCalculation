@@ -15,11 +15,11 @@ enum NetworkError: Error {
     var description: String {
         switch self {
         case .networkFail:
-            return "네트워크 통신에 실패했습니다."
+            return "네트워크 통신 과정에서 오류가 발생했습니다."
         case .decodeError:
-            return "디코딩 실패했습니다."
+            return "디코딩 과정에서 오류가 발생했습니다."
         case .etc:
-            return "기타 오류가 발생했습니다."
+            return "알 수 없는 오류가 발생했습니다."
         }
     }
 }
