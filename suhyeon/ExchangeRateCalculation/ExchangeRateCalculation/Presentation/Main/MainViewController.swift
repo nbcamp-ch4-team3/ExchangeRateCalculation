@@ -6,12 +6,12 @@
 //
 
 import UIKit
+import os
 
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let networkService = NetworkService()
     private var dataSource = ExchangeRates()
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,9 +33,9 @@ class MainViewController: UIViewController {
                     dataSource = exchangeRates
                     mainView.tableView.reloadData()
                 }
-            case .failure(let failure):
-                print(failure.errorDescription)
-                print(failure.debugDescription)
+            case .failure(let error):
+                self.showNetworkErrorAlert(message: error.errorDescription)
+                os_log("%@", type: .error, error.debugDescription)
             }
         }
     }

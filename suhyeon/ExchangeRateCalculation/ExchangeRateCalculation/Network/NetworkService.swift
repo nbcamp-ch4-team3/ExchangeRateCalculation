@@ -12,7 +12,6 @@ class NetworkService {
         let urlString = "https://open.er-api.com/v6/latest/USD"
 
         guard let url = URL(string: urlString) else {
-            print("url ERror")
             return .failure(.invalidURL(url: urlString))
         }
         let urlRequest = URLRequest(url: url)
