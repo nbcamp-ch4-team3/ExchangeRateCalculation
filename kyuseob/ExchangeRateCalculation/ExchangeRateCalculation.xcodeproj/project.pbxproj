@@ -11,20 +11,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9572DE692DAE20500077FFB3 /* Exceptions for "ExchangeRateCalculation" folder in "ExchangeRateCalculation" target */ = {
+		9572DE982DAE28CB0077FFB3 /* Exceptions for "ExchangeRateCalculation" folder in "ExchangeRateCalculation" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resource/Info.plist,
 			);
 			target = 9572DE532DAE204F0077FFB3 /* ExchangeRateCalculation */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9572DE562DAE204F0077FFB3 /* ExchangeRateCalculation */ = {
+		9572DE912DAE28CB0077FFB3 /* ExchangeRateCalculation */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9572DE692DAE20500077FFB3 /* Exceptions for "ExchangeRateCalculation" folder in "ExchangeRateCalculation" target */,
+				9572DE982DAE28CB0077FFB3 /* Exceptions for "ExchangeRateCalculation" folder in "ExchangeRateCalculation" target */,
 			);
 			path = ExchangeRateCalculation;
 			sourceTree = "<group>";
@@ -45,7 +45,7 @@
 		9572DE4B2DAE204F0077FFB3 = {
 			isa = PBXGroup;
 			children = (
-				9572DE562DAE204F0077FFB3 /* ExchangeRateCalculation */,
+				9572DE912DAE28CB0077FFB3 /* ExchangeRateCalculation */,
 				9572DE552DAE204F0077FFB3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,7 +74,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				9572DE562DAE204F0077FFB3 /* ExchangeRateCalculation */,
+				9572DE912DAE28CB0077FFB3 /* ExchangeRateCalculation */,
 			);
 			name = ExchangeRateCalculation;
 			packageProductDependencies = (
