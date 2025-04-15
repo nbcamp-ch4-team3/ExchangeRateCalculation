@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CB05C7902DADE46400A866CD /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CB05C78F2DADE46400A866CD /* SnapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CB05C7652DAD2C1200A866CD /* ExchangeRateCalculation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExchangeRateCalculation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB05C7902DADE46400A866CD /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = ExchangeRateCalculation;
 			packageProductDependencies = (
+				CB05C78F2DADE46400A866CD /* SnapKit */,
 			);
 			productName = ExchangeRateCalculation;
 			productReference = CB05C7652DAD2C1200A866CD /* ExchangeRateCalculation.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = CB05C75C2DAD2C1200A866CD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CB05C78E2DADE46400A866CD /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CB05C7662DAD2C1200A866CD /* Products */;
 			projectDirPath = "";
@@ -341,6 +350,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CB05C78E2DADE46400A866CD /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB05C78F2DADE46400A866CD /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB05C78E2DADE46400A866CD /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CB05C75D2DAD2C1200A866CD /* Project object */;
 }
