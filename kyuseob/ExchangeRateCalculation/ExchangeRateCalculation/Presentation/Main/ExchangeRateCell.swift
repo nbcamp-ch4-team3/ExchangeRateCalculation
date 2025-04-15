@@ -72,11 +72,6 @@ private extension ExchangeRateCell {
     }
 
     func setConstraints() {
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.height.equalTo(60)
-        }
-
         labelStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()

@@ -2,6 +2,15 @@ import UIKit
 import SnapKit
 
 class MainView: UIView {
+    private let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "통화 검색"
+        searchBar.backgroundImage = UIImage()
+        searchBar.searchBarStyle = .default
+
+        return searchBar
+    }()
+
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
@@ -45,12 +54,18 @@ private extension MainView {
     }
 
     func setHierarchy() {
-        addSubViews(views: tableView)
+        addSubViews(views: searchBar, tableView)
     }
 
     func setConstraints() {
+        searchBar.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.directionalHorizontalEdges.equalToSuperview()
+        }
+
         tableView.snp.makeConstraints { make in
-            make.directionalEdges.equalToSuperview()
+            make.top.equalTo(searchBar.snp.bottom)
+            make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
 }
