@@ -5,7 +5,7 @@ class MainView: UIView {
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .systemBackground
-        tableView.register(CurrencyRateCell.self, forCellReuseIdentifier: CurrencyRateCell.identifier)
+        tableView.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.identifier)
         tableView.allowsMultipleSelection = false
 
         return tableView

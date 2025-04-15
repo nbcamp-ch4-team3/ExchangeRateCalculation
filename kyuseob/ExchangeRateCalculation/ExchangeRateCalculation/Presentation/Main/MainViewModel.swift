@@ -2,8 +2,9 @@ import Foundation
 
 class MainViewModel {
     private let service = DataService()
-    private(set) var currencyCodes: [String] = []
     private(set) var exchangeData = [String: Double]()
+    private(set) var currencyCodes: [String] = []
+    private(set) var currencyCountryInfo = CurrencyCountryInfo().infoList
 
     func fetchData() async throws {
         do {

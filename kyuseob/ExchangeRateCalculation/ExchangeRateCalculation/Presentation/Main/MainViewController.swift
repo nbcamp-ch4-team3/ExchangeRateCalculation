@@ -37,14 +37,15 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CurrencyRateCell.identifier) as? CurrencyRateCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeRateCell.identifier) as? ExchangeRateCell else {
             return UITableViewCell()
         }
 
         let currencyCode = viewModel.currencyCodes[indexPath.row]
-        guard let rate = viewModel.exchangeData[currencyCode] else { return UITableViewCell() }
+        guard let rate = viewModel.exchangeData[currencyCode],
+              let country = viewModel.currencyCountryInfo[currencyCode] else { return UITableViewCell() }
 
-        cell.configure(with: currencyCode, rate: rate)
+        cell.configure(with: currencyCode, rate: rate, country: country)
 
         return cell
     }
