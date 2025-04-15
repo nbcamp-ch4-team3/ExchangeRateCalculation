@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct ExchangeRate: Codable {
+// JSON 파싱 모델
+struct ExchangeRate: Decodable {
     let result: String
     let provider, documentation, termsOfUse: String
     let timeLastUpdateUnix: Int

@@ -11,6 +11,7 @@ import SnapKit
 class TableViewCell: UITableViewCell {
     static let reuseIdentifier = "TableViewCell"
     
+    // 통화 기호(예: USD)
     private let currencyCodeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .body)
@@ -18,6 +19,7 @@ class TableViewCell: UITableViewCell {
         return label
     }()
     
+    // 환율(예: 1.000)
     private let currencyRateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .body)
@@ -61,6 +63,6 @@ class TableViewCell: UITableViewCell {
     
     func configureUI(currencyCode: String, currencyRate: Double) {
         currencyCodeLabel.text = currencyCode
-        currencyRateLabel.text = String(format: "%.4f", currencyRate)
+        currencyRateLabel.text = String(format: "%.4f", currencyRate) // 소수점 4자리까지 표시
     }
 }
