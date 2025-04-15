@@ -12,19 +12,33 @@ class TableViewCell: UITableViewCell {
     static let reuseIdentifier = "TableViewCell"
     
     // 통화 기호(예: USD)
-    private let currencyCodeLabel: UILabel = {
+    private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
     
-    // 환율(예: 1.000)
-    private let currencyRateLabel: UILabel = {
+    // 통화 국가(예: 미국)
+    private let countryLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = .secondaryLabel
+        label.font = .systemFont(ofSize: 14)
+        label.textColor = .gray
+        return label
+    }()
+    
+    // 통화 기호 + 통화 국가(예: USD 미국)
+    private let labelStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 4
+        return stackView
+    }()
+    
+    // 환율(예: 1.000)
+    private let rateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16)
+        label.textAlignment = .right
         return label
     }()
     
@@ -42,18 +56,24 @@ class TableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        [currencyCodeLabel, currencyRateLabel].forEach {
+        [currencyLabel, countryLabel].forEach {
+            labelStackView.addArrangedSubview($0)
+        }
+        
+        [labelStackView, rateLabel].forEach {
             addSubview($0)
         }
         
-        currencyCodeLabel.snp.makeConstraints {
+        labelStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().offset(16)
         }
         
-        currencyRateLabel.snp.makeConstraints {
+        rateLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(16)
+            $0.leading.greaterThanOrEqualTo(labelStackView).offset(16)
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.width.equalTo(120)
         }
     }
     
@@ -61,8 +81,9 @@ class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureUI(currencyCode: String, currencyRate: Double) {
-        currencyCodeLabel.text = currencyCode
-        currencyRateLabel.text = String(format: "%.4f", currencyRate) // 소수점 4자리까지 표시
+    func configureUI(currencyCode: String, countryName: String, currencyRate: Double) {
+        currencyLabel.text = currencyCode
+        countryLabel.text = countryName
+        rateLabel.text = String(format: "%.4f", currencyRate) // 소수점 4자리까지 표시
     }
 }

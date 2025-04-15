@@ -21,6 +21,13 @@ class ViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "통화 검색"
+        searchBar.searchBarStyle = .minimal
+        return searchBar
+    }()
+    
     let tableView = UITableView()
     
     override func viewDidLoad() {
@@ -35,12 +42,21 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.reuseIdentifier)
         
-        view.addSubview(tableView)
+        [searchBar, tableView].forEach {
+            view.addSubview($0)
+        }
+        
+        searchBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+        }
         
         tableView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(searchBar.snp.bottom)
+            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
@@ -86,9 +102,21 @@ extension ViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
         
         let currencyCode = dataManager.currencyCodes[indexPath.row]
+        let countryName = dataManager.getCountryName(for: currencyCode) ?? ""
         let currencyRate = dataManager.currencyRates[indexPath.row]
-        cell.configureUI(currencyCode: currencyCode, currencyRate: currencyRate)
+        cell.configureUI(currencyCode: currencyCode, countryName: countryName, currencyRate: currencyRate)
         
         return cell
+    }
+}
+
+extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        60
+    }
+}
+
+extension ViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     }
 }
