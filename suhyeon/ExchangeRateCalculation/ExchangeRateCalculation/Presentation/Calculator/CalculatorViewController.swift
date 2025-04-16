@@ -15,7 +15,7 @@ class CalculatorViewController: UIViewController {
         self.exchangeRate = exchangeRate
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -28,8 +28,14 @@ class CalculatorViewController: UIViewController {
     }
 
     @objc private func touchUpInsideConvertButton() {
-        guard let text = calculatorView.amountTextField.text,
-              let amount = Double(text) else {
+        guard let text = calculatorView.amountTextField.text else {
+            self.showErrorAlert(
+                title: "오류",
+                message: "금액을 입력해주세요."
+            )
+            return
+        }
+        guard let amount = Double(text) else {
             self.showErrorAlert(
                 title: "오류",
                 message: "올바른 숫자를 입력해주세요."
