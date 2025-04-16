@@ -64,6 +64,12 @@ extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let dataSource = viewModel.state.exchangeRates
+        let nextVC = ExchangeRateCalculatorViewController(exchangeRate: dataSource[indexPath.row])
+        self.navigationController?.pushViewController(nextVC, animated: true)
+    }
 }
 
 extension MainViewController: UISearchBarDelegate {
