@@ -100,12 +100,7 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
-        
-        let currencyCode = dataManager.currencyCodes[indexPath.row]
-        let countryName = dataManager.getCountryName(for: currencyCode) ?? ""
-        let currencyRate = dataManager.currencyRates[indexPath.row]
-        cell.configureUI(currencyCode: currencyCode, countryName: countryName, currencyRate: currencyRate)
-        
+        cell.configureUI(exchangeRate: dataManager.exchangeRates[indexPath.row])
         return cell
     }
 }
