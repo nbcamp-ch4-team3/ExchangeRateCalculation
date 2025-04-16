@@ -30,6 +30,10 @@ class ExchangeRateCalculatorViewController: UIViewController {
     @objc private func touchUpInsideConvertButton() {
         guard let text = calculatorView.amountTextField.text,
               let amount = Double(text) else {
+            self.showErrorAlert(
+                title: "오류",
+                message: "올바른 숫자를 입력해주세요."
+            )
             return
         }
         calculatorView.setCalculatorResult(with: amount * exchangeRate.rate, currency: exchangeRate.currency)

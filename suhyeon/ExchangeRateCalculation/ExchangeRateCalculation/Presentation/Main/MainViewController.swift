@@ -37,7 +37,10 @@ class MainViewController: UIViewController {
         }
 
         viewModel.state.handleNetworkError = {[weak self] error in
-            self?.showNetworkErrorAlert(message: error.localizedDescription)
+            self?.showErrorAlert(
+                title: "네트워크 오류",
+                message: error.localizedDescription
+            )
             os_log("%@", type: .error, error.debugDescription)
         }
     }
