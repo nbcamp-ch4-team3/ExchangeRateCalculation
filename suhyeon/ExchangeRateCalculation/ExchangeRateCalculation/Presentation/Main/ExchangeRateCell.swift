@@ -64,7 +64,7 @@ private extension ExchangeRateCell {
 
     func setHierarchy() {
         labelStackView.addArrangedSubviews(views: currencyLabel, countryLabel)
-        self.addSubviews(views: labelStackView, rateLabel)
+        self.contentView.addSubviews(views: labelStackView, rateLabel)
     }
 
     func setConstraints() {
