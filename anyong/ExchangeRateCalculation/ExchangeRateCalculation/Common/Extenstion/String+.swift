@@ -11,4 +11,8 @@ extension String {
     var isHangul: Bool {
         return range(of: "^[가-힣]+$", options: .regularExpression) != nil
     }
+    
+    var isNumber: Bool {
+        return range(of: "^[0-9]+$", options: .regularExpression) != nil
+    }
 }
