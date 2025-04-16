@@ -21,6 +21,15 @@ class MainView: UIView {
         return tableView
     }()
 
+    private let emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "검색 결과 없음"
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.isHidden = true
+        return label
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -29,6 +38,11 @@ class MainView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setEmptyStateVisible(_ visible: Bool) {
+        tableView.isHidden = visible
+        emptyStateLabel.isHidden = !visible
     }
 }
 
@@ -44,7 +58,7 @@ private extension MainView {
     }
 
     func setHierarchy(){
-        self.addSubviews(views: searchBar, tableView)
+        self.addSubviews(views: searchBar, tableView, emptyStateLabel)
     }
 
     func setConstraints() {
@@ -52,9 +66,14 @@ private extension MainView {
             make.top.equalTo(safeAreaLayoutGuide)
             make.directionalHorizontalEdges.equalToSuperview()
         }
+
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
             make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+
+        emptyStateLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }

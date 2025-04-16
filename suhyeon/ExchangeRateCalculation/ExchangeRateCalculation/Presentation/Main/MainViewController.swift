@@ -33,7 +33,12 @@ class MainViewController: UIViewController {
         viewModel.action?(.loadExchangeRates)
 
         viewModel.state.updateExchangeRates = {[weak self] in
-            self?.mainView.tableView.reloadData()
+            guard let self else { return }
+
+            let dataSource = viewModel.state.exchangeRates
+            self.mainView.setEmptyStateVisible(dataSource.isEmpty)
+
+            self.mainView.tableView.reloadData()
         }
 
         viewModel.state.handleNetworkError = {[weak self] error in
