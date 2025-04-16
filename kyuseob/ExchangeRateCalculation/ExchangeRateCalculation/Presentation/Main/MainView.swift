@@ -21,6 +21,8 @@ class MainView: UIView {
         return tableView
     }()
 
+    private let emptyView = EmptyView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -50,6 +52,10 @@ class MainView: UIView {
         self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
     }
 
+    func showEmptyView(_ show: Bool) {
+        emptyView.isHidden = !show
+    }
+
 }
 
 private extension MainView {
@@ -64,7 +70,7 @@ private extension MainView {
     }
 
     func setHierarchy() {
-        addSubViews(views: searchBar, tableView)
+        addSubViews(views: searchBar, tableView, emptyView)
     }
 
     func setConstraints() {
@@ -75,6 +81,10 @@ private extension MainView {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
             make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+
+        emptyView.snp.makeConstraints { make in
+            make.edges.equalTo(tableView)
         }
     }
 }

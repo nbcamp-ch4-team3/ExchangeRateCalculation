@@ -59,6 +59,8 @@ private extension MainViewController {
 
 extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let count = viewModel.filteredItems.count
+        mainView.showEmptyView(count == 0)
         return viewModel.filteredItems.count
     }
     
