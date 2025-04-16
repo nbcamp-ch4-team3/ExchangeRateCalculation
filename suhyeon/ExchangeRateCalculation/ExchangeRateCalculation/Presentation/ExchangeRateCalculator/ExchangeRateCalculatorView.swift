@@ -41,7 +41,7 @@ class ExchangeRateCalculatorView: UIView {
     }()
 
     // 금액 입력 텍스트 필드
-    private let amountTextField: UITextField = {
+    let amountTextField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
         textField.keyboardType = .decimalPad
@@ -84,6 +84,12 @@ class ExchangeRateCalculatorView: UIView {
     func configure(with exchangeRate: ExchangeRate) {
         countryLabel.text = exchangeRate.country
         currencyLabel.text = exchangeRate.currency
+    }
+
+    func setCalculatorResult(with result: Double, currency: String) {
+        let result = String(format: "%.2f", result)
+        let text = "$\(amountTextField.text ?? "") -> \(result) \(currency)"
+        resultLabel.text = text
     }
 }
 

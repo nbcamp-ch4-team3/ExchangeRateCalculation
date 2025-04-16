@@ -22,6 +22,16 @@ class ExchangeRateCalculatorViewController: UIViewController {
 
     override func viewDidLoad() {
         view = calculatorView
+
+        calculatorView.convertButton.addTarget(self, action: #selector(touchUpInsideConvertButton), for: .touchUpInside)
         calculatorView.configure(with: exchangeRate)
+    }
+
+    @objc private func touchUpInsideConvertButton() {
+        guard let text = calculatorView.amountTextField.text,
+              let amount = Double(text) else {
+            return
+        }
+        calculatorView.setCalculatorResult(with: amount * exchangeRate.rate, currency: exchangeRate.currency)
     }
 }
