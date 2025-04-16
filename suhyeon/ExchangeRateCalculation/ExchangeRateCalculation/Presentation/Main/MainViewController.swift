@@ -10,40 +10,41 @@ import os
 
 class MainViewController: UIViewController {
     private let mainView = MainView()
-    private let networkService = NetworkService()
-    private var dataSource = ExchangeRates()
+    private let viewModel = MainViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setProtocol()
+        view = mainView
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        bindViewModel()
+    }
+
+    private func setProtocol() {
         mainView.tableView.dataSource = self
         mainView.tableView.delegate = self
-        view = mainView
+    }
 
-        Task {
-            let result = await networkService.fetchExchangeRate()
-            switch result {
-            case .success(let result):
-                let exchangeRates: ExchangeRates = result.rates
-                    .compactMap { (currency, rate)  in
-                        guard let country = countryMapping[currency] else { return nil }
-                        return ExchangeRate(country: country, currency: currency, rate: rate)
-                    }
+    private func bindViewModel() {
+        viewModel.action?(.fetchExchangeRate)
 
-                await MainActor.run {
-                    dataSource = exchangeRates
-                    mainView.tableView.reloadData()
-                }
-            case .failure(let error):
-                self.showNetworkErrorAlert(message: error.errorDescription)
-                os_log("%@", type: .error, error.debugDescription)
-            }
+        viewModel.state.successFetchData = {[weak self] in
+            self?.mainView.tableView.reloadData()
+        }
+
+        viewModel.state.showNetworkErrorAlert = {[weak self] error in
+            self?.showNetworkErrorAlert(message: error.localizedDescription)
+            os_log("%@", type: .error, error.debugDescription)
         }
     }
 }
 
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        return viewModel.state.exchangeRates.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -51,6 +52,7 @@ extension MainViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        let dataSource = viewModel.state.exchangeRates
         cell.configure(with: dataSource[indexPath.row])
         return cell
     }

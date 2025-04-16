@@ -58,8 +58,13 @@ class ExchangeRateCell: UITableViewCell {
 
 private extension ExchangeRateCell {
     func configure() {
+        setLayout()
         setHierarchy()
         setConstraints()
+    }
+
+    func setLayout() {
+        self.backgroundColor = .white
     }
 
     func setHierarchy() {
