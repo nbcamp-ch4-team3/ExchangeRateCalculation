@@ -28,7 +28,7 @@ class MainViewModel {
     func filterCurrencyItems(by searchText: String) {
         if !searchText.isEmpty {
             filteredItems = currencyItems.filter({ currencyInfo in
-                currencyInfo.code.lowercased().contains(searchText.lowercased())
+                currencyInfo.code.lowercased().contains(searchText.lowercased()) || currencyInfo.country.lowercased().contains(searchText.lowercased())
             })
         } else {
             filteredItems = currencyItems
