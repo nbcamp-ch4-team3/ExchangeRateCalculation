@@ -54,17 +54,17 @@ private extension MainView {
     }
 
     func setHierarchy() {
-        addSubViews(views: searchBar, tableView)
+        addSubViews(views: tableView)
     }
 
     func setConstraints() {
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.directionalHorizontalEdges.equalToSuperview()
-        }
+//        searchBar.snp.makeConstraints { make in
+//            make.top.equalTo(safeAreaLayoutGuide)
+//            make.directionalHorizontalEdges.equalToSuperview()
+//        }
 
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom)
+            make.top.equalTo(safeAreaLayoutGuide)
             make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
         }
     }

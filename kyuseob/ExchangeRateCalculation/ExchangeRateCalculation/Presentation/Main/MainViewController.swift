@@ -3,6 +3,7 @@ import UIKit
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
+    private let searchController = UISearchController()
 
     override func loadView() {
         view = mainView
@@ -12,6 +13,8 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
 
         mainView.configure(dataSource: self, delegate: self)
+        searchControllerSetting()
+        navigationControllerSetting()
 
         Task {
             await fetchData()
@@ -31,11 +34,23 @@ class MainViewController: UIViewController {
             showAlert(message: "데이터 로드에 실패했습니다.")
         }
     }
+
+    private func searchControllerSetting() {
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "통화 검색"
+        searchController.searchBar.searchBarStyle = .minimal
+    }
+
+    private func navigationControllerSetting() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.topItem?.title = "환율 정보"
+    }
 }
 
 extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.exchangeData.count
+        return viewModel.filteredItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -43,16 +58,25 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
 
-        let currencyCode = viewModel.currencyCodes[indexPath.row]
-        guard let rate = viewModel.exchangeData[currencyCode],
-              let country = viewModel.currencyCountryInfo[currencyCode] else { return UITableViewCell() }
+        let currencyItem = viewModel.filteredItems[indexPath.row]
 
-        cell.configure(with: currencyCode, rate: rate, country: country)
+        cell.configure(with: currencyItem)
+        print(currencyItem)
 
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
+    }
+}
+
+extension MainViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+
+        if searchText != "" {
+
+        }
     }
 }
