@@ -14,6 +14,7 @@ class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         setProtocol()
         view = mainView
     }
@@ -21,12 +22,6 @@ class MainViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         bindViewModel()
-    }
-
-    private func setProtocol() {
-        mainView.tableView.dataSource = self
-        mainView.tableView.delegate = self
-        mainView.searchBar.delegate = self
     }
 
     private func bindViewModel() {
@@ -74,5 +69,25 @@ extension MainViewController: UITableViewDelegate {
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.action?(.filterExchangeRates(searchText))
+    }
+}
+
+private extension MainViewController {
+    private func setNavigationBar() {
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.text = "환율 정보"
+            label.font = .systemFont(ofSize: 28, weight: .bold)
+            return label
+        }()
+
+        let leftBarItem = UIBarButtonItem(customView: titleLabel)
+        navigationItem.setLeftBarButton(leftBarItem, animated: true)
+    }
+
+    private func setProtocol() {
+        mainView.tableView.dataSource = self
+        mainView.tableView.delegate = self
+        mainView.searchBar.delegate = self
     }
 }
