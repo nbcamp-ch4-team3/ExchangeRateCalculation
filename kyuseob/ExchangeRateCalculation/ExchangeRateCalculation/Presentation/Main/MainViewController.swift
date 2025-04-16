@@ -8,14 +8,11 @@ class MainViewController: UIViewController {
     override func loadView() {
         view = mainView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mainView.configure(dataSource: self, delegate: self)
-        searchControllerSetting()
-        navigationControllerSetting()
-
+        configure()
         Task {
             await fetchData()
         }
@@ -35,16 +32,28 @@ class MainViewController: UIViewController {
         }
     }
 
-    private func searchControllerSetting() {
-        navigationItem.searchController = searchController
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.placeholder = "통화 검색"
-        searchController.searchBar.searchBarStyle = .minimal
-    }
-
     private func navigationControllerSetting() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.topItem?.title = "환율 정보"
+    }
+}
+
+private extension MainViewController {
+    func configure() {
+        mainView.configureTableView(dataSource: self, delegate: self)
+        mainView.configureSearchBar(delegate: self)
+        navigationControllerSetting()
+        hideKeyboardWhenTappedBackground()
+    }
+    
+    func hideKeyboardWhenTappedBackground() {
+        let tapEvent = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapEvent.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapEvent)
+    }
+
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
@@ -59,9 +68,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         }
 
         let currencyItem = viewModel.filteredItems[indexPath.row]
-
         cell.configure(with: currencyItem)
-        print(currencyItem)
 
         return cell
     }
@@ -69,15 +76,24 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(indexPath)
+    }
 }
 
-extension MainViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-
+extension MainViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if !searchText.isEmpty {
             viewModel.filterCurrencyItems(by: searchText)
             mainView.reloadTableView()
+        } else {
+            viewModel.resetFilteredItems()
+            mainView.reloadTableView()
         }
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

@@ -35,4 +35,8 @@ class MainViewModel {
         }
     }
 
+    func resetFilteredItems() {
+        filteredItems = currencyItems
+    }
+
 }
