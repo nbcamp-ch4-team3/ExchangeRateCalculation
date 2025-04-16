@@ -75,8 +75,9 @@ extension MainViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
 
-        if searchText != "" {
-
+        if !searchText.isEmpty {
+            viewModel.filterCurrencyItems(by: searchText)
+            mainView.reloadTableView()
         }
     }
 }
