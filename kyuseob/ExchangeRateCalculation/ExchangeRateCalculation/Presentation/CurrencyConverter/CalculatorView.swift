@@ -1,7 +1,13 @@
 import UIKit
 import SnapKit
 
+protocol CalculatorViewDelegate: AnyObject {
+    func didTapConvertButton() -> Double
+}
+
 class CalculatorView: UIView {
+    weak var delegate: CalculatorViewDelegate?
+
     private let labelStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -69,6 +75,11 @@ class CalculatorView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented.")
     }
+
+    func configure(with: CurrencyInfo) {
+        currencyLabel.text = with.code
+        countryLabel.text = with.country
+    }
 }
 
 private extension CalculatorView {
@@ -104,5 +115,15 @@ private extension CalculatorView {
             make.top.equalTo(convertButton.snp.bottom).offset(32)
             make.directionalHorizontalEdges.equalToSuperview().inset(24)
         }
+    }
+
+    func setAction() {
+        convertButton.addTarget(self, action: #selector(didTapConvertButton), for: .touchUpInside)
+    }
+
+    @objc func didTapConvertButton() {
+        guard let result = delegate?.didTapConvertButton() else { return }
+        let formattedResult = String(format: "%.2f", result)
+        self.resultLabel.text = formattedResult
     }
 }

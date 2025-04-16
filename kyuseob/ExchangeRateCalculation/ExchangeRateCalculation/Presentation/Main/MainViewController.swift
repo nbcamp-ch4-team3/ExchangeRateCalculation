@@ -79,6 +79,9 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = CalculatorViewController()
+        let currencyItem = viewModel.filteredItems[indexPath.row]
+        vc.configure(with: currencyItem)
+        
         self.navigationController?.pushViewController(vc, animated: false)
     }
 }
