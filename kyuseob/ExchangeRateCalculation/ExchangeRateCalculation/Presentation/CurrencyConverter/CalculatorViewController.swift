@@ -22,6 +22,10 @@ class CalculatorViewController: UIViewController {
 }
 
 extension CalculatorViewController: CalculatorViewDelegate {
+    func showError(message: String) {
+        showAlert(message: message)
+    }
+    
     func didTapConvertButton(from: Double) -> String {
         let base = "$\(String(format: "%.2f", from)) → "
         let result = String(format: "%.2f", viewModel.convert(from: from))
@@ -31,4 +35,6 @@ extension CalculatorViewController: CalculatorViewDelegate {
 
         return "\(base)\(result)\(code)"
     }
+
+
 }

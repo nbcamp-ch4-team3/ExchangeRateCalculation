@@ -3,6 +3,7 @@ import SnapKit
 
 protocol CalculatorViewDelegate: AnyObject {
     func didTapConvertButton(from: Double) -> String
+    func showError(message: String)
 }
 
 class CalculatorView: UIView {
@@ -123,7 +124,16 @@ private extension CalculatorView {
     }
 
     @objc func didTapConvertButton() {
-        guard let amount = amountTextField.text, let inputValue = Double(amount) else { return }
+        if let text = amountTextField.text, text.isEmpty {
+            delegate?.showError(message: "금액을 입력해주세요")
+            return
+        }
+
+        guard let amount = amountTextField.text, let inputValue = Double(amount) else {
+            delegate?.showError(message: "올바른 숫자를 입력해주세요")
+            return
+        }
+
         guard let result = delegate?.didTapConvertButton(from: inputValue) else { return }
         self.resultLabel.text = result
     }
