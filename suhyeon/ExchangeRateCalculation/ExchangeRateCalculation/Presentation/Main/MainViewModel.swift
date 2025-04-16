@@ -23,29 +23,29 @@ class MainViewModel: ViewModelProtocol {
     var state = State()
 
     enum Action {
-        case fetchExchangeRate
-        case searchExchangeRate(String)
+        case loadExchangeRates
+        case filterExchangeRates(String)
     }
 
     struct State {
         fileprivate(set) var exchangeRates: ExchangeRates = []
 
-        var showNetworkErrorAlert: ((NetworkError) -> Void)?
-        var successFetchData: (() -> Void)?
+        var updateExchangeRates: (() -> Void)?
+        var handleNetworkError: ((NetworkError) -> Void)?
     }
 
     init() {
         self.action = { action in
             switch action {
-            case .fetchExchangeRate:
-                self.fetchExchangeRate()
-            case .searchExchangeRate(let searchText):
-                self.searchExchangeRate(with: searchText)
+            case .loadExchangeRates:
+                self.loadExchangeRates()
+            case .filterExchangeRates(let keyword):
+                self.filterExchangeRates(with: keyword)
             }
         }
     }
 
-    private func fetchExchangeRate() {
+    private func loadExchangeRates() {
         Task {
             let result = await networkService.fetchExchangeRate()
             switch result {
@@ -56,28 +56,28 @@ class MainViewModel: ViewModelProtocol {
 
                 await MainActor.run {
                     state.exchangeRates = exchangeRates
-                    state.successFetchData?()
+                    state.updateExchangeRates?()
                 }
             case .failure(let error):
                 await MainActor.run {
-                    state.showNetworkErrorAlert?(error)
+                    state.handleNetworkError?(error)
                 }
             }
         }
     }
 
-    private func searchExchangeRate(with text: String) {
+    private func filterExchangeRates(with keyword: String) {
         // 검색어를 모두 지웠을 때는 다시 전체 데이터로 변환
-        if text.isEmpty {
+        if keyword.isEmpty {
             state.exchangeRates = cachedExchangeRates
         } else {
-            let uppercasedText = text.uppercased()
+            let uppercasedKeyword = keyword.uppercased()
             state.exchangeRates = cachedExchangeRates.filter {
-                $0.country.contains(uppercasedText) || $0.currency.contains(uppercasedText)
+                $0.country.contains(uppercasedKeyword) || $0.currency.contains(uppercasedKeyword)
             }
         }
 
-        state.successFetchData?()
+        state.updateExchangeRates?()
     }
 
     private func countryMapping(with rates: [String: Double]) -> ExchangeRates {

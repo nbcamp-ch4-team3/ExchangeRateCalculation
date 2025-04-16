@@ -30,13 +30,13 @@ class MainViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.action?(.fetchExchangeRate)
+        viewModel.action?(.loadExchangeRates)
 
-        viewModel.state.successFetchData = {[weak self] in
+        viewModel.state.updateExchangeRates = {[weak self] in
             self?.mainView.tableView.reloadData()
         }
 
-        viewModel.state.showNetworkErrorAlert = {[weak self] error in
+        viewModel.state.handleNetworkError = {[weak self] error in
             self?.showNetworkErrorAlert(message: error.localizedDescription)
             os_log("%@", type: .error, error.debugDescription)
         }
@@ -68,6 +68,6 @@ extension MainViewController: UITableViewDelegate {
 
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.action?(.searchExchangeRate(searchText))
+        viewModel.action?(.filterExchangeRates(searchText))
     }
 }
