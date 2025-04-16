@@ -1,5 +1,5 @@
 //
-//  ExchangeRateCalculatorView.swift
+//  CalculatorView.swift
 //  ExchangeRateCalculation
 //
 //  Created by 이수현 on 4/15/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ExchangeRateCalculatorView: UIView {
+class CalculatorView: UIView {
 
     // currencyLabel + countryLabel
     private let labelStackView: UIStackView = {
@@ -86,7 +86,7 @@ class ExchangeRateCalculatorView: UIView {
     }
 }
 
-private extension ExchangeRateCalculatorView {
+private extension CalculatorView {
     func configure() {
         setLayout()
         setHierarchy()

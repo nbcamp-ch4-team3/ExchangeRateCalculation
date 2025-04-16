@@ -1,5 +1,5 @@
 //
-//  ExchangeRateCalculatorViewController.swift
+//  CalculatorViewController.swift
 //  ExchangeRateCalculation
 //
 //  Created by 이수현 on 4/15/25.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-class ExchangeRateCalculatorViewController: UIViewController {
-    private let calculatorView = ExchangeRateCalculatorView()
+class CalculatorViewController: UIViewController {
+    private let calculatorView = CalculatorView()
     private let exchangeRate: ExchangeRate
 
     init(exchangeRate: ExchangeRate) {
