@@ -92,6 +92,7 @@ private extension MainViewController {
 
         let leftBarItem = UIBarButtonItem(customView: titleLabel)
         navigationItem.setLeftBarButton(leftBarItem, animated: true)
+        navigationItem.backButtonTitle = "환율 정보"
     }
 
     private func setProtocol() {
