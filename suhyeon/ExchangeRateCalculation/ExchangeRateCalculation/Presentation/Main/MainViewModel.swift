@@ -39,7 +39,6 @@ class MainViewModel: ViewModelProtocol {
             case .fetchExchangeRate:
                 self.fetchExchangeRate()
             }
-
         }
     }
 
@@ -48,11 +47,8 @@ class MainViewModel: ViewModelProtocol {
             let result = await networkService.fetchExchangeRate()
             switch result {
             case .success(let result):
-                let exchangeRates: ExchangeRates = result.rates
-                    .compactMap { (currency, rate)  in
-                        guard let country = countryMapping[currency] else { return nil }
-                        return ExchangeRate(country: country, currency: currency, rate: rate)
-                    }
+                // 매핑 + 정렬
+                let exchangeRates = countrymapping(with: result.rates)
 
                 await MainActor.run {
                     state.exchangeRates = exchangeRates
@@ -64,5 +60,14 @@ class MainViewModel: ViewModelProtocol {
                 }
             }
         }
+    }
+
+    private func countrymapping(with rates: [String: Double]) -> ExchangeRates {
+        return rates
+            .sorted { $0.key < $1.key }
+            .compactMap { (currency, rate) in
+                guard let country = countryMapping[currency] else { return nil }
+                return ExchangeRate(country: country, currency: currency, rate: rate)
+            }
     }
 }
