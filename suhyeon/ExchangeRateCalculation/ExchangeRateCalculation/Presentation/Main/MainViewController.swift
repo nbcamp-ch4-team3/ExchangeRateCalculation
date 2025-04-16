@@ -14,7 +14,7 @@ class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationBar()
+        setNavigationBar(title: "환율 정보", isLargeTitle: true)
         setProtocol()
         view = mainView
     }
@@ -82,19 +82,6 @@ extension MainViewController: UISearchBarDelegate {
 }
 
 private extension MainViewController {
-    private func setNavigationBar() {
-        let titleLabel: UILabel = {
-            let label = UILabel()
-            label.text = "환율 정보"
-            label.font = .systemFont(ofSize: 28, weight: .bold)
-            return label
-        }()
-
-        let leftBarItem = UIBarButtonItem(customView: titleLabel)
-        navigationItem.setLeftBarButton(leftBarItem, animated: true)
-        navigationItem.backButtonTitle = "환율 정보"
-    }
-
     private func setProtocol() {
         mainView.tableView.dataSource = self
         mainView.tableView.delegate = self

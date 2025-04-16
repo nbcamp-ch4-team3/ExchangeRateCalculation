@@ -14,4 +14,11 @@ extension UIViewController {
         alertController.addAction(confirmAction)
         self.present(alertController, animated: true)
     }
+
+    func setNavigationBar(title: String, isLargeTitle: Bool) {
+        navigationItem.title = title
+        navigationItem.backButtonTitle = title
+
+        navigationController?.navigationBar.prefersLargeTitles = isLargeTitle
+    }
 }

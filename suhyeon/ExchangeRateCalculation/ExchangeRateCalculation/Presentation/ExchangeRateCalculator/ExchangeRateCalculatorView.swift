@@ -8,13 +8,6 @@
 import UIKit
 
 class ExchangeRateCalculatorView: UIView {
-    // 타이틀 라벨("환율 계산기")
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "환율 계산기"
-        label.font = .systemFont(ofSize: 28, weight: .bold)
-        return label
-    }()
 
     // currencyLabel + countryLabel
     private let labelStackView: UIStackView = {
@@ -106,17 +99,12 @@ private extension ExchangeRateCalculatorView {
 
     func setHierarchy(){
         labelStackView.addArrangedSubviews(views: currencyLabel, countryLabel)
-        self.addSubviews(views: titleLabel, labelStackView, amountTextField, convertButton, resultLabel)
+        self.addSubviews(views: labelStackView, amountTextField, convertButton, resultLabel)
     }
 
     func setConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(12)
-            make.directionalHorizontalEdges.equalToSuperview().inset(12)
-        }
-
         labelStackView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(32)
+            make.top.equalTo(safeAreaLayoutGuide).offset(32)
             make.centerX.equalToSuperview()
         }
 

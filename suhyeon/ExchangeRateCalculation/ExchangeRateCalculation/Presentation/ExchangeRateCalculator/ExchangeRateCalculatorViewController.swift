@@ -22,7 +22,7 @@ class ExchangeRateCalculatorViewController: UIViewController {
 
     override func viewDidLoad() {
         view = calculatorView
-
+        setNavigationBar(title: "환율 계산기", isLargeTitle: true)
         calculatorView.convertButton.addTarget(self, action: #selector(touchUpInsideConvertButton), for: .touchUpInside)
         calculatorView.configure(with: exchangeRate)
     }
