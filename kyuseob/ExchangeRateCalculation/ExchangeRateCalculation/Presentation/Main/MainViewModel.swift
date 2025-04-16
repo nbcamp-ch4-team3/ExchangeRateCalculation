@@ -2,15 +2,24 @@ import Foundation
 
 class MainViewModel {
     private let service = DataService()
-    private(set) var exchangeData = [String: Double]()
-    private(set) var currencyCodes: [String] = []
-    private(set) var currencyCountryInfo = CurrencyCountryInfo().infoList
+    private(set) var currencyItems: [CurrencyInfo] = []
+    private(set) var filteredItems: [CurrencyInfo] = []
+    private let currencyCountryInfo = CurrencyCountryInfo().infoList
 
     func fetchData() async throws {
         do {
             let exchangeData = try await service.fetchExchangeRateData()
-            self.exchangeData = exchangeData.rates
-            self.currencyCodes = exchangeData.rates.keys.sorted()
+
+            var items: [CurrencyInfo] = []
+            for (code, rate) in exchangeData.rates {
+                if let country = currencyCountryInfo[code] {
+                    let item = CurrencyInfo(code: code, country: country, rate: rate)
+                    items.append(item)
+                }
+            }
+
+            self.currencyItems = items.sorted { $0.code < $1.code }
+            self.filteredItems = self.currencyItems
         } catch let error as APIError {
             throw error
         }
