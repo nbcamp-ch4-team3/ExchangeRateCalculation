@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ExchangeRateViewController.swift
 //  ExchangeRateCalculation
 //
 //  Created by 최안용 on 4/14/25.
@@ -7,40 +7,43 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+final class ExchangeRateViewController: UIViewController {
     private let networkService = NetworkService()
     private let rootView = ExchangeRateView()
     private var exchangeRates: [ExchangeRate] = []
     private var searchRates: [ExchangeRate] = []
     private var isSearching: Bool = false
     
+    override func loadView() {
+        view = rootView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         rootView.tableViewConfigure(delegate: self, dataSource: self)
         rootView.searchBarConfigure(delegate: self)
+        setNavigationBar()
         fetchData()
-    }
-    
-    override func loadView() {
-        view = rootView
     }
 
     private func fetchData() {
-        Task {
+        Task { [weak self] in
+            guard let self else { return }
+            
             do {
-                exchangeRates = try await networkService.getExchangeRate(nation: "USD").toModel()
+                self.exchangeRates = try await self.networkService.getExchangeRate(nation: "USD").toModel()
                 
                 await MainActor.run {
-                    rootView.tableViewReloadData()
+                    self.rootView.tableViewReloadData()
                 }
             } catch let error as NetworkError {
                 await MainActor.run {
-                    showErrorAlert(message: error.description)
+                    self.showErrorAlert(message: error.description)
                 }
             } catch {
                 await MainActor.run {
-                    showErrorAlert(message: error.localizedDescription)
+                    self.showErrorAlert(message: error.localizedDescription)
                 }
             }
         }
@@ -51,13 +54,24 @@ class ViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "확인", style: .default))
         present(alert, animated: true)
     }
-}
-
-extension ViewController: UITableViewDelegate {
     
+    private func setNavigationBar() {
+        self.navigationItem.title = "환율 정보"
+        self.navigationItem.backButtonTitle = "환율 정보"
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+    }
 }
 
-extension ViewController: UITableViewDataSource {
+extension ExchangeRateViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let exchangeRate = isSearching ? searchRates[indexPath.row] : exchangeRates[indexPath.row]
+        let vc = ExchangeRateCalculatorViewController(exchangeRate: exchangeRate)
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension ExchangeRateViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return isSearching ? searchRates.count : exchangeRates.count
     }
@@ -78,7 +92,7 @@ extension ViewController: UITableViewDataSource {
 }
 
 
-extension ViewController: UISearchBarDelegate {
+extension ExchangeRateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty {
             searchRates = []
