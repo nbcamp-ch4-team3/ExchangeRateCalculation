@@ -78,7 +78,8 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath)
+        let vc = CalculatorViewController()
+        self.navigationController?.pushViewController(vc, animated: false)
     }
 }
 
