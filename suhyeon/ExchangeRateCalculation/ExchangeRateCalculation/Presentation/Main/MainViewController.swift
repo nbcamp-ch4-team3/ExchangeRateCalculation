@@ -26,6 +26,7 @@ class MainViewController: UIViewController {
     private func setProtocol() {
         mainView.tableView.dataSource = self
         mainView.tableView.delegate = self
+        mainView.searchBar.delegate = self
     }
 
     private func bindViewModel() {
@@ -44,6 +45,7 @@ class MainViewController: UIViewController {
 
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return viewModel.state.exchangeRates.count
     }
 
@@ -61,5 +63,11 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
+    }
+}
+
+extension MainViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.action?(.searchExchangeRate(searchText))
     }
 }

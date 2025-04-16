@@ -7,7 +7,7 @@
 
 import Foundation
 
-let countryMapping = [
+let CountryMapping = [
     "USD": "미국",
     "AED": "아랍에미리트",
     "AFN": "아프가니스탄",
