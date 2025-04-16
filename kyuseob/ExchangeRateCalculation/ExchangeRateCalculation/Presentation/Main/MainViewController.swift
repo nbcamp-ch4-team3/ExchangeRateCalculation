@@ -22,7 +22,9 @@ class MainViewController: UIViewController {
     private func fetchData() async {
         do {
             try await viewModel.fetchData()
-            mainView.reloadTableView()
+            await MainActor.run {
+                mainView.reloadTableView()
+            }
         } catch let error as APIError {
             showAlert(message: error.errorMessage)
         } catch {
