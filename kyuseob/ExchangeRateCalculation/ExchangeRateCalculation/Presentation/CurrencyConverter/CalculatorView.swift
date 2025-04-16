@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 
 protocol CalculatorViewDelegate: AnyObject {
-    func didTapConvertButton() -> Double
+    func didTapConvertButton(from: Double) -> String
 }
 
 class CalculatorView: UIView {
@@ -86,6 +86,7 @@ private extension CalculatorView {
     func configure() {
         setHierarchy()
         setConstraints()
+        setAction()
     }
 
     func setHierarchy() {
@@ -122,8 +123,8 @@ private extension CalculatorView {
     }
 
     @objc func didTapConvertButton() {
-        guard let result = delegate?.didTapConvertButton() else { return }
-        let formattedResult = String(format: "%.2f", result)
-        self.resultLabel.text = formattedResult
+        guard let amount = amountTextField.text, let inputValue = Double(amount) else { return }
+        guard let result = delegate?.didTapConvertButton(from: inputValue) else { return }
+        self.resultLabel.text = result
     }
 }
