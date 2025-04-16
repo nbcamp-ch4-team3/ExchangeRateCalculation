@@ -90,19 +90,19 @@ final class ExchangeRateCalculatorView: UIView {
         
         amountTextField.snp.makeConstraints {
             $0.top.equalTo(labelStackView.snp.bottom).offset(32)
-            $0.directionalHorizontalEdges.equalToSuperview().inset(24)
+            $0.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
             $0.height.equalTo(44)
         }
         
         convertButton.snp.makeConstraints {
             $0.top.equalTo(amountTextField.snp.bottom).offset(24)
-            $0.directionalHorizontalEdges.equalToSuperview().inset(24)
+            $0.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
             $0.height.equalTo(44)
         }
         
         resultLabel.snp.makeConstraints {
             $0.top.equalTo(convertButton.snp.bottom).offset(32)
-            $0.directionalHorizontalEdges.equalToSuperview().inset(24)
+            $0.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
         }
     }
 }
