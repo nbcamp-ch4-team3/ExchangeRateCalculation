@@ -11,16 +11,19 @@ class ViewController: UIViewController {
     private let networkService = NetworkService()
     private let rootView = ExchangeRateView()
     private var exchangeRates: [ExchangeRate] = []
+    private var searchRates: [ExchangeRate] = []
+    private var isSearching: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        rootView.tableViewConfigure(delegate: self, dataSource: self)
+        rootView.searchBarConfigure(delegate: self)
+        fetchData()
     }
     
     override func loadView() {
         view = rootView
-        rootView.tableView.dataSource = self
-        rootView.tableView.delegate = self
-        fetchData()
     }
 
     private func fetchData() {
@@ -29,7 +32,7 @@ class ViewController: UIViewController {
                 exchangeRates = try await networkService.getExchangeRate(nation: "USD").toModel()
                 
                 await MainActor.run {
-                    rootView.tableView.reloadData()
+                    rootView.tableViewReloadData()
                 }
             } catch let error as NetworkError {
                 await MainActor.run {
@@ -56,8 +59,7 @@ extension ViewController: UITableViewDelegate {
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(exchangeRates.count)
-        return exchangeRates.count
+        return isSearching ? searchRates.count : exchangeRates.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -65,7 +67,41 @@ extension ViewController: UITableViewDataSource {
             withIdentifier: ExchangeRateCell.identifier,
             for: indexPath
         ) as? ExchangeRateCell else { return UITableViewCell() }
-        cell.configure(exchangeRates[indexPath.row])
+        
+        if isSearching {
+            cell.configure(searchRates[indexPath.row])
+        } else {
+            cell.configure(exchangeRates[indexPath.row])
+        }
         return cell
+    }
+}
+
+
+extension ViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            searchRates = []
+            isSearching = false
+            rootView.tableViewReloadData()
+        } else {
+            isSearching = true
+            searchExchangeRate(searchText)
+            rootView.tableViewReloadData()
+            
+            if searchRates.isEmpty {
+                rootView.updateBackgroundView(true)
+            } else {
+                rootView.updateBackgroundView(false)
+            }
+        }
+    }
+    
+    private func searchExchangeRate(_ text: String) {
+        if text.isHangul {
+            searchRates = exchangeRates.filter { $0.nation.contains(text) }
+        } else {
+            searchRates = exchangeRates.filter { $0.currencyCode.contains(text.uppercased()) }
+        }
     }
 }
