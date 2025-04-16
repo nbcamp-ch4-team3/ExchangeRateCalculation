@@ -51,7 +51,7 @@ class MainViewModel: ViewModelProtocol {
             switch result {
             case .success(let result):
                 // 매핑 + 정렬
-                let exchangeRates = countryMapping(with: result.rates)
+                let exchangeRates = makeExchageRates(from: result.rates)
                 cachedExchangeRates = exchangeRates
 
                 await MainActor.run {
@@ -80,12 +80,7 @@ class MainViewModel: ViewModelProtocol {
         state.updateExchangeRates?()
     }
 
-    private func countryMapping(with rates: [String: Double]) -> ExchangeRates {
-        return rates
-            .sorted { $0.key < $1.key }
-            .compactMap { (currency, rate) in
-                guard let country = CountryMapping[currency] else { return nil }
-                return ExchangeRate(country: country, currency: currency, rate: rate)
-            }
+    private func makeExchageRates(from rates: [String: Double]) -> ExchangeRates {
+        return ExchangeRateMapper.makeExchangeRates(from: rates)
     }
 }
