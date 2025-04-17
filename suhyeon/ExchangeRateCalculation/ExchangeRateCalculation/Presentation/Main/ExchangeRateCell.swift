@@ -39,6 +39,15 @@ final class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
+    private let starButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "star"), for: .normal)
+        button.setImage(UIImage(systemName: "star.fill"), for: .selected)
+        button.tintColor = .systemYellow
+        button.isEnabled = true
+        return button
+    }()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -69,7 +78,7 @@ private extension ExchangeRateCell {
 
     func setHierarchy() {
         labelStackView.addArrangedSubviews(views: currencyLabel, countryLabel)
-        self.contentView.addSubviews(views: labelStackView, rateLabel)
+        self.contentView.addSubviews(views: labelStackView, rateLabel, starButton)
     }
 
     func setConstraints() {
@@ -79,10 +88,16 @@ private extension ExchangeRateCell {
         }
 
         rateLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
+            make.trailing.equalTo(starButton.snp.leading).offset(-16)
             make.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.equalTo(120)
+        }
+
+        starButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.size.equalTo(30)
+            make.centerY.equalToSuperview()
         }
     }
 }
