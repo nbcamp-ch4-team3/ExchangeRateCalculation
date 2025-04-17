@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ExchangeRateStorage {
+final class ExchangeRateStorage {
     // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
     static let shared = ExchangeRateStorage()
 

@@ -15,7 +15,7 @@ protocol ViewModelProtocol {
     var action: ((Action) -> Void)? { get }
 }
 
-class MainViewModel: ViewModelProtocol {
+final class MainViewModel: ViewModelProtocol {
     private let networkService = NetworkService()
 
     var action: ((Action) -> Void)?
@@ -34,7 +34,9 @@ class MainViewModel: ViewModelProtocol {
     }
 
     init() {
-        self.action = { action in
+        self.action = {[weak self] action in
+            guard let self else { return }
+
             switch action {
             case .loadExchangeRates:
                 self.loadExchangeRates()

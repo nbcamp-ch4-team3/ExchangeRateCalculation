@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CalculatorViewModel: ViewModelProtocol {
+final class CalculatorViewModel: ViewModelProtocol {
     let exchangeRate: ExchangeRate
 
     var action: ((Action) -> Void)?
@@ -25,7 +25,9 @@ class CalculatorViewModel: ViewModelProtocol {
     init(exchangeRate: ExchangeRate) {
         self.exchangeRate = exchangeRate
 
-        action = { action in
+        action = {[weak self] action in
+            guard let self else { return }
+
             switch action {
             case .calculate(let input):
                 self.calculate(input: input)

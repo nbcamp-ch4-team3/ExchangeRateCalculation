@@ -8,7 +8,7 @@
 import UIKit
 import os
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
 

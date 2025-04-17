@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class ExchangeRateCell: UITableViewCell {
+final class ExchangeRateCell: UITableViewCell {
     static let id = "ExchangeRateCell"
 
     private let labelStackView: UIStackView = {
