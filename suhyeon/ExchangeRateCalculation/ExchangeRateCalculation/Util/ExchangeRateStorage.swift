@@ -21,7 +21,12 @@ final class ExchangeRateStorage {
             .sorted { $0.key < $1.key }
             .compactMap { (currency, rate) in
                 guard let country = currencyToCountryMap[currency] else { return nil }
-                return ExchangeRate(country: country, currency: currency, rate: rate)
+                return ExchangeRate(
+                    country: country,
+                    currency: currency,
+                    rate: rate,
+                    isFavorite: false
+                )
             }
     }
 
@@ -34,6 +39,17 @@ final class ExchangeRateStorage {
 
         return cachedExchangeRates.filter {
             $0.country.contains(uppercasedKeyword) || $0.currency.contains(uppercasedKeyword)
+        }
+    }
+
+    func setFavoriteItem(with currency: String) {
+        cachedExchangeRates = cachedExchangeRates.map {
+            if $0.currency == currency {
+                var newExchangeRate = $0
+                newExchangeRate.toggleFavorite()
+                return newExchangeRate
+            }
+            return $0
         }
     }
 

@@ -24,6 +24,7 @@ final class MainViewModel: ViewModelProtocol {
     enum Action {
         case loadExchangeRates
         case filterExchangeRates(String)
+        case setFavoriteItem(currency: String)
     }
 
     struct State {
@@ -42,6 +43,8 @@ final class MainViewModel: ViewModelProtocol {
                 self.loadExchangeRates()
             case .filterExchangeRates(let keyword):
                 self.filterExchangeRates(with: keyword)
+            case .setFavoriteItem(let currency):
+                self.setFavoriteItem(with: currency)
             }
         }
     }
@@ -72,6 +75,12 @@ final class MainViewModel: ViewModelProtocol {
             ? ExchangeRateStorage.shared.loadExchangeRates()
             : ExchangeRateStorage.shared.filterExchangeRates(with: keyword)
 
+        state.updateExchangeRates?()
+    }
+
+    private func setFavoriteItem(with currency: String) {
+        ExchangeRateStorage.shared.setFavoriteItem(with: currency)
+        state.exchangeRates = ExchangeRateStorage.shared.loadExchangeRates()
         state.updateExchangeRates?()
     }
 }

@@ -11,6 +11,11 @@ struct ExchangeRate {
     let country: String
     let currency: String
     let rate: Double
+    private(set) var isFavorite: Bool
+
+    mutating func toggleFavorite() {
+        isFavorite.toggle()
+    }
 }
 
 typealias ExchangeRates = [ExchangeRate]

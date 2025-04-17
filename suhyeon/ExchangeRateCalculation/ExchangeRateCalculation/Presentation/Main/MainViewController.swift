@@ -59,6 +59,7 @@ extension MainViewController: UITableViewDataSource {
 
         let dataSource = viewModel.state.exchangeRates
         cell.configure(with: dataSource[indexPath.row])
+        cell.delegate = self
         return cell
     }
 }
@@ -78,6 +79,12 @@ extension MainViewController: UITableViewDelegate {
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.action?(.filterExchangeRates(searchText))
+    }
+}
+
+extension MainViewController: ExchangeRateCellDelegate {
+    func didTapStarButton(with currency: String) {
+        viewModel.action?(.setFavoriteItem(currency: currency))
     }
 }
 

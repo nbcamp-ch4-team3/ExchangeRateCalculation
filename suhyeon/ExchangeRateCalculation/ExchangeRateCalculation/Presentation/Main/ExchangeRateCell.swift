@@ -8,8 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol ExchangeRateCellDelegate: AnyObject {
+    func didTapStarButton(with currency: String)
+}
+
 final class ExchangeRateCell: UITableViewCell {
     static let id = "ExchangeRateCell"
+    weak var delegate: ExchangeRateCellDelegate?
 
     private let labelStackView: UIStackView = {
         let stackView = UIStackView()
@@ -39,12 +44,14 @@ final class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
-    private let starButton: UIButton = {
+    private lazy var starButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
         button.setImage(UIImage(systemName: "star.fill"), for: .selected)
         button.tintColor = .systemYellow
         button.isEnabled = true
+
+        button.addTarget(self, action: #selector(touchUpInsideStarButton), for: .touchUpInside)
         return button
     }()
 
@@ -58,10 +65,20 @@ final class ExchangeRateCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        delegate = nil
+
+        countryLabel.text = nil
+        currencyLabel.text = nil
+        rateLabel.text = nil
+    }
+
     func configure(with data: ExchangeRate) {
         countryLabel.text = data.country
         currencyLabel.text = data.currency
         rateLabel.text = data.rate.formatted(toDecimalDigits: 4)
+        starButton.isSelected = data.isFavorite
     }
 }
 
@@ -99,5 +116,10 @@ private extension ExchangeRateCell {
             make.size.equalTo(30)
             make.centerY.equalToSuperview()
         }
+    }
+
+    @objc func touchUpInsideStarButton() {
+        guard let currency = currencyLabel.text else { return }
+        delegate?.didTapStarButton(with: currency)
     }
 }
