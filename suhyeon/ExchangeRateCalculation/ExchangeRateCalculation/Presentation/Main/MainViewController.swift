@@ -14,8 +14,8 @@ class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationBar(title: "환율 정보", isLargeTitle: true)
-        setProtocol()
+        configure()
+
         view = mainView
     }
 
@@ -33,7 +33,7 @@ class MainViewController: UIViewController {
             let dataSource = viewModel.state.exchangeRates
             self.mainView.setEmptyStateVisible(dataSource.isEmpty)
 
-            self.mainView.tableView.reloadData()
+            self.mainView.reloadTableView()
         }
 
         viewModel.state.handleNetworkError = {[weak self] error in
@@ -82,9 +82,16 @@ extension MainViewController: UISearchBarDelegate {
 }
 
 private extension MainViewController {
+    private func configure() {
+        setNavigationBar(title: "환율 정보", isLargeTitle: true)
+        setProtocol()
+    }
+
     private func setProtocol() {
-        mainView.tableView.dataSource = self
-        mainView.tableView.delegate = self
-        mainView.searchBar.delegate = self
+        mainView.setSearchBarDelegate(delegate: self)
+        mainView.setTableViewDelegateAndDataSource(
+            delegate: self,
+            dataSource: self
+        )
     }
 }

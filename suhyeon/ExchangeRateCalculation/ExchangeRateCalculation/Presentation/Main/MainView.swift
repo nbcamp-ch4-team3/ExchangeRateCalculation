@@ -8,14 +8,14 @@
 import UIKit
 
 class MainView: UIView {
-    let searchBar: UISearchBar = {
+    private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "통화 검색"
         searchBar.searchBarStyle = .minimal
         return searchBar
     }()
 
-    let tableView: UITableView = {
+    private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ExchangeRateCell.self, forCellReuseIdentifier: ExchangeRateCell.id)
         return tableView
@@ -38,6 +38,22 @@ class MainView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setSearchBarDelegate(delegate: UISearchBarDelegate) {
+        searchBar.delegate = delegate
+    }
+
+    func setTableViewDelegateAndDataSource(
+        delegate: UITableViewDelegate,
+        dataSource: UITableViewDataSource
+    ) {
+        tableView.delegate = delegate
+        tableView.dataSource = dataSource
+    }
+
+    func reloadTableView() {
+        tableView.reloadData()
     }
 
     func setEmptyStateVisible(_ visible: Bool) {
