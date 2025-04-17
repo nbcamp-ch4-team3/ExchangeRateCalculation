@@ -1,5 +1,5 @@
 //
-//  ExchangeRateMapper.swift
+//  ExchangeRateStorage.swift
 //  ExchangeRateCalculation
 //
 //  Created by 이수현 on 4/16/25.
@@ -7,17 +7,17 @@
 
 import Foundation
 
-class ExchangeRateMapper {
+class ExchangeRateStorage {
     // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
-    static let shared = ExchangeRateMapper()
+    static let shared = ExchangeRateStorage()
 
-    private var exchangeRates = ExchangeRates()
+    private var cachedExchangeRates = ExchangeRates()
 
     private init() { }
 
     // [String: Double] 딕셔너리를 받아 ExchangeRates 모델로 변환하는 역할
     func saveExchangeRates(from rates: [String: Double]) {
-        exchangeRates = rates
+        cachedExchangeRates = rates
             .sorted { $0.key < $1.key }
             .compactMap { (currency, rate) in
                 guard let country = currencyToCountryMap[currency] else { return nil }
@@ -26,7 +26,15 @@ class ExchangeRateMapper {
     }
 
     func loadExchangeRates() -> ExchangeRates {
-        return exchangeRates
+        return cachedExchangeRates
+    }
+
+    func filterExchangeRates(with keyword: String) -> ExchangeRates {
+        let uppercasedKeyword = keyword.uppercased()
+
+        return cachedExchangeRates.filter {
+            $0.country.contains(uppercasedKeyword) || $0.currency.contains(uppercasedKeyword)
+        }
     }
 
     private let currencyToCountryMap = [

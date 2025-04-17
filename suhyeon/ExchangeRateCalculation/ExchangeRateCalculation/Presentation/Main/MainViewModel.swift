@@ -49,8 +49,8 @@ class MainViewModel: ViewModelProtocol {
             let result = await networkService.fetchExchangeRate()
             switch result {
             case .success(let result):
-                ExchangeRateMapper.shared.saveExchangeRates(from: result.rates) // 싱글톤에 저장
-                let exchangeRates = ExchangeRateMapper.shared.loadExchangeRates() // 불러오기
+                ExchangeRateStorage.shared.saveExchangeRates(from: result.rates) // 싱글톤에 저장
+                let exchangeRates = ExchangeRateStorage.shared.loadExchangeRates() // 불러오기
 
                 await MainActor.run {
                     state.exchangeRates = exchangeRates
@@ -66,16 +66,9 @@ class MainViewModel: ViewModelProtocol {
 
     private func filterExchangeRates(with keyword: String) {
         // 검색어를 모두 지웠을 때는 다시 전체 데이터로 변환
-        if keyword.isEmpty {
-            state.exchangeRates = ExchangeRateMapper.shared.loadExchangeRates()
-        } else {
-            let uppercasedKeyword = keyword.uppercased()
-            let data = ExchangeRateMapper.shared.loadExchangeRates()
-
-            state.exchangeRates = data.filter {
-                $0.country.contains(uppercasedKeyword) || $0.currency.contains(uppercasedKeyword)
-            }
-        }
+        state.exchangeRates = keyword.isEmpty
+            ? ExchangeRateStorage.shared.loadExchangeRates()
+            : ExchangeRateStorage.shared.filterExchangeRates(with: keyword)
 
         state.updateExchangeRates?()
     }
