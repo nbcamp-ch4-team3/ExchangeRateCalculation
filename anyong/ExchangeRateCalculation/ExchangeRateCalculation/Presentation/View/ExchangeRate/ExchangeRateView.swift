@@ -11,8 +11,8 @@ import SnapKit
 import Then
 
 final class ExchangeRateView: UIView {
-    let searchBar = UISearchBar()
-    let tableView = UITableView()
+    private let searchBar = UISearchBar()
+    private let tableView = UITableView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,6 +53,37 @@ final class ExchangeRateView: UIView {
         tableView.snp.makeConstraints {
             $0.top.equalTo(searchBar.snp.bottom)
             $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+    }
+}
+
+extension ExchangeRateView {
+    func tableViewConfigure(delegate: UITableViewDelegate, dataSource: UITableViewDataSource) {
+        tableView.delegate = delegate
+        tableView.dataSource = dataSource
+    }
+    
+    func searchBarConfigure(delegate: UISearchBarDelegate) {
+        searchBar.delegate = delegate
+    }
+    
+    func tableViewReloadData() {
+        tableView.reloadData()
+    }
+    
+    func updateBackgroundView(_ isEmpty: Bool) {
+        if isEmpty {
+            let label = UILabel()
+            
+            label.do {
+                $0.text = "검색 결과 없음"
+                $0.textColor = .systemGray
+                $0.font = .systemFont(ofSize: 16, weight: .medium)
+                $0.textAlignment = .center
+            }
+            tableView.backgroundView = label
+        } else {
+            tableView.backgroundView = nil
         }
     }
 }

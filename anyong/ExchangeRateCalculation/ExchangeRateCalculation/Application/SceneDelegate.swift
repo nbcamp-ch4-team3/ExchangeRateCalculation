@@ -7,15 +7,18 @@
 
 import UIKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {    
     var window: UIWindow?
-    
-    
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
         guard let windowScene = scene as? UIWindowScene else { return }
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = ViewController()
+        let vc = ExchangeRateViewController()
+        window?.rootViewController = UINavigationController(rootViewController: vc)
         window?.makeKeyAndVisible()
     }
     
@@ -39,4 +42,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     }
 }
-
