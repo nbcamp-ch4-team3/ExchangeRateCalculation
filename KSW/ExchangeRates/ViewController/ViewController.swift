@@ -9,7 +9,17 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController {
+    let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "통화 검색"
+        searchBar.searchBarStyle = .minimal
+        return searchBar
+    }()
+    
+    let tableView = UITableView()
+    
     private let dataManager: DataManager
+    private let noResultsLabel = NoResultsLabel() // 사용자의 검색 결과가 없을 때
     
     init() {
         self.dataManager = DataManager()
@@ -21,15 +31,6 @@ class ViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "통화 검색"
-        searchBar.searchBarStyle = .minimal
-        return searchBar
-    }()
-    
-    let tableView = UITableView()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,6 +41,12 @@ class ViewController: UIViewController {
     
     private func configureUI() {
         view.backgroundColor = .white
+        
+        navigationItem.title = "환율 정보"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
+        
+        searchBar.delegate = self
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -91,21 +98,29 @@ extension ViewController: DataManagerDelegate {
             self.showError(error)
         }
     }
+    
+    func dataManagerDidFilterData() {
+        // 검색 결과가 없으면 검색 결과 없음 레이블 표시
+        DispatchQueue.main.async {
+            if self.dataManager.filteredExchangeRates.isEmpty {
+                self.tableView.backgroundView = self.noResultsLabel
+            } else {
+                self.tableView.backgroundView = nil
+            }
+            
+            self.tableView.reloadData()
+        }
+    }
 }
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataManager.exchangeRates.count
+        dataManager.filteredExchangeRates.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
-        
-        let currencyCode = dataManager.currencyCodes[indexPath.row]
-        let countryName = dataManager.getCountryName(for: currencyCode) ?? ""
-        let currencyRate = dataManager.currencyRates[indexPath.row]
-        cell.configureUI(currencyCode: currencyCode, countryName: countryName, currencyRate: currencyRate)
-        
+        cell.configureUI(exchangeRate: dataManager.filteredExchangeRates[indexPath.row])
         return cell
     }
 }
@@ -114,9 +129,17 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let exchangeRate = dataManager.filteredExchangeRates[indexPath.row]
+        
+        let viewController = DetailViewController(exchangeRate: exchangeRate)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 extension ViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        dataManager.filterData(searchText: searchText)
     }
 }

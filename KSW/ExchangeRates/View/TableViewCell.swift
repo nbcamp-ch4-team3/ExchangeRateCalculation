@@ -11,7 +11,7 @@ import SnapKit
 class TableViewCell: UITableViewCell {
     static let reuseIdentifier = "TableViewCell"
     
-    // 통화 기호(예: USD)
+    // 통화 코드(예: USD)
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .medium)
@@ -42,17 +42,10 @@ class TableViewCell: UITableViewCell {
         return label
     }()
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -81,9 +74,9 @@ class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureUI(currencyCode: String, countryName: String, currencyRate: Double) {
-        currencyLabel.text = currencyCode
-        countryLabel.text = countryName
-        rateLabel.text = String(format: "%.4f", currencyRate) // 소수점 4자리까지 표시
+    func configureUI(exchangeRate: ExchangeRate) {
+        currencyLabel.text = exchangeRate.code
+        countryLabel.text = exchangeRate.country
+        rateLabel.text = String(format: "%.4f", exchangeRate.rate) // 소수점 4자리까지 표시
     }
 }
