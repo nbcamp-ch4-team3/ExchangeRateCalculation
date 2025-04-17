@@ -80,9 +80,12 @@ class CalculatorView: UIView {
     }
 
     func setCalculatorResult(with result: Double, currency: String) {
-        let result = String(format: "%.2f", result)
-        let text = "$\(amountTextField.text ?? "") -> \(result) \(currency)"
-        resultLabel.text = text
+        guard let text = amountTextField.text,
+              let dollar = Double(text)?.formatted(toDecimalDigits: 2) else {
+            return
+        }
+        let result = result.formatted(toDecimalDigits: 2)
+        resultLabel.text = "$\(dollar) → \(result) \(currency)"
     }
 }
 
