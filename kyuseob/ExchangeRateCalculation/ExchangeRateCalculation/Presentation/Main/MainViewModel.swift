@@ -1,6 +1,15 @@
 import Foundation
 
-class MainViewModel {
+protocol MainViewModelProtocol {
+    var currencyItems: [CurrencyInfo] { get }
+    var filteredItems: [CurrencyInfo] { get }
+
+    func fetchData() async throws
+    func filterCurrencyItems(by searchText: String)
+    func resetFilteredItems()
+}
+
+class MainViewModel: MainViewModelProtocol {
     private let service = DataService()
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []

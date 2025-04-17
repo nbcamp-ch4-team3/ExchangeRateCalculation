@@ -1,6 +1,13 @@
 import Foundation
 
-class CalculatorViewModel {
+protocol CalculatorViewModelProtocol {
+    var currencyInfo: CurrencyInfo? { get }
+
+    func setCurrencyInfo(to: CurrencyInfo)
+    func convert(from: Double) -> Double
+}
+
+class CalculatorViewModel: CalculatorViewModelProtocol {
     private(set) var currencyInfo: CurrencyInfo? = nil
 
     func setCurrencyInfo(to: CurrencyInfo) {
