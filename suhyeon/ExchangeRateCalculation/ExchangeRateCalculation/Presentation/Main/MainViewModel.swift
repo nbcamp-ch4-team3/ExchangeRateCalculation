@@ -16,7 +16,6 @@ protocol ViewModelProtocol {
 }
 
 final class MainViewModel: ViewModelProtocol {
-    private let networkService = NetworkService()
 
     var action: ((Action) -> Void)?
     var state = State()
@@ -51,14 +50,11 @@ final class MainViewModel: ViewModelProtocol {
 
     private func loadExchangeRates() {
         Task {
-            let result = await networkService.fetchExchangeRate()
+            let result = await ExchangeRateRepository.shared.fetchExchangeRate()
             switch result {
-            case .success(let result):
-                ExchangeRateStorage.shared.saveExchangeRates(from: result.rates) // 싱글톤에 저장
-                let exchangeRates = ExchangeRateStorage.shared.loadExchangeRates() // 불러오기
-
+            case .success(let response):
                 await MainActor.run {
-                    state.exchangeRates = exchangeRates
+                    state.exchangeRates = response
                     state.updateExchangeRates?()
                 }
             case .failure(let error):
@@ -72,15 +68,15 @@ final class MainViewModel: ViewModelProtocol {
     private func filterExchangeRates(with keyword: String) {
         // 검색어를 모두 지웠을 때는 다시 전체 데이터로 변환
         state.exchangeRates = keyword.isEmpty
-            ? ExchangeRateStorage.shared.loadExchangeRates()
-            : ExchangeRateStorage.shared.filterExchangeRates(with: keyword)
+            ? ExchangeRateRepository.shared.loadExchangeRates()
+            : ExchangeRateRepository.shared.filterExchangeRates(with: keyword)
 
         state.updateExchangeRates?()
     }
 
     private func setFavoriteItem(with currency: String) {
-        ExchangeRateStorage.shared.setFavoriteItem(with: currency)
-        state.exchangeRates = ExchangeRateStorage.shared.loadExchangeRates()
+        ExchangeRateRepository.shared.setFavoriteItem(with: currency)
+        state.exchangeRates = ExchangeRateRepository.shared.loadExchangeRates()
         state.updateExchangeRates?()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  ExchangeRateStorage.swift
+//  ExchangeRateRepository.swift
 //  ExchangeRateCalculation
 //
 //  Created by 이수현 on 4/16/25.
@@ -7,27 +7,34 @@
 
 import Foundation
 
-final class ExchangeRateStorage {
+final class ExchangeRateRepository {
     // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
-    static let shared = ExchangeRateStorage()
+    static let shared = ExchangeRateRepository()
 
+    private let networkService = NetworkService()
     private var cachedExchangeRates = ExchangeRates()
 
     private init() { }
 
-    // [String: Double] 딕셔너리를 받아 ExchangeRates 모델로 변환하는 역할
-    func saveExchangeRates(from rates: [String: Double]) {
-        cachedExchangeRates = rates
-            .sorted { $0.key < $1.key }
-            .compactMap { (currency, rate) in
-                guard let country = currencyToCountryMap[currency] else { return nil }
-                return ExchangeRate(
-                    country: country,
-                    currency: currency,
-                    rate: rate,
-                    isFavorite: false
-                )
-            }
+    func fetchExchangeRate() async -> Result<ExchangeRates, NetworkError> {
+        let result = await networkService.fetchExchangeRate()
+        switch result {
+        case .success(let response):
+            cachedExchangeRates = response.rates
+                .sorted { $0.key < $1.key }
+                .compactMap { (currency, rate) in
+                    guard let country = currencyToCountryMap[currency] else { return nil }
+                    return ExchangeRate(
+                        country: country,
+                        currency: currency,
+                        rate: rate,
+                        isFavorite: false
+                    )
+                }
+            return .success(cachedExchangeRates)
+        case .failure(let error):
+            return .failure(error)
+        }
     }
 
     func loadExchangeRates() -> ExchangeRates {
