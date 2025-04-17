@@ -11,6 +11,7 @@ import os
 final class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
+    private var isFirstAppear = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,8 @@ final class MainViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if !isFirstAppear { return }
+        isFirstAppear = false
         bindViewModel()
     }
 
