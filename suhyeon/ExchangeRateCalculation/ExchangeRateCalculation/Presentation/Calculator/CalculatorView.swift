@@ -25,14 +25,12 @@ class CalculatorView: UIView {
 
     private let currencyLabel: UILabel = {
         let label = UILabel()
-        label.text = "ALL"
         label.font = .systemFont(ofSize: 24, weight: .bold)
         return label
     }()
 
     private let countryLabel: UILabel = {
         let label = UILabel()
-        label.text = "엘바니아"
         label.font = .systemFont(ofSize: 16)
         label.textColor = .gray
         return label
