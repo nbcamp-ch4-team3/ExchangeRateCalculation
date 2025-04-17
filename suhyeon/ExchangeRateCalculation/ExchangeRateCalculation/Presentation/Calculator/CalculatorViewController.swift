@@ -6,13 +6,14 @@
 //
 
 import UIKit
+import os
 
 class CalculatorViewController: UIViewController {
     private let calculatorView = CalculatorView()
-    private let exchangeRate: ExchangeRate
+    private let viewModel: CalculatorViewModel
 
     init(exchangeRate: ExchangeRate) {
-        self.exchangeRate = exchangeRate
+        self.viewModel = CalculatorViewModel(exchangeRate: exchangeRate)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -22,28 +23,31 @@ class CalculatorViewController: UIViewController {
 
     override func viewDidLoad() {
         view = calculatorView
+
         configure()
+        bindViewModel()
+    }
+
+    private func bindViewModel() {
+        viewModel.state.success = {[weak self] result, currency in
+            guard let self else { return }
+            calculatorView.setCalculatorResult(with: result, currency: currency)
+        }
+
+        viewModel.state.failure = {[weak self] error in
+            guard let self else { return }
+            showErrorAlert(title: "오류", message: error.localizedDescription)
+            os_log(.error, "%@", error.debugDesciption)
+        }
     }
 }
 
 extension CalculatorViewController: CalculatorViewDelegate {
-    func calculatorView(_ view: CalculatorView, didTapConvertButtonWith amountTextField: UITextField) {
-        guard let text = amountTextField.text, !text.isEmpty else {
-            self.showErrorAlert(
-                title: "오류",
-                message: "금액을 입력해주세요."
-            )
-            return
-        }
-        guard let amount = Double(text) else {
-            self.showErrorAlert(
-                title: "오류",
-                message: "올바른 숫자를 입력해주세요."
-            )
-            return
-        }
-
-        view.setCalculatorResult(with: amount * exchangeRate.rate, currency: exchangeRate.currency)
+    func calculatorView(
+        _ view: CalculatorView,
+        didTapConvertButtonWith amountTextField: UITextField
+    ) {
+        viewModel.action?(.calculate(input: amountTextField.text))
     }
 }
 
@@ -51,6 +55,6 @@ private extension CalculatorViewController {
     func configure() {
         calculatorView.delegate = self
         setNavigationBar(title: "환율 계산기", isLargeTitle: true)
-        calculatorView.configure(with: exchangeRate)
+        calculatorView.configure(with: viewModel.exchangeRate)
     }
 }
