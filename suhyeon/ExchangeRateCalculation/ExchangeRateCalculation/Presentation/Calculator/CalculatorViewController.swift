@@ -29,9 +29,12 @@ class CalculatorViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        viewModel.state.success = {[weak self] result, currency in
+        viewModel.state.success = {[weak self] result in
             guard let self else { return }
-            calculatorView.setCalculatorResult(with: result, currency: currency)
+            calculatorView.setCalculatorResult(
+                with: result.calculatedAmount,
+                currency: result.currency
+            )
         }
 
         viewModel.state.failure = {[weak self] error in

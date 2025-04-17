@@ -18,7 +18,7 @@ class CalculatorViewModel: ViewModelProtocol {
     }
 
     struct State {
-        var success: ((Double, String) -> Void)?
+        var success: ((CalculationResult) -> Void)?
         var failure: ((CalculatorError) -> Void)?
     }
 
@@ -44,6 +44,10 @@ class CalculatorViewModel: ViewModelProtocol {
             return
         }
 
-        state.success?(amount * exchangeRate.rate, exchangeRate.currency)
+        let result = CalculationResult(
+            calculatedAmount: amount * exchangeRate.rate,
+            currency: exchangeRate.currency
+        )
+        state.success?(result)
     }
 }
