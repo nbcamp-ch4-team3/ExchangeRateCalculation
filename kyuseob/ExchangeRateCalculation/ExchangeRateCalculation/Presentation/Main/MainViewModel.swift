@@ -33,7 +33,7 @@ class MainViewModel: MainViewModelProtocol {
 
             self.currencyItems = items.sorted { $0.code < $1.code }
             self.filteredItems = self.currencyItems
-        } catch let error as APIError {
+        } catch {
             throw error
         }
     }

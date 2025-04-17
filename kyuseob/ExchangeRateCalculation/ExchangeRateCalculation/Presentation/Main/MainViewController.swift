@@ -9,7 +9,7 @@ class MainViewController: UIViewController {
     }
 
     init(viewModel: MainViewModelProtocol) {
-        self.viewModel = MainViewModel()
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -32,13 +32,9 @@ class MainViewController: UIViewController {
             await MainActor.run {
                 mainView.reloadTableView()
             }
-        } catch let error as APIError {
+        } catch  {
             await MainActor.run {
-                showAlert(message: error.errorMessage)
-            }
-        } catch {
-            await MainActor.run {
-                showAlert(message: "데이터 로드에 실패했습니다.")
+                showAlert(message: error.localizedDescription)
             }
         }
     }
