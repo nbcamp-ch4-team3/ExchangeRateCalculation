@@ -52,14 +52,19 @@ class ExchangeRateCell: UITableViewCell {
     func configure(with data: ExchangeRate) {
         countryLabel.text = data.country
         currencyLabel.text = data.currency
-        rateLabel.text = String(format: "%.4f", data.rate)
+        rateLabel.text = data.rate.formatted(toDecimalDigits: 4)
     }
 }
 
 private extension ExchangeRateCell {
     func configure() {
+        setLayout()
         setHierarchy()
         setConstraints()
+    }
+
+    func setLayout() {
+        self.backgroundColor = .white
     }
 
     func setHierarchy() {

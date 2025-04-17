@@ -10,40 +10,46 @@ import os
 
 class MainViewController: UIViewController {
     private let mainView = MainView()
-    private let networkService = NetworkService()
-    private var dataSource = ExchangeRates()
+    private let viewModel = MainViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        mainView.tableView.dataSource = self
-        mainView.tableView.delegate = self
+        configure()
+
         view = mainView
+    }
 
-        Task {
-            let result = await networkService.fetchExchangeRate()
-            switch result {
-            case .success(let result):
-                let exchangeRates: ExchangeRates = result.rates
-                    .compactMap { (currency, rate)  in
-                        guard let country = countryMapping[currency] else { return nil }
-                        return ExchangeRate(country: country, currency: currency, rate: rate)
-                    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        bindViewModel()
+    }
 
-                await MainActor.run {
-                    dataSource = exchangeRates
-                    mainView.tableView.reloadData()
-                }
-            case .failure(let error):
-                self.showNetworkErrorAlert(message: error.errorDescription)
-                os_log("%@", type: .error, error.debugDescription)
-            }
+    private func bindViewModel() {
+        viewModel.action?(.loadExchangeRates)
+
+        viewModel.state.updateExchangeRates = {[weak self] in
+            guard let self else { return }
+
+            let dataSource = viewModel.state.exchangeRates
+            self.mainView.setEmptyStateVisible(dataSource.isEmpty)
+
+            self.mainView.reloadTableView()
+        }
+
+        viewModel.state.handleNetworkError = {[weak self] error in
+            self?.showErrorAlert(
+                title: "네트워크 오류",
+                message: error.localizedDescription
+            )
+            os_log("%@", type: .error, error.debugDescription)
         }
     }
 }
 
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+        
+        return viewModel.state.exchangeRates.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -51,6 +57,7 @@ extension MainViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        let dataSource = viewModel.state.exchangeRates
         cell.configure(with: dataSource[indexPath.row])
         return cell
     }
@@ -59,5 +66,32 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let dataSource = viewModel.state.exchangeRates
+        let nextVC = CalculatorViewController(exchangeRate: dataSource[indexPath.row])
+        self.navigationController?.pushViewController(nextVC, animated: true)
+    }
+}
+
+extension MainViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.action?(.filterExchangeRates(searchText))
+    }
+}
+
+private extension MainViewController {
+    private func configure() {
+        setNavigationBar(title: "환율 정보", isLargeTitle: true)
+        setProtocol()
+    }
+
+    private func setProtocol() {
+        mainView.setSearchBarDelegate(delegate: self)
+        mainView.setTableViewDelegateAndDataSource(
+            delegate: self,
+            dataSource: self
+        )
     }
 }
