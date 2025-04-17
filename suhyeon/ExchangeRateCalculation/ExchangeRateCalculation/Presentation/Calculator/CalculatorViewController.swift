@@ -22,13 +22,13 @@ class CalculatorViewController: UIViewController {
 
     override func viewDidLoad() {
         view = calculatorView
-        setNavigationBar(title: "환율 계산기", isLargeTitle: true)
-        calculatorView.convertButton.addTarget(self, action: #selector(touchUpInsideConvertButton), for: .touchUpInside)
-        calculatorView.configure(with: exchangeRate)
+        configure()
     }
+}
 
-    @objc private func touchUpInsideConvertButton() {
-        guard let text = calculatorView.amountTextField.text else {
+extension CalculatorViewController: CalculatorViewDelegate {
+    func calculatorView(_ view: CalculatorView, didTapConvertButtonWith amountTextField: UITextField) {
+        guard let text = amountTextField.text, !text.isEmpty else {
             self.showErrorAlert(
                 title: "오류",
                 message: "금액을 입력해주세요."
@@ -42,6 +42,15 @@ class CalculatorViewController: UIViewController {
             )
             return
         }
-        calculatorView.setCalculatorResult(with: amount * exchangeRate.rate, currency: exchangeRate.currency)
+
+        view.setCalculatorResult(with: amount * exchangeRate.rate, currency: exchangeRate.currency)
+    }
+}
+
+private extension CalculatorViewController {
+    func configure() {
+        calculatorView.delegate = self
+        setNavigationBar(title: "환율 계산기", isLargeTitle: true)
+        calculatorView.configure(with: exchangeRate)
     }
 }

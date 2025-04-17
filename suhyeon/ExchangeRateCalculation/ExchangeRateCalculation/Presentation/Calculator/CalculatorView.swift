@@ -7,7 +7,12 @@
 
 import UIKit
 
+protocol CalculatorViewDelegate: AnyObject {
+    func calculatorView(_ view: CalculatorView, didTapConvertButtonWith amountTextField: UITextField)
+}
+
 class CalculatorView: UIView {
+    weak var delegate: CalculatorViewDelegate?
 
     // currencyLabel + countryLabel
     private let labelStackView: UIStackView = {
@@ -34,7 +39,7 @@ class CalculatorView: UIView {
     }()
 
     // 금액 입력 텍스트 필드
-    let amountTextField: UITextField = {
+    private let amountTextField: UITextField = {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
         textField.keyboardType = .decimalPad
@@ -44,13 +49,14 @@ class CalculatorView: UIView {
     }()
 
     // 변환 버튼
-    let convertButton: UIButton = {
+    private lazy var convertButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .systemBlue
         button.setTitle("환율 계산", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(touchUpInsideConvertButton), for: .touchUpInside)
         return button
     }()
 
@@ -127,5 +133,9 @@ private extension CalculatorView {
             make.top.equalTo(convertButton.snp.bottom).offset(32)
             make.directionalHorizontalEdges.equalToSuperview().inset(24)
         }
+    }
+
+    @objc func touchUpInsideConvertButton(){
+        delegate?.calculatorView(self, didTapConvertButtonWith: amountTextField)
     }
 }
