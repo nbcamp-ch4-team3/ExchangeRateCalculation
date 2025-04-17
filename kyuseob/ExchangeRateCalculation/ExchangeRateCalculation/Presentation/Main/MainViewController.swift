@@ -3,7 +3,6 @@ import UIKit
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
-    private let searchController = UISearchController()
 
     override func loadView() {
         view = mainView
@@ -26,9 +25,13 @@ class MainViewController: UIViewController {
                 mainView.reloadTableView()
             }
         } catch let error as APIError {
-            showAlert(message: error.errorMessage)
+            await MainActor.run {
+                showAlert(message: error.errorMessage)
+            }
         } catch {
-            showAlert(message: "데이터 로드에 실패했습니다.")
+            await MainActor.run {
+                showAlert(message: "데이터 로드에 실패했습니다.")
+            }
         }
     }
 

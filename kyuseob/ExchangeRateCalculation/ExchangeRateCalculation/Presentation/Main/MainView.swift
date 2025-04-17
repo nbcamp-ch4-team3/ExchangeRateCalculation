@@ -47,11 +47,6 @@ class MainView: UIView {
         tableView.reloadData()
     }
 
-    func scrollToTop() {
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
-    }
-
     func showEmptyView(_ show: Bool) {
         emptyView.isHidden = !show
     }

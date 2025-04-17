@@ -4,7 +4,7 @@ class MainViewModel {
     private let service = DataService()
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
-    private let currencyCountryInfo = CurrencyCountryInfo().infoList
+    private let currencyCountryInfo = CurrencyCountryMap().infoList
 
     func fetchData() async throws {
         do {
@@ -27,8 +27,9 @@ class MainViewModel {
 
     func filterCurrencyItems(by searchText: String) {
         if !searchText.isEmpty {
+            let uppercasedSearchText = searchText.uppercased()
             filteredItems = currencyItems.filter({ currencyInfo in
-                currencyInfo.code.lowercased().contains(searchText.lowercased()) || currencyInfo.country.lowercased().contains(searchText.lowercased())
+                currencyInfo.code.uppercased().contains(uppercasedSearchText) || currencyInfo.country.uppercased().contains(uppercasedSearchText)
             })
         } else {
             filteredItems = currencyItems
