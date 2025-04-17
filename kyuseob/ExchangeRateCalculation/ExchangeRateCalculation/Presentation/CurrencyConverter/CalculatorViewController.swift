@@ -2,7 +2,16 @@ import UIKit
 
 class CalculatorViewController: UIViewController {
     private let calculatorView = CalculatorView()
-    private let viewModel = CalculatorViewModel()
+    private let viewModel: CalculatorViewModelProtocol
+
+    init(viewModel: CalculatorViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented.")
+    }
 
     override func loadView() {
         view = calculatorView

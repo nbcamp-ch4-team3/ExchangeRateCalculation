@@ -10,10 +10,14 @@ protocol MainViewModelProtocol {
 }
 
 class MainViewModel: MainViewModelProtocol {
-    private let service = DataService()
+    private let service: DataServiceProtocol
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
     private let currencyCountryInfo = CurrencyCountryMap().infoList
+
+    init(service: DataServiceProtocol = DataService()) {
+        self.service = service
+    }
 
     func fetchData() async throws {
         do {
