@@ -38,7 +38,8 @@ class DetailView: UIView {
         textField.borderStyle = .roundedRect
         textField.keyboardType = .decimalPad
         textField.textAlignment = .center
-        textField.placeholder = "금액을 입력하세요."
+        textField.placeholder = "달러(USD)를 입력하세요."
+        textField.clearButtonMode = .whileEditing
         return textField
     }()
     

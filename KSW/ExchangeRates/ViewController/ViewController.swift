@@ -44,7 +44,6 @@ class ViewController: UIViewController {
         
         navigationItem.title = "환율 정보"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
         
         searchBar.delegate = self
         
