@@ -25,8 +25,8 @@ class MainView: UIView {
         let label = UILabel()
         label.text = "검색 결과 없음"
         label.textColor = .lightGray
+        label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .medium)
-        label.isHidden = true
         return label
     }()
 
@@ -41,8 +41,7 @@ class MainView: UIView {
     }
 
     func setEmptyStateVisible(_ visible: Bool) {
-        tableView.isHidden = visible
-        emptyStateLabel.isHidden = !visible
+        tableView.backgroundView = visible ? emptyStateLabel : nil
     }
 }
 
@@ -58,7 +57,7 @@ private extension MainView {
     }
 
     func setHierarchy(){
-        self.addSubviews(views: searchBar, tableView, emptyStateLabel)
+        self.addSubviews(views: searchBar, tableView)
     }
 
     func setConstraints() {
@@ -70,10 +69,6 @@ private extension MainView {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
             make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
-        }
-
-        emptyStateLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
         }
     }
 }
