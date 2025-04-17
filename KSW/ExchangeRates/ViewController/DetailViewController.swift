@@ -8,8 +8,7 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    let exchangeRate: ExchangeRate
-    
+    let viewModel: DetailViewModel
     private let detailView = DetailView()
     
     override func loadView() {
@@ -18,8 +17,8 @@ class DetailViewController: UIViewController {
         view = detailView
     }
     
-    init(exchangeRate: ExchangeRate) {
-        self.exchangeRate = exchangeRate
+    init(viewModel: DetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,36 +32,26 @@ class DetailViewController: UIViewController {
         navigationItem.title = "환율 계산기"
         navigationController?.navigationBar.prefersLargeTitles = true
         
-        detailView.currencyLabel.text = exchangeRate.code
-        detailView.countryLabel.text = exchangeRate.country
-        
+        detailView.currencyLabel.text = viewModel.currency.code
+        detailView.countryLabel.text = viewModel.currency.country
         detailView.convertButton.addTarget(self, action: #selector(convertButtonTapped), for: .touchUpInside)
+        
+        viewModel.onValidate = { [weak self] result in
+            guard let self, let text = detailView.amountTextField.text else { return }
+            
+            switch result {
+            case .valid(let number):
+                detailView.resultLabel.text = "$\(text) → \(String(format: "%.2f", number * viewModel.currency.rate)) \(viewModel.currency.code)"
+            case .invalid(let message):
+                showError(message: message)
+                detailView.amountTextField.text = ""
+            }
+        }
     }
     
     @objc func convertButtonTapped() {
         let text = detailView.amountTextField.text
-        validate(text)
-    }
-    
-    // 텍스트 필드 사용자 입력값 검증
-    private func validate(_ text: String?) {
-        guard let text else { return }
-        
-        // 입력값이 없을 때
-        if text.isEmpty {
-            showError(message: "금액을 입력해주세요.")
-            return
-        }
-        
-        // 입력값이 있을 때
-        if let number = Double(text) {
-            // 입력값 정상
-            detailView.resultLabel.text = "$\(text) → \(String(format: "%.2f", number * exchangeRate.rate)) \(exchangeRate.code)"
-        } else {
-            // 입력값이 숫자가 아닐 때
-            showError(message: "올바른 숫자를 입력해주세요.")
-            detailView.amountTextField.text = ""
-        }
+        viewModel.validate(text)
     }
     
     private func showError(message: String) {

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol DataServiceProtocol {
-    func fetchData(from url: URL, completion: @escaping (Result<[ExchangeRate], Error>) -> Void)
+    func fetchData(from url: URL, completion: @escaping (Result<[Currency], Error>) -> Void)
 }
 
 final class DataService: DataServiceProtocol {
@@ -18,7 +18,7 @@ final class DataService: DataServiceProtocol {
         case parsingFailed
     }
     
-    func fetchData(from url: URL, completion: @escaping (Result<[ExchangeRate], Error>) -> Void) {
+    func fetchData(from url: URL, completion: @escaping (Result<[Currency], Error>) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error {
                 completion(.failure(error))
@@ -39,19 +39,19 @@ final class DataService: DataServiceProtocol {
             }
             
             do {
-                let response = try JSONDecoder().decode(ExchangeRateResponse.self, from: data)
-                var exchangeRates: [ExchangeRate] = []
+                let response = try JSONDecoder().decode(CurrencyResponse.self, from: data)
+                var currencies: [Currency] = []
                 
                 // 파싱한 데이터 딕셔너리(rates)의 키와 밸류를 각각 코드(예: USD)와 환율(예: 1.0000)에 넣고, 국가명을 매핑(예: 미국)
                 for (key, value) in response.rates {
-                    let exchangeRate = ExchangeRate(code: key, country: countryCodes[key] ?? "", rate: value)
-                    exchangeRates.append(exchangeRate)
+                    let currency = Currency(code: key, country: countryCodes[key] ?? "", rate: value)
+                    currencies.append(currency)
                 }
                 
                 // 코드 기준 정렬
-                exchangeRates.sort { $0.code < $1.code }
+                currencies.sort { $0.code < $1.code }
                 
-                completion(.success(exchangeRates))
+                completion(.success(currencies))
             } catch {
                 completion(.failure(DataError.parsingFailed))
             }

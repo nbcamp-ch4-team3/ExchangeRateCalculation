@@ -74,9 +74,9 @@ class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureUI(exchangeRate: ExchangeRate) {
-        currencyLabel.text = exchangeRate.code
-        countryLabel.text = exchangeRate.country
-        rateLabel.text = String(format: "%.4f", exchangeRate.rate) // 소수점 4자리까지 표시
+    func configureUI(currency: Currency) {
+        currencyLabel.text = currency.code
+        countryLabel.text = currency.country
+        rateLabel.text = String(format: "%.4f", currency.rate) // 소수점 4자리까지 표시
     }
 }

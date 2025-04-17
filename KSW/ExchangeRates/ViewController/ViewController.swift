@@ -101,7 +101,7 @@ extension ViewController: DataManagerDelegate {
     func dataManagerDidFilterData() {
         // 검색 결과가 없으면 검색 결과 없음 레이블 표시
         DispatchQueue.main.async {
-            if self.dataManager.filteredExchangeRates.isEmpty {
+            if self.dataManager.filteredCurrencies.isEmpty {
                 self.tableView.backgroundView = self.noResultsLabel
             } else {
                 self.tableView.backgroundView = nil
@@ -114,12 +114,12 @@ extension ViewController: DataManagerDelegate {
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataManager.filteredExchangeRates.count
+        dataManager.filteredCurrencies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
-        cell.configureUI(exchangeRate: dataManager.filteredExchangeRates[indexPath.row])
+        cell.configureUI(currency: dataManager.filteredCurrencies[indexPath.row])
         return cell
     }
 }
@@ -130,9 +130,10 @@ extension ViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let exchangeRate = dataManager.filteredExchangeRates[indexPath.row]
+        let currency = dataManager.filteredCurrencies[indexPath.row]
         
-        let viewController = DetailViewController(exchangeRate: exchangeRate)
+        let viewModel = DetailViewModel(currency: currency)
+        let viewController = DetailViewController(viewModel: viewModel)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }
