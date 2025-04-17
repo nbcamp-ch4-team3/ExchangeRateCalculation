@@ -7,7 +7,7 @@
 
 import UIKit
 
-// 사용자가 검색할 때, 검색 결과 없음 표시 레이블
+// 사용자의 검색 결과가 없을 때
 class NoResultsLabel: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
