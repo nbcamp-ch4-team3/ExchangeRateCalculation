@@ -1,6 +1,6 @@
 import Foundation
 
-struct CurrencyCountryInfo {
+struct CurrencyCountryMap {
     let infoList = [
         "USD": "미국",
         "AED": "아랍에미리트",

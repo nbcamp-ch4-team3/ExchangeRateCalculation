@@ -46,11 +46,10 @@ class ExchangeRateCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with: String, rate: Double, country: String) {
-        self.currencyCodeLabel.text = with
-        let formattedRate = String(format: "%.4f", rate)
-        self.exchangeRateLabel.text = formattedRate
-        self.countryLabel.text = country
+    func configure(with: CurrencyInfo) {
+        self.currencyCodeLabel.text = with.code
+        self.exchangeRateLabel.text = with.formattedRate
+        self.countryLabel.text = with.country
     }
 }
 

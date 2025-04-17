@@ -7,6 +7,7 @@ class MainView: UIView {
         searchBar.placeholder = "통화 검색"
         searchBar.backgroundImage = UIImage()
         searchBar.searchBarStyle = .default
+        searchBar.showsCancelButton = false
 
         return searchBar
     }()
@@ -20,6 +21,8 @@ class MainView: UIView {
         return tableView
     }()
 
+    private let emptyView = EmptyView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -31,13 +34,21 @@ class MainView: UIView {
         fatalError("init(coder:) has not been implemented.")
     }
 
-    func configure(dataSource: UITableViewDataSource, delegate: UITableViewDelegate) {
+    func configureTableView(dataSource: UITableViewDataSource, delegate: UITableViewDelegate) {
         tableView.dataSource = dataSource
         tableView.delegate = delegate
     }
 
+    func configureSearchBar(delegate: UISearchBarDelegate) {
+        searchBar.delegate = delegate
+    }
+
     func reloadTableView() {
         tableView.reloadData()
+    }
+
+    func showEmptyView(_ show: Bool) {
+        emptyView.isHidden = !show
     }
 
 }
@@ -54,18 +65,21 @@ private extension MainView {
     }
 
     func setHierarchy() {
-        addSubViews(views: searchBar, tableView)
+        addSubViews(views: searchBar, tableView, emptyView)
     }
 
     func setConstraints() {
         searchBar.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.directionalHorizontalEdges.equalToSuperview()
+            make.top.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide)
         }
 
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
             make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+
+        emptyView.snp.makeConstraints { make in
+            make.edges.equalTo(tableView)
         }
     }
 }
