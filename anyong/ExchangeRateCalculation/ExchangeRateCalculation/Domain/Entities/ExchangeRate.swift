@@ -9,6 +9,6 @@ import Foundation
 
 struct ExchangeRate {
     let currencyCode: String
-    let rate: String
+    let rate: Double
     let nation: String
 }
