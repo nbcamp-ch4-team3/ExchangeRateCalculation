@@ -69,9 +69,9 @@ final class ExchangeRateCell: UITableViewCell {
 }
 
 extension ExchangeRateCell {
-    func configure(_ exchangeRate: ExchangeRate) {
-        currencyCodeLabel.text = exchangeRate.currencyCode
-        nationLabel.text = exchangeRate.nation
-        rateLabel.text = exchangeRate.rate
+    func configure(currencyCode: String, nation: String, rate: Double) {
+        currencyCodeLabel.text = currencyCode
+        nationLabel.text = nation
+        rateLabel.text = String(format: "%.4f", rate)
     }
 }
