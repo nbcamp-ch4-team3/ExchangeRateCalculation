@@ -15,8 +15,8 @@ enum NetworkError: AppErrorProtocol {
     case networkFailure(error: Error)
 }
 
-// 사용자 메시지 정의
 extension NetworkError {
+    // 사용자 메시지 정의
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -31,10 +31,8 @@ extension NetworkError {
             return "네트워크 연결에 실패했어요.\n 인터넷 상태를 확인해주세요."
         }
     }
-}
 
-// 디버깅용 메시지 정의
-extension NetworkError {
+    // 디버깅용 메시지 정의
     var debugDescription: String {
         switch self {
         case .invalidURL(let url):

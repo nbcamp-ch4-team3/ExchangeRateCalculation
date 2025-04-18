@@ -33,7 +33,9 @@ enum AppError: AppErrorProtocol {
             self = .unKnown(error)
         }
     }
+}
 
+extension AppError {
     var errorDescription: String? {
         switch self {
         case .network(let networkError):
@@ -46,7 +48,6 @@ enum AppError: AppErrorProtocol {
             repositoryError.errorDescription
         case .unKnown:
             "알 수 없는 오류가 발생했습니다"
-
         }
     }
 
@@ -63,6 +64,13 @@ enum AppError: AppErrorProtocol {
         case .unKnown(let error):
             "알 수 없는 에러 발생: \(error.localizedDescription)"
         }
+    }
+}
+
+extension AppError {
+    enum AlertType: String {
+        case networkError = "네트워크 오류"
+        case defaultError = "오류"
     }
 
     var alertType: AlertType {

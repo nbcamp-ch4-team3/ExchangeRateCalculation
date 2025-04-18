@@ -48,7 +48,7 @@ final class MainViewController: UIViewController {
         }
     }
 }
-
+// UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -67,6 +67,7 @@ extension MainViewController: UITableViewDataSource {
     }
 }
 
+// UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -79,18 +80,21 @@ extension MainViewController: UITableViewDelegate {
     }
 }
 
+// UISearchBarDelegate
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.action?(.filterExchangeRates(searchText))
     }
 }
 
+// ExchangeRateCellDelegate
 extension MainViewController: ExchangeRateCellDelegate {
     func didTapStarButton(with currency: String) {
         viewModel.action?(.toggleFavoriteItem(currency: currency))
     }
 }
 
+// Configure
 private extension MainViewController {
     private func configure() {
         setNavigationBar(title: "환율 정보", isLargeTitle: true)

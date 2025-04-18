@@ -10,7 +10,9 @@ import Foundation
 enum CalculatorError: AppErrorProtocol {
     case inputIsNotNumber(String)
     case inputIsEmpty
+}
 
+extension CalculatorError {
     var errorDescription: String? {
         switch self {
         case .inputIsNotNumber:

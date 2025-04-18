@@ -11,7 +11,9 @@ enum CoreDataError: AppErrorProtocol {
     case readError(Error)
     case saveError(Error)
     case deleteError(Error)
+}
 
+extension CoreDataError {
     var errorDescription: String? {
         "관리자에게 문의 부탁드립니다"
     }

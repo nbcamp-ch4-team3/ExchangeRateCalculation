@@ -7,13 +7,9 @@
 
 import UIKit
 
-enum AlertType: String {
-    case networkError = "네트워크 오류"
-    case defaultError = "오류"
-}
 
 extension UIViewController {
-    func showErrorAlert(type: AlertType, message: String?) {
+    func showErrorAlert(type: AppError.AlertType, message: String?) {
         let alertController = UIAlertController(
             title: type.rawValue,
             message: message,

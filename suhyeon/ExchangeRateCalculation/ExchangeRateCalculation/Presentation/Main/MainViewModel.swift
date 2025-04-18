@@ -48,6 +48,7 @@ final class MainViewModel: ViewModelProtocol {
         }
     }
 
+    // 환율 데이터 불러오는 메서드
     private func loadExchangeRates() {
         Task {
             do {
@@ -64,6 +65,7 @@ final class MainViewModel: ViewModelProtocol {
         }
     }
 
+    // 검색 필터링 메서드
     private func filterExchangeRates(with keyword: String) {
         // 검색어를 모두 지웠을 때는 다시 전체 데이터로 변환
         state.exchangeRates = keyword.isEmpty
@@ -73,6 +75,7 @@ final class MainViewModel: ViewModelProtocol {
         state.updateExchangeRates?()
     }
 
+    // 즐겨찾기 추가 / 삭제 메서드
     private func toggleFavoriteItem(with currency: String) {
         do {
             let result = try ExchangeRateRepository.shared.toggleFavoriteItem(with: currency)

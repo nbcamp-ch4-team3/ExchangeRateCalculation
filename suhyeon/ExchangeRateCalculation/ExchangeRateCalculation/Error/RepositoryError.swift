@@ -9,7 +9,9 @@ import Foundation
 
 enum RepositoryError: AppErrorProtocol {
     case itemNotFound(String)
+}
 
+extension RepositoryError {
     var errorDescription: String? {
         switch self {
         case .itemNotFound(let currency):
