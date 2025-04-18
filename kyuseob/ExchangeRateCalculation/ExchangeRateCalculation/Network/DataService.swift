@@ -1,53 +1,44 @@
 import Foundation
 
-enum APIError: Error {
-    case invalidURL
-    case networkError(Error)
-    case invalidResponse
-    case apiError(String)
-
-    var errorMessage: String {
-        switch self {
-        case .invalidURL:
-            return "올바르지 않은 URL입니다."
-        case .networkError(let error):
-            return "\(error.localizedDescription)"
-        case .invalidResponse:
-            return "올바르지 않은 응답입니다."
-        case .apiError(let message):
-            return message
-        }
-    }
+protocol DataServiceProtocol {
+    func fetchExchangeRateData() async throws -> ExchangeRateResponse
 }
 
-class DataService {
+class DataService: DataServiceProtocol {
     func fetchExchangeRateData() async throws -> ExchangeRateResponse {
         let urlString = "https://open.er-api.com/v6/latest/USD"
 
         guard let url = URL(string: urlString) else {
-            throw APIError.invalidURL
+            throw NetworkError.invalidURL
         }
 
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
 
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                throw APIError.invalidResponse
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.invalidResponse
             }
 
-            let decoder = JSONDecoder()
-            let exchangeRateData = try decoder.decode(ExchangeRateResponse.self, from: data)
-
-            guard exchangeRateData.result == "success" else {
-                throw APIError.apiError("API 호출에 실패했습니다.")
+            if (400...499).contains(httpResponse.statusCode) {
+                throw NetworkError.clientError(httpResponse.statusCode)
+            } else if (500...599).contains(httpResponse.statusCode) {
+                throw NetworkError.serverError(httpResponse.statusCode)
             }
 
-            return exchangeRateData
-        } catch let error as APIError {
-            throw APIError.networkError(error)
+            do {
+                let decoder = JSONDecoder()
+                let exchangeRateData = try decoder.decode(ExchangeRateResponse.self, from: data)
+
+                guard exchangeRateData.result == "success" else {
+                    throw NetworkError.apiError("API 호출에 실패했습니다.")
+                }
+
+                return exchangeRateData
+            } catch {
+                throw NetworkError.decodingError(error)
+            }
         } catch {
-            throw error
+            throw NetworkError.unknownError("알 수 없는 오류가 발생했습니다.")
         }
     }
 }

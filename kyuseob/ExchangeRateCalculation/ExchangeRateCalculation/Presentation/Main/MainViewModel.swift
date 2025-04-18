@@ -1,10 +1,23 @@
 import Foundation
 
-class MainViewModel {
-    private let service = DataService()
+protocol MainViewModelProtocol {
+    var currencyItems: [CurrencyInfo] { get }
+    var filteredItems: [CurrencyInfo] { get }
+
+    func fetchData() async throws
+    func filterCurrencyItems(by searchText: String)
+    func resetFilteredItems()
+}
+
+class MainViewModel: MainViewModelProtocol {
+    private let service: DataServiceProtocol
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
     private let currencyCountryInfo = CurrencyCountryMap().infoList
+
+    init(service: DataServiceProtocol = DataService()) {
+        self.service = service
+    }
 
     func fetchData() async throws {
         do {
@@ -20,7 +33,7 @@ class MainViewModel {
 
             self.currencyItems = items.sorted { $0.code < $1.code }
             self.filteredItems = self.currencyItems
-        } catch let error as APIError {
+        } catch {
             throw error
         }
     }

@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
         window?.backgroundColor = .systemBackground
-        let mainNavigationController = UINavigationController(rootViewController: MainViewController())
+        let mainNavigationController = UINavigationController(rootViewController: MainViewController(viewModel: MainViewModel()))
         window?.rootViewController = mainNavigationController
         window?.makeKeyAndVisible()
     }

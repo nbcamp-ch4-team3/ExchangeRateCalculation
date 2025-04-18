@@ -2,12 +2,21 @@ import UIKit
 
 class MainViewController: UIViewController {
     private let mainView = MainView()
-    private let viewModel = MainViewModel()
+    private let viewModel: MainViewModelProtocol
 
     override func loadView() {
         view = mainView
     }
-    
+
+    init(viewModel: MainViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented.")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -15,7 +24,6 @@ class MainViewController: UIViewController {
         Task {
             await fetchData()
         }
-
     }
 
     private func fetchData() async {
@@ -24,13 +32,9 @@ class MainViewController: UIViewController {
             await MainActor.run {
                 mainView.reloadTableView()
             }
-        } catch let error as APIError {
+        } catch  {
             await MainActor.run {
-                showAlert(message: error.errorMessage)
-            }
-        } catch {
-            await MainActor.run {
-                showAlert(message: "데이터 로드에 실패했습니다.")
+                showAlert(message: error.localizedDescription)
             }
         }
     }
@@ -83,7 +87,8 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = CalculatorViewController()
+        let calculatorViewModel = CalculatorViewModel()
+        let vc = CalculatorViewController(viewModel: calculatorViewModel)
         let currencyItem = viewModel.filteredItems[indexPath.row]
         vc.configure(with: currencyItem)
         
