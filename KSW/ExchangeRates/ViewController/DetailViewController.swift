@@ -12,8 +12,6 @@ class DetailViewController: UIViewController {
     private let detailView = DetailView()
     
     override func loadView() {
-        super.loadView()
-        
         view = detailView
     }
     
@@ -36,12 +34,12 @@ class DetailViewController: UIViewController {
         detailView.countryLabel.text = viewModel.currency.country
         detailView.convertButton.addTarget(self, action: #selector(convertButtonTapped), for: .touchUpInside)
         
-        viewModel.onValidate = { [weak self] result in
-            guard let self, let text = detailView.amountTextField.text else { return }
+        viewModel.output = { [weak self] result in
+            guard let self else { return }
             
             switch result {
-            case .valid(let number):
-                detailView.resultLabel.text = "$\(text) → \(String(format: "%.2f", number * viewModel.currency.rate)) \(viewModel.currency.code)"
+            case .valid(let result):
+                detailView.resultLabel.text = result
             case .invalid(let message):
                 showError(message: message)
                 detailView.amountTextField.text = ""
@@ -51,7 +49,7 @@ class DetailViewController: UIViewController {
     
     @objc func convertButtonTapped() {
         let text = detailView.amountTextField.text
-        viewModel.validate(text)
+        viewModel.input?(.validate(text))
     }
     
     private func showError(message: String) {
