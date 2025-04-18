@@ -40,7 +40,7 @@ final class CalculatorViewController: UIViewController {
         viewModel.state.failure = {[weak self] error in
             guard let self else { return }
             showErrorAlert(type: .defaultError, message: error.localizedDescription)
-            os_log(.error, "%@", error.debugDesciption)
+            os_log(.error, "%@", error.debugDescription)
         }
     }
 }

@@ -39,9 +39,9 @@ final class MainViewController: UIViewController {
             self.mainView.reloadTableView()
         }
 
-        viewModel.state.handleNetworkError = {[weak self] error in
+        viewModel.state.handleError = { [weak self] error in
             self?.showErrorAlert(
-                type: .networkError,
+                type: error.alertType,
                 message: error.localizedDescription
             )
             os_log("%@", type: .error, error.debugDescription)
@@ -87,7 +87,7 @@ extension MainViewController: UISearchBarDelegate {
 
 extension MainViewController: ExchangeRateCellDelegate {
     func didTapStarButton(with currency: String) {
-        viewModel.action?(.setFavoriteItem(currency: currency))
+        viewModel.action?(.toggleFavoriteItem(currency: currency))
     }
 }
 
