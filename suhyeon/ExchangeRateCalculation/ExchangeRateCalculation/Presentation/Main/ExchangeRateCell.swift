@@ -120,7 +120,6 @@ private extension ExchangeRateCell {
 
     @objc func touchUpInsideStarButton() {
         guard let currency = currencyLabel.text else { return }
-        starButton.isSelected.toggle()
         delegate?.didTapStarButton(with: currency)
     }
 }

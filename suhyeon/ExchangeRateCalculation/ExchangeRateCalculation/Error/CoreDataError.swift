@@ -11,7 +11,6 @@ enum CoreDataError: AppErrorProtocol {
     case readError(Error)
     case saveError(Error)
     case deleteError(Error)
-    case itemNotFound
 
     var errorDescription: String? {
         "관리자에게 문의 부탁드립니다"
@@ -25,8 +24,6 @@ enum CoreDataError: AppErrorProtocol {
             "CoreDataError - saveError: \(error.localizedDescription)"
         case .deleteError(let error):
             "CoreDataError - deleteError: \(error.localizedDescription)"
-        case .itemNotFound:
-            "ASD"
         }
     }
 }

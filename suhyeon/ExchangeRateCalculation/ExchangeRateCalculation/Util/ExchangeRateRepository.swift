@@ -28,7 +28,6 @@ final class ExchangeRateRepository {
             .map {
                 ExchangeRate(currency: $0.key, rate: $0.value)
             }
-            .sorted { $0.currency < $1.currency }
         return try syncExchangeRate()
     }
 
@@ -49,7 +48,7 @@ final class ExchangeRateRepository {
         guard let isFavorite = cachedExchangeRates
             .first(where: {$0.currency == currency})?
             .isFavorite else {
-            throw CoreDataError.itemNotFound
+            throw RepositoryError.itemNotFound(currency)
         }
 
         if isFavorite {
