@@ -120,7 +120,15 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
         cell.configureUI(currency: dataManager.filteredCurrencies[indexPath.row])
+        
+        cell.favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
+        
         return cell
+    }
+    
+    @objc func toggleFavorite(_ sender: FavoriteButton) {
+        sender.isFavorite.toggle()
+        sender.setButtonImage()
     }
 }
 

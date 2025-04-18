@@ -43,7 +43,7 @@ final class DetailViewModel: ViewModelProtocol {
     }
     
     // 텍스트 필드 사용자 입력값 검증
-    func validate(_ input: String?) {
+    private func validate(_ input: String?) {
         guard let input else { return }
         
         // 입력값이 없을 때

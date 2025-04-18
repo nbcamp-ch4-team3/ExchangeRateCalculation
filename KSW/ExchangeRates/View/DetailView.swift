@@ -40,7 +40,6 @@ class DetailView: UIView {
         textField.textAlignment = .center
         textField.placeholder = "달러(USD)를 입력하세요."
         textField.clearButtonMode = .whileEditing
-        textField.becomeFirstResponder()
         return textField
     }()
     
