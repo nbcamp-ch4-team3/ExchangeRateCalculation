@@ -11,7 +11,7 @@ protocol CalculatorViewDelegate: AnyObject {
     func calculatorView(_ view: CalculatorView, didTapConvertButtonWith amountTextField: UITextField)
 }
 
-class CalculatorView: UIView {
+final class CalculatorView: UIView {
     weak var delegate: CalculatorViewDelegate?
 
     // currencyLabel + countryLabel

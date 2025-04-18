@@ -8,10 +8,20 @@
 import UIKit
 
 extension UIViewController {
-    func showErrorAlert(title: String, message: String?) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    enum AlertType: String {
+        case networkError = "네트워크 오류"
+        case defaultError = "오류"
+    }
+
+    func showErrorAlert(type: AlertType, message: String?) {
+        let alertController = UIAlertController(
+            title: type.rawValue,
+            message: message,
+            preferredStyle: .alert
+        )
         let confirmAction = UIAlertAction(title: "확인", style: .default)
         alertController.addAction(confirmAction)
+
         self.present(alertController, animated: true)
     }
 

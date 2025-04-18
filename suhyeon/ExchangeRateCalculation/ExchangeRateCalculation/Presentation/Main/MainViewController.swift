@@ -8,7 +8,7 @@
 import UIKit
 import os
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
 
@@ -38,7 +38,7 @@ class MainViewController: UIViewController {
 
         viewModel.state.handleNetworkError = {[weak self] error in
             self?.showErrorAlert(
-                title: "네트워크 오류",
+                type: .networkError,
                 message: error.localizedDescription
             )
             os_log("%@", type: .error, error.debugDescription)
