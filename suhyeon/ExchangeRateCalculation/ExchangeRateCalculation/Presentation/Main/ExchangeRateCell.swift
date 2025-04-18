@@ -44,6 +44,12 @@ final class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
+    private let increaseDecreaseLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 16)
+        return label
+    }()
+
     private lazy var starButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
@@ -71,6 +77,7 @@ final class ExchangeRateCell: UITableViewCell {
 
         countryLabel.text = nil
         currencyLabel.text = nil
+        increaseDecreaseLabel.text = nil
         rateLabel.text = nil
     }
 
@@ -78,6 +85,7 @@ final class ExchangeRateCell: UITableViewCell {
         countryLabel.text = data.country
         currencyLabel.text = data.currency
         rateLabel.text = data.rate.formatted(toDecimalDigits: 4)
+        increaseDecreaseLabel.text = "🔼🔽"
         starButton.isSelected = data.isFavorite
     }
 }
@@ -95,7 +103,7 @@ private extension ExchangeRateCell {
 
     func setHierarchy() {
         labelStackView.addArrangedSubviews(views: currencyLabel, countryLabel)
-        self.contentView.addSubviews(views: labelStackView, rateLabel, starButton)
+        self.contentView.addSubviews(views: labelStackView, rateLabel, increaseDecreaseLabel, starButton)
     }
 
     func setConstraints() {
@@ -105,10 +113,15 @@ private extension ExchangeRateCell {
         }
 
         rateLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(starButton.snp.leading).offset(-16)
+            make.trailing.equalTo(increaseDecreaseLabel.snp.leading).offset(-16)
             make.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.equalTo(120)
+        }
+
+        increaseDecreaseLabel.snp.makeConstraints { make in
+            make.trailing.equalTo(starButton.snp.leading).offset(-16)
+            make.centerY.equalToSuperview()
         }
 
         starButton.snp.makeConstraints { make in
