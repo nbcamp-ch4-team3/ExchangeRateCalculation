@@ -8,8 +8,7 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    let exchangeRate: ExchangeRate
-    
+    let viewModel: DetailViewModel
     private let detailView = DetailView()
     
     override func loadView() {
@@ -18,8 +17,8 @@ class DetailViewController: UIViewController {
         view = detailView
     }
     
-    init(exchangeRate: ExchangeRate) {
-        self.exchangeRate = exchangeRate
+    init(viewModel: DetailViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -32,9 +31,40 @@ class DetailViewController: UIViewController {
         
         navigationItem.title = "환율 계산기"
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
         
-        detailView.currencyLabel.text = exchangeRate.code
-        detailView.countryLabel.text = exchangeRate.country
+        detailView.currencyLabel.text = viewModel.currency.code
+        detailView.countryLabel.text = viewModel.currency.country
+        detailView.convertButton.addTarget(self, action: #selector(convertButtonTapped), for: .touchUpInside)
+        
+        viewModel.onValidate = { [weak self] result in
+            guard let self, let text = detailView.amountTextField.text else { return }
+            
+            switch result {
+            case .valid(let number):
+                detailView.resultLabel.text = "$\(text) → \(String(format: "%.2f", number * viewModel.currency.rate)) \(viewModel.currency.code)"
+            case .invalid(let message):
+                showError(message: message)
+                detailView.amountTextField.text = ""
+            }
+        }
+    }
+    
+    @objc func convertButtonTapped() {
+        let text = detailView.amountTextField.text
+        viewModel.validate(text)
+    }
+    
+    private func showError(message: String) {
+        let alertTitle = NSLocalizedString("오류", comment: "Error alert title")
+        let alert = UIAlertController(
+            title: alertTitle, message: message, preferredStyle: .alert)
+        let actionTitle = NSLocalizedString("확인", comment: "Alert OK button title")
+        alert.addAction(
+            UIAlertAction(
+                title: actionTitle, style: .default,
+                handler: { [weak self] _ in
+                    self?.dismiss(animated: true)
+                }))
+        present(alert, animated: true, completion: nil)
     }
 }

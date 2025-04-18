@@ -17,8 +17,8 @@ final class DataManager {
     weak var delegate: DataManagerDelegate?
     
     private let dataService: DataServiceProtocol
-    private var exchangeRates: [ExchangeRate] = []
-    private(set) var filteredExchangeRates: [ExchangeRate] = []
+    private var currencies: [Currency] = []
+    private(set) var filteredCurrencies: [Currency] = []
     
     init(dataService: DataServiceProtocol = DataService()) {
         self.dataService = dataService
@@ -31,8 +31,8 @@ final class DataManager {
             
             switch result {
             case .success(let data):
-                exchangeRates = data
-                filteredExchangeRates = data
+                currencies = data
+                filteredCurrencies = data
                 delegate?.dataManagerDidLoadData() // 데이터 준비가 다 되었음을 알림
             case .failure(let error):
                 delegate?.dataManager(didFailWithError: error)
@@ -43,22 +43,22 @@ final class DataManager {
     func filterData(searchText: String) {
         // 검색어가 없으면 원본 데이터를 반환하고 리턴
         if searchText.isEmpty {
-            filteredExchangeRates = exchangeRates
+            filteredCurrencies = currencies
             delegate?.dataManagerDidFilterData()
             return
         }
         
         // 대소문자 및 문장 맨 앞뒤 공백 무시
-        let searchResults = exchangeRates.filter {
+        let searchResults = currencies.filter {
             $0.code.localizedStandardContains(searchText.trimmingCharacters(in: .whitespaces)) ||
             $0.country.localizedStandardContains(searchText.trimmingCharacters(in: .whitespaces))
         }
         
         // 검색 결과 반환
         if searchResults.isEmpty {
-            filteredExchangeRates = []
+            filteredCurrencies = []
         } else {
-            filteredExchangeRates = searchResults
+            filteredCurrencies = searchResults
         }
         delegate?.dataManagerDidFilterData()
     }
