@@ -15,8 +15,7 @@ extension ExchangeRateDTO {
     func toModel() -> [ExchangeRate] {
         return rates.map { code, rate in
             let nation = ExchangeRateDTO.mapping[code] ?? "알 수 없음"
-            let formattedRate = String(format: "%.4f", rate)
-            return ExchangeRate(currencyCode: code, rate: formattedRate, nation: nation)
+            return ExchangeRate(currencyCode: code, rate: rate, nation: nation)
         }
     }
     

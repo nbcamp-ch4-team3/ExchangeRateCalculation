@@ -8,11 +8,18 @@
 import UIKit
 
 final class ExchangeRateViewController: UIViewController {
-    private let networkService = NetworkService()
     private let rootView = ExchangeRateView()
-    private var exchangeRates: [ExchangeRate] = []
-    private var searchRates: [ExchangeRate] = []
-    private var isSearching: Bool = false
+    private let viewModel: ExchangeRateViewModel
+    
+    init(viewModel: ExchangeRateViewModel) {
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = rootView
@@ -24,27 +31,24 @@ final class ExchangeRateViewController: UIViewController {
         rootView.tableViewConfigure(delegate: self, dataSource: self)
         rootView.searchBarConfigure(delegate: self)
         setNavigationBar()
-        fetchData()
+        bind()
+        viewModel.action?(.fetch)
     }
-
-    private func fetchData() {
-        Task { [weak self] in
+    
+    private func bind() {
+        viewModel.onStateChanged = { [weak self] state in
             guard let self else { return }
             
-            do {
-                self.exchangeRates = try await self.networkService.getExchangeRate(nation: "USD").toModel()
-                
-                await MainActor.run {
-                    self.rootView.tableViewReloadData()
+            if let message = state.errorMessage {
+                DispatchQueue.main.async {
+                    self.showErrorAlert(message: message)
+                    return
                 }
-            } catch let error as NetworkError {
-                await MainActor.run {
-                    self.showErrorAlert(message: error.description)
-                }
-            } catch {
-                await MainActor.run {
-                    self.showErrorAlert(message: error.localizedDescription)
-                }
+            }
+            
+            DispatchQueue.main.async {
+                self.rootView.updateBackgroundView(state.isSearching && state.searchRates.isEmpty)
+                self.rootView.tableViewReloadData()
             }
         }
     }
@@ -64,8 +68,15 @@ final class ExchangeRateViewController: UIViewController {
 
 extension ExchangeRateViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let exchangeRate = isSearching ? searchRates[indexPath.row] : exchangeRates[indexPath.row]
-        let vc = ExchangeRateCalculatorViewController(exchangeRate: exchangeRate)
+        let exchangeRate: ExchangeRate
+        
+        if viewModel.state.isSearching {
+            exchangeRate = viewModel.state.searchRates[indexPath.row]
+        } else {
+            exchangeRate = viewModel.state.exchangeRates[indexPath.row]
+        }
+                
+        let vc = CalculatorViewController(exchangeRate: exchangeRate)
         
         self.navigationController?.pushViewController(vc, animated: true)
     }
@@ -73,7 +84,11 @@ extension ExchangeRateViewController: UITableViewDelegate {
 
 extension ExchangeRateViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isSearching ? searchRates.count : exchangeRates.count
+        if viewModel.state.isSearching {
+            viewModel.state.searchRates.count
+        }  else {
+            viewModel.state.exchangeRates.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -82,11 +97,20 @@ extension ExchangeRateViewController: UITableViewDataSource {
             for: indexPath
         ) as? ExchangeRateCell else { return UITableViewCell() }
         
-        if isSearching {
-            cell.configure(searchRates[indexPath.row])
+        let exchangeRate: ExchangeRate
+        
+        if viewModel.state.isSearching {
+            exchangeRate = viewModel.state.searchRates[indexPath.row]
         } else {
-            cell.configure(exchangeRates[indexPath.row])
+            exchangeRate = viewModel.state.exchangeRates[indexPath.row]
         }
+        
+        cell.configure(
+            currencyCode: exchangeRate.currencyCode,
+            nation: exchangeRate.nation,
+            rate: exchangeRate.rate
+        )
+        
         return cell
     }
 }
@@ -94,28 +118,6 @@ extension ExchangeRateViewController: UITableViewDataSource {
 
 extension ExchangeRateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchText.isEmpty {
-            searchRates = []
-            isSearching = false
-            rootView.tableViewReloadData()
-        } else {
-            isSearching = true
-            searchExchangeRate(searchText)
-            rootView.tableViewReloadData()
-            
-            if searchRates.isEmpty {
-                rootView.updateBackgroundView(true)
-            } else {
-                rootView.updateBackgroundView(false)
-            }
-        }
-    }
-    
-    private func searchExchangeRate(_ text: String) {
-        if text.isHangul {
-            searchRates = exchangeRates.filter { $0.nation.contains(text) }
-        } else {
-            searchRates = exchangeRates.filter { $0.currencyCode.contains(text.uppercased()) }
-        }
+        viewModel.action?(.search(text: searchText))
     }
 }

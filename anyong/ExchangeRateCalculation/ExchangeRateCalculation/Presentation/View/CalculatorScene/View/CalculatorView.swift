@@ -1,5 +1,5 @@
 //
-//  ExchangeRateCalculatorView.swift
+//  CalculatorView.swift
 //  ExchangeRateCalculation
 //
 //  Created by 최안용 on 4/16/25.
@@ -10,11 +10,11 @@ import UIKit
 import SnapKit
 import Then
 
-protocol ExchangeRateCalculatorViewDelegate: AnyObject {
+protocol CalculatorViewDelegate: AnyObject {
     func didTabConvertButton(_ input: String)
 }
 
-final class ExchangeRateCalculatorView: UIView {
+final class CalculatorView: UIView {
     private let currencyCodeLabel = UILabel()
     private let nationLabel = UILabel()
     private let labelStackView = UIStackView()
@@ -22,7 +22,7 @@ final class ExchangeRateCalculatorView: UIView {
     private let convertButton = UIButton(type: .system)
     private let resultLabel = UILabel()
     
-    weak var delegate: ExchangeRateCalculatorViewDelegate?
+    weak var delegate: CalculatorViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -107,18 +107,14 @@ final class ExchangeRateCalculatorView: UIView {
     }
 }
 
-extension ExchangeRateCalculatorView {
-    func configure(_ exchangeRate: ExchangeRate) {
-        currencyCodeLabel.text = exchangeRate.currencyCode
-        nationLabel.text = exchangeRate.nation
+extension CalculatorView {
+    func configure(currencyCode: String, nation: String) {
+        currencyCodeLabel.text = currencyCode
+        nationLabel.text = nation
     }
     
-    func updateConvertedAmount(_ convertedAmount: String, currencyCode code: String) {
-        guard let text = amountTextField.text,
-              let doubleText = Double(text) else { return }
-        let convertText = String(format: "%.2f", doubleText)
-        let output = "$\(convertText) → \(convertedAmount) \(code)"
-        resultLabel.text = output
+    func updateConvertedAmount(_ result: String) {
+        resultLabel.text = result
     }
     
     @objc
