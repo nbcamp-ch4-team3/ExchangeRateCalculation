@@ -8,6 +8,7 @@
 import Foundation
 
 protocol AppErrorProtocol: LocalizedError {
+    var errorDescription: String? { get }
     var debugDescription: String { get }
 }
 

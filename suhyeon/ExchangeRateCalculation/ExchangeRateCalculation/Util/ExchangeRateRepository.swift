@@ -23,19 +23,13 @@ final class ExchangeRateRepository {
     }
 
     func fetchExchangeRate() async throws -> ExchangeRates {
-        let result = await networkService.fetchExchangeRate()
-        switch result {
-        case .success(let response):
-            //TODO: coreData에 저장된 데이터 정렬 시 사용
-            cachedExchangeRates = response.rates
-                .map {
-                    ExchangeRate(currency: $0.key, rate: $0.value)
-                }
-                .sorted { $0.currency < $1.currency }
-            return try syncExchangeRate()
-        case .failure(let error):
-            throw error
-        }
+        let result = try await networkService.fetchExchangeRate()
+        cachedExchangeRates = result.rates
+            .map {
+                ExchangeRate(currency: $0.key, rate: $0.value)
+            }
+            .sorted { $0.currency < $1.currency }
+        return try syncExchangeRate()
     }
 
     func loadExchangeRates() -> ExchangeRates {
