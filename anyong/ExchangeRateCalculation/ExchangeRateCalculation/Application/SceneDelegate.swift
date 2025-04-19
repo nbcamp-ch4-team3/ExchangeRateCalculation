@@ -18,7 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         window = UIWindow(windowScene: windowScene)
         let vc = ExchangeRateViewController(
-            viewModel: ExchangeRateViewModel(networkService: NetworkService())
+            viewModel: ExchangeRateViewModel(
+                networkService: NetworkService(),
+                currencyCodeStorage: CurrencyCodeStorage()
+            )
         )
         window?.rootViewController = UINavigationController(rootViewController: vc)
         window?.makeKeyAndVisible()
