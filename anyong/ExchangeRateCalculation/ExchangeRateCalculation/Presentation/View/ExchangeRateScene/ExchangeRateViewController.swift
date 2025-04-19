@@ -108,8 +108,10 @@ extension ExchangeRateViewController: UITableViewDataSource {
         cell.configure(
             currencyCode: exchangeRate.currencyCode,
             nation: exchangeRate.nation,
-            rate: exchangeRate.rate
+            rate: exchangeRate.rate,
+            isSelected: exchangeRate.isSelected
         )
+        cell.delegate = self
         
         return cell
     }
@@ -119,5 +121,11 @@ extension ExchangeRateViewController: UITableViewDataSource {
 extension ExchangeRateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.action?(.search(text: searchText))
+    }
+}
+
+extension ExchangeRateViewController: ExchangeRateCellDelegate {
+    func didTapStarButton(_ code: String, _ selected: Bool) {
+        viewModel.action?(.didTapStar(code: code, isSelected: selected))
     }
 }
