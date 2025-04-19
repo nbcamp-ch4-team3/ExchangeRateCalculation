@@ -11,4 +11,5 @@ struct ExchangeRate {
     let currencyCode: String
     let rate: Double
     let nation: String
+    var isSelected: Bool = false
 }
