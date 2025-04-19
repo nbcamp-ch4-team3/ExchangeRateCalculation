@@ -17,6 +17,7 @@ extension ExchangeRateDTO {
             let nation = ExchangeRateDTO.mapping[code] ?? "알 수 없음"
             return ExchangeRate(currencyCode: code, rate: rate, nation: nation)
         }
+        .sorted { $0.currencyCode < $1.currencyCode }
     }
     
     static let mapping = [
