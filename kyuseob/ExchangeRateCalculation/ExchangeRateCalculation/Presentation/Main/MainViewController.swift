@@ -28,8 +28,8 @@ class MainViewController: UIViewController {
 
     private func fetchData() async {
         do {
-            try await viewModel.fetchData()
             try viewModel.fetchFavoriteCurrencies()
+            try await viewModel.fetchData()
             await MainActor.run {
                 mainView.reloadTableView()
             }
