@@ -10,10 +10,10 @@ import SnapKit
 
 // 즐겨찾기 추가/삭제
 class FavoriteButton: UIButton {
-    var isFavorite: Bool
+    var currency: Currency?
     
-    init(isFavorite: Bool = false) {
-        self.isFavorite = isFavorite
+    init(currency: Currency? = nil) {
+        self.currency = currency
         super.init(frame: .zero)
         
         tintColor = .systemYellow
@@ -26,7 +26,7 @@ class FavoriteButton: UIButton {
     }
     
     func setButtonImage() {
-        if isFavorite {
+        if let currency, currency.isFavorite {
             setImage(UIImage(systemName: "star.fill"), for: .normal)
         } else {
             setImage(UIImage(systemName: "star"), for: .normal)

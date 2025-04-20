@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Input - Output pattern
 protocol ViewModelProtocol {
     associatedtype Input
     associatedtype Output
@@ -16,16 +17,17 @@ protocol ViewModelProtocol {
 }
 
 final class DetailViewModel: ViewModelProtocol {
+    // 텍스트 필드 입력값 검증
     enum ValidationResult {
         case valid(result: String)
         case invalid(message: String)
     }
     
     enum Input {
-        case validate(String?)
+        case validate(String?) // 텍스트 필드 입력값 검증 요청 수신
     }
     
-    typealias Output = (ValidationResult) -> Void
+    typealias Output = (ValidationResult) -> Void // 검증 결과 송신
     
     let currency: Currency
     var input: ((Input) -> Void)?
@@ -34,10 +36,10 @@ final class DetailViewModel: ViewModelProtocol {
     init(currency: Currency) {
         self.currency = currency
         
-        input = { input in
+        input = { [weak self] input in
             switch input {
             case .validate(let text):
-                self.validate(text)
+                self?.validate(text)
             }
         }
     }

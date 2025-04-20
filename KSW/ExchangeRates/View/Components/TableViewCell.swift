@@ -88,5 +88,8 @@ class TableViewCell: UITableViewCell {
         currencyLabel.text = currency.code
         countryLabel.text = currency.country
         rateLabel.text = String(format: "%.4f", currency.rate) // 소수점 4자리까지 표시
+        
+        favoriteButton.currency = currency
+        favoriteButton.setButtonImage()
     }
 }

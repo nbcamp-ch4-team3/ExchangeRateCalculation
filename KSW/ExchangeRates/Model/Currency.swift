@@ -8,9 +8,10 @@
 import Foundation
 
 struct Currency: Decodable {
-    let code: String
-    let country: String
-    let rate: Double
+    let code: String // 통화 코드(예: USD)
+    let country: String // 통화 국가(예: 미국)
+    let rate: Double // 환율(예: 1.000)
+    var isFavorite: Bool = false
 }
 
 struct CurrencyResponse: Decodable {

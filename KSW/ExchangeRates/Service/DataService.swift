@@ -48,9 +48,6 @@ final class DataService: DataServiceProtocol {
                     currencies.append(currency)
                 }
                 
-                // 코드 기준 정렬
-                currencies.sort { $0.code < $1.code }
-                
                 completion(.success(currencies))
             } catch {
                 completion(.failure(DataError.parsingFailed))
