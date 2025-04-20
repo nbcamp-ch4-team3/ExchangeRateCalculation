@@ -7,6 +7,12 @@ protocol MainViewModelProtocol {
     func fetchData() async throws
     func filterCurrencyItems(by searchText: String)
     func resetFilteredItems()
+
+    func fetchFavoriteCurrencies() throws
+    func addToFavorites(currencyCode: String) throws
+    func removeFromFavorites(currencyCode: String) throws
+    func toggleFavorite(currencyCode: String) throws
+    func isFavorite(currencyCode: String) -> Bool
 }
 
 class MainViewModel: MainViewModelProtocol {

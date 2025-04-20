@@ -29,6 +29,7 @@ class MainViewController: UIViewController {
     private func fetchData() async {
         do {
             try await viewModel.fetchData()
+            try viewModel.fetchFavoriteCurrencies()
             await MainActor.run {
                 mainView.reloadTableView()
             }
@@ -77,7 +78,11 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         }
 
         let currencyItem = viewModel.filteredItems[indexPath.row]
+        cell.delegate = self
         cell.configure(with: currencyItem)
+
+        let isFavorite = viewModel.isFavorite(currencyCode: currencyItem.code)
+        cell.updateFavoriteButtonState(isFavorite: isFavorite)
 
         return cell
     }
@@ -109,5 +114,16 @@ extension MainViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+    }
+}
+
+extension MainViewController: ExchangeRateCellDelegate {
+    func didTapFavoriteButton(currencyCode: String) {
+        do {
+            try viewModel.toggleFavorite(currencyCode: currencyCode)
+            mainView.reloadTableView()
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
