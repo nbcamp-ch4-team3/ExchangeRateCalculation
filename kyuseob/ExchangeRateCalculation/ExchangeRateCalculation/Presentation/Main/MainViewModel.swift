@@ -14,6 +14,8 @@ class MainViewModel: MainViewModelProtocol {
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
     private let currencyCountryInfo = CurrencyCountryMap().infoList
+    private var favoriteCurrencyCodes = [String]()
+    private let coreDataStack = CoreDataStack.shared
 
     init(service: DataServiceProtocol = DataService()) {
         self.service = service
@@ -53,4 +55,53 @@ class MainViewModel: MainViewModelProtocol {
         filteredItems = currencyItems
     }
 
+}
+
+extension MainViewModel {
+    func fetchFavoriteCurrencies() throws {
+        do {
+            let favoriteEntities = try coreDataStack.fetchAllFavoriteCurrencies()
+            favoriteCurrencyCodes.removeAll()
+            favoriteEntities.forEach {
+                guard let currencyCode = $0.currencyCode else { return }
+                favoriteCurrencyCodes.append(currencyCode)
+            }
+        } catch {
+            throw error
+        }
+    }
+
+    func addToFavorites(currencyCode: String) throws {
+        if !favoriteCurrencyCodes.contains(currencyCode) {
+            do {
+                try coreDataStack.addFavorite(with: currencyCode)
+                favoriteCurrencyCodes.append(currencyCode)
+            } catch {
+                throw error
+            }
+        }
+    }
+
+    func removeFromFavorites(currencyCode: String) throws {
+        do {
+            try coreDataStack.removeFavorite(with: currencyCode)
+            if let index = favoriteCurrencyCodes.firstIndex(of: currencyCode) {
+                favoriteCurrencyCodes.remove(at: index)
+            }
+        } catch {
+            throw error
+        }
+    }
+
+    func toggleFavorite(currencyCode: String) throws {
+        if isFavorite(currencyCode: currencyCode) {
+            try removeFromFavorites(currencyCode: currencyCode)
+        } else {
+            try addToFavorites(currencyCode: currencyCode)
+        }
+    }
+
+    func isFavorite(currencyCode: String) -> Bool {
+        return favoriteCurrencyCodes.contains(currencyCode)
+    }
 }

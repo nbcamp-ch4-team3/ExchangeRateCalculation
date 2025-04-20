@@ -33,22 +33,41 @@ class CoreDataStack {
     }
 
     // MARK: - Favorite CurrencyCode Method
-
-    func addFavorite(with currencyCode: String) {
-        let newFavoriteCurrency = FavoriteCurrency(context: viewContext)
-
-        newFavoriteCurrency.currencyCode = currencyCode
-
-        saveContext()
-    }
-
-    func fetchAllFavoriteCurrencies() -> [FavoriteCurrency] {
+    func fetchAllFavoriteCurrencies() throws -> [FavoriteCurrency] {
         let request = FavoriteCurrency.fetchRequest()
 
-        guard let favorites = try? viewContext.fetch(request) else { return [] }
-        print(favorites)
+        do {
+            let favorites = try viewContext.fetch(request)
+            return favorites
+        } catch {
+            throw CoreDataError.fetchFavoritesFailed(error: error)
+        }
+    }
 
-        return favorites
+    func addFavorite(with currencyCode: String) throws {
+        let newFavoriteCurrency = FavoriteCurrency(context: viewContext)
+        newFavoriteCurrency.currencyCode = currencyCode
+
+        do {
+            try viewContext.save()
+        } catch {
+            throw CoreDataError.addFavoriteFailed(error: error)
+        }
+    }
+
+    func removeFavorite(with currencyCode: String) throws {
+        let request = FavoriteCurrency.fetchRequest()
+        request.predicate = NSPredicate(format: "currencyCode == %@", currencyCode)
+
+        do {
+            let matches = try viewContext.fetch(request)
+            for match in matches {
+                viewContext.delete(match)
+            }
+            try viewContext.save()
+        } catch {
+            throw CoreDataError.deleteFavoriteFailed(error: error)
+        }
     }
 
 }
