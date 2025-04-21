@@ -4,6 +4,8 @@
         <attribute name="code" optional="YES" attributeType="String"/>
         <attribute name="country" optional="YES" attributeType="String"/>
         <attribute name="rate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="trend" optional="YES" attributeType="String"/>
+        <attribute name="updatedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="FavoriteCurrency" representedClassName="FavoriteCurrency" syncable="YES" codeGenerationType="class">
         <attribute name="currencyCode" optional="YES" attributeType="String"/>
