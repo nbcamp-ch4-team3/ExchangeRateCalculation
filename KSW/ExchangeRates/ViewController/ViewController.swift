@@ -18,14 +18,14 @@ class ViewController: UIViewController {
     
     let tableView = UITableView()
     
-    private let dataManager: DataManager
+    private let viewModel: ViewModel
     private let noResultsLabel = NoResultsLabel() // 사용자의 검색 결과가 없을 때
     
     init() {
-        self.dataManager = DataManager()
+        self.viewModel = ViewModel()
         super.init(nibName: nil, bundle: nil)
         
-        self.dataManager.delegate = self
+        self.viewModel.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -37,7 +37,7 @@ class ViewController: UIViewController {
         
         configureUI()
         
-        dataManager.loadCurrencies()
+        viewModel.loadCurrencies()
     }
     
     private func configureUI() {
@@ -82,25 +82,23 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: DataManagerDelegate {
-    func dataManagerDidLoadData() {        
-        dataManager.prepareFavorites()
-        
+extension ViewController: ViewModelDelegate {
+    func viewModelDidLoadData() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
     }
     
-    func dataManager(didFailWithError error: any Error) {
+    func viewModel(didFailWithError error: any Error) {
         DispatchQueue.main.async {
             self.showError(error)
         }
     }
     
-    func dataManagerDidFilterData() {
+    func viewModelDidFilterData() {
         // 검색 결과가 없으면 검색 결과 없음 레이블 표시
         DispatchQueue.main.async {
-            if self.dataManager.filteredCurrencies.isEmpty {
+            if self.viewModel.filteredCurrencies.isEmpty {
                 self.tableView.backgroundView = self.noResultsLabel
             } else {
                 self.tableView.backgroundView = nil
@@ -115,12 +113,12 @@ extension ViewController: DataManagerDelegate {
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataManager.filteredCurrencies.count
+        viewModel.filteredCurrencies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
-        cell.configureUI(currency: dataManager.filteredCurrencies[indexPath.row])
+        cell.configureUI(currency: viewModel.filteredCurrencies[indexPath.row])
         
         cell.favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         
@@ -128,13 +126,10 @@ extension ViewController: UITableViewDataSource {
     }
     
     @objc func toggleFavorite(_ sender: FavoriteButton) {
-        // 버튼 UI 반영
-        sender.currency?.isFavorite.toggle()
-        sender.setButtonImage()
-        
-        // 뷰 모델 정보 반영
         guard let currency = sender.currency else { return }
-        dataManager.toggleFavorite(currency)
+        viewModel.toggleFavorite(currency)
+        
+        sender.setButtonImage()
     }
 }
 
@@ -144,7 +139,7 @@ extension ViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let currency = dataManager.filteredCurrencies[indexPath.row]
+        let currency = viewModel.filteredCurrencies[indexPath.row]
         
         let viewModel = DetailViewModel(currency: currency)
         let viewController = DetailViewController(viewModel: viewModel)
@@ -154,6 +149,6 @@ extension ViewController: UITableViewDelegate {
 
 extension ViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        dataManager.filterCurrencies(searchText: searchText)
+        viewModel.filterCurrencies(searchText: searchText)
     }
 }
