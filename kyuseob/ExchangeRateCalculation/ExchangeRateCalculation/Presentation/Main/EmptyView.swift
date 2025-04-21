@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EmptyView: UIView {
+final class EmptyView: UIView {
     private let emptyStatusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)

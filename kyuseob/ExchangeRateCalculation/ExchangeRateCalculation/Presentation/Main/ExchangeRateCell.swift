@@ -4,7 +4,7 @@ protocol ExchangeRateCellDelegate: AnyObject {
     func didTapFavoriteButton(currencyCode: String)
 }
 
-class ExchangeRateCell: UITableViewCell {
+final class ExchangeRateCell: UITableViewCell {
     static let identifier = "CurrencyRateCell"
     private var currencyCode: String = ""
     weak var delegate: ExchangeRateCellDelegate?

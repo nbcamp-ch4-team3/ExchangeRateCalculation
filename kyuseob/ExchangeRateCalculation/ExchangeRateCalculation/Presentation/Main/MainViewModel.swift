@@ -15,12 +15,12 @@ protocol MainViewModelProtocol {
     func isFavorite(currencyCode: String) -> Bool
 }
 
-class MainViewModel: MainViewModelProtocol {
+final class MainViewModel: MainViewModelProtocol {
     private let service: DataServiceProtocol
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
     private let currencyCountryInfo = CurrencyCountryMap().infoList
-    private var favoriteCurrencyCodes = [String]()
+    private var favoriteCurrencyCodes: Set<String> = []
     private let coreDataStack = CoreDataStack.shared
 
     init(service: DataServiceProtocol = DataService()) {
@@ -72,7 +72,7 @@ extension MainViewModel {
             favoriteCurrencyCodes.removeAll()
             favoriteEntities.forEach {
                 guard let currencyCode = $0.currencyCode else { return }
-                favoriteCurrencyCodes.append(currencyCode)
+                favoriteCurrencyCodes.insert(currencyCode)
             }
         } catch {
             throw error
@@ -83,7 +83,7 @@ extension MainViewModel {
         if !favoriteCurrencyCodes.contains(currencyCode) {
             do {
                 try coreDataStack.addFavorite(with: currencyCode)
-                favoriteCurrencyCodes.append(currencyCode)
+                favoriteCurrencyCodes.insert(currencyCode)
             } catch {
                 throw error
             }
