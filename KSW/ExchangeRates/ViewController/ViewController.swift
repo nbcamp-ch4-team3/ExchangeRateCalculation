@@ -106,6 +106,8 @@ extension ViewController: DataManagerDelegate {
                 self.tableView.backgroundView = nil
             }
             
+            // self.dataManager.sortCurrencies()
+            
             self.tableView.reloadData()
         }
     }

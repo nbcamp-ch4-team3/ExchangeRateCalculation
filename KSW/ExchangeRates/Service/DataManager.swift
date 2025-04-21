@@ -53,6 +53,7 @@ final class DataManager {
         // 검색어가 없으면 원본 데이터를 반환하고 리턴
         if searchText.isEmpty {
             filteredCurrencies = currencies
+            sortCurrencies()
             delegate?.dataManagerDidFilterData()
             return
         }
@@ -69,6 +70,7 @@ final class DataManager {
         } else {
             filteredCurrencies = searchResults
         }
+        sortCurrencies()
         delegate?.dataManagerDidFilterData()
     }
     
@@ -93,26 +95,52 @@ final class DataManager {
     
     // 즐겨찾기 여부 등록
     func registerFavorites() {
-        for index in filteredCurrencies.indices {
+//        for index in filteredCurrencies.indices {
+//            if favorites.contains(where: { favorite in
+//                favorite.currencyCode == filteredCurrencies[index].code
+//            }) {
+//                filteredCurrencies[index].isFavorite = true
+//            }
+//        }
+        
+        for index in currencies.indices {
             if favorites.contains(where: { favorite in
-                favorite.currencyCode == filteredCurrencies[index].code
+                favorite.currencyCode == currencies[index].code
             }) {
-                filteredCurrencies[index].isFavorite = true
+                currencies[index].isFavorite = true
             }
         }
+        
+        filteredCurrencies = currencies
     }
     
     func toggleFavorite(_ currency: Currency) {
-        let index = filteredCurrencies.firstIndex { $0.code == currency.code }
+//        let index = filteredCurrencies.firstIndex { $0.code == currency.code }
+//        guard let index else { return }
+//        
+//        filteredCurrencies[index].isFavorite.toggle()
+//        
+//        if filteredCurrencies[index].isFavorite == true {
+//            addFavorite(filteredCurrencies[index])
+//        } else {
+//            deleteFavorite(filteredCurrencies[index])
+//        }
+//        
+//        sortCurrencies()
+        
+        
+        let index = currencies.firstIndex { $0.code == currency.code }
         guard let index else { return }
         
-        filteredCurrencies[index].isFavorite.toggle()
+        currencies[index].isFavorite.toggle()
         
-        if filteredCurrencies[index].isFavorite == true {
-            addFavorite(filteredCurrencies[index])
+        if currencies[index].isFavorite == true {
+            addFavorite(currencies[index])
         } else {
-            deleteFavorite(filteredCurrencies[index])
+            deleteFavorite(currencies[index])
         }
+        
+        filteredCurrencies = currencies
         
         sortCurrencies()
     }
