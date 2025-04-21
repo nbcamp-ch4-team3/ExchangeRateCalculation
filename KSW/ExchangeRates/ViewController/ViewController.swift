@@ -24,6 +24,7 @@ class ViewController: UIViewController {
     init() {
         self.dataManager = DataManager()
         super.init(nibName: nil, bundle: nil)
+        
         self.dataManager.delegate = self
     }
     
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
         
         configureUI()
         
-        loadData()
+        dataManager.loadCurrencies()
     }
     
     private func configureUI() {
@@ -66,10 +67,6 @@ class ViewController: UIViewController {
         }
     }
     
-    private func loadData() {
-        dataManager.loadData()
-    }
-    
     private func showError(_ error: Error) {
         let alertTitle = NSLocalizedString("Error", comment: "Error alert title")
         let alert = UIAlertController(
@@ -86,7 +83,9 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: DataManagerDelegate {
-    func dataManagerDidLoadData() {
+    func dataManagerDidLoadData() {        
+        dataManager.prepareFavorites()
+        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
@@ -120,7 +119,20 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath) as? TableViewCell else { return UITableViewCell() }
         cell.configureUI(currency: dataManager.filteredCurrencies[indexPath.row])
+        
+        cell.favoriteButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
+        
         return cell
+    }
+    
+    @objc func toggleFavorite(_ sender: FavoriteButton) {
+        // 버튼 UI 반영
+        sender.currency?.isFavorite.toggle()
+        sender.setButtonImage()
+        
+        // 뷰 모델 정보 반영
+        guard let currency = sender.currency else { return }
+        dataManager.toggleFavorite(currency)
     }
 }
 
@@ -140,6 +152,6 @@ extension ViewController: UITableViewDelegate {
 
 extension ViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        dataManager.filterData(searchText: searchText)
+        dataManager.filterCurrencies(searchText: searchText)
     }
 }

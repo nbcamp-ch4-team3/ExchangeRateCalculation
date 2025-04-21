@@ -7,37 +7,61 @@
 
 import Foundation
 
-enum ValidationResult {
-    case valid(number: Double)
-    case invalid(message: String)
+// Input - Output pattern
+protocol ViewModelProtocol {
+    associatedtype Input
+    associatedtype Output
+    
+    var input: ((Input) -> Void)? { get }
+    var output: Output { get }
 }
 
-class DetailViewModel {
-    let currency: Currency
+final class DetailViewModel: ViewModelProtocol {
+    // 텍스트 필드 입력값 검증
+    enum ValidationResult {
+        case valid(result: String)
+        case invalid(message: String)
+    }
     
-    var onValidate: (ValidationResult) -> Void = { _ in }
+    enum Input {
+        case validate(String?) // 텍스트 필드 입력값 검증 요청 수신
+    }
+    
+    typealias Output = (ValidationResult) -> Void // 검증 결과 송신
+    
+    let currency: Currency
+    var input: ((Input) -> Void)?
+    var output: Output = { _ in }
     
     init(currency: Currency) {
         self.currency = currency
+        
+        input = { [weak self] input in
+            switch input {
+            case .validate(let text):
+                self?.validate(text)
+            }
+        }
     }
     
     // 텍스트 필드 사용자 입력값 검증
-    func validate(_ text: String?) {
-        guard let text else { return }
+    private func validate(_ input: String?) {
+        guard let input else { return }
         
         // 입력값이 없을 때
-        if text.isEmpty {
-            onValidate(.invalid(message: "금액을 입력해주세요."))
+        if input.isEmpty {
+            output(.invalid(message: "금액을 입력해주세요."))
             return
         }
         
         // 입력값이 있을 때
-        if let number = Double(text) {
+        if let number = Double(input) {
             // 입력값 정상
-            onValidate(.valid(number: number))
+            let result = "$\(input) → \(String(format: "%.2f", number * currency.rate)) \(currency.code)"
+            output(.valid(result: result))
         } else {
             // 입력값이 숫자가 아닐 때
-            onValidate(.invalid(message: "올바른 숫자를 입력해주세요."))
+            output(.invalid(message: "올바른 숫자를 입력해주세요."))
         }
     }
 }

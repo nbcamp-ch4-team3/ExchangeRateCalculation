@@ -42,6 +42,9 @@ class TableViewCell: UITableViewCell {
         return label
     }()
     
+    // 즐겨찾기 버튼
+    let favoriteButton = FavoriteButton()
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
@@ -49,12 +52,14 @@ class TableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        selectionStyle = .none
+        
         [currencyLabel, countryLabel].forEach {
             labelStackView.addArrangedSubview($0)
         }
         
-        [labelStackView, rateLabel].forEach {
-            addSubview($0)
+        [labelStackView, rateLabel, favoriteButton].forEach {
+            contentView.addSubview($0)
         }
         
         labelStackView.snp.makeConstraints {
@@ -65,8 +70,13 @@ class TableViewCell: UITableViewCell {
         rateLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.greaterThanOrEqualTo(labelStackView).offset(16)
-            $0.trailing.equalToSuperview().offset(-16)
             $0.width.equalTo(120)
+        }
+        
+        favoriteButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalTo(rateLabel.snp.trailing).offset(16)
+            $0.trailing.equalToSuperview().offset(-16)
         }
     }
     
@@ -78,5 +88,8 @@ class TableViewCell: UITableViewCell {
         currencyLabel.text = currency.code
         countryLabel.text = currency.country
         rateLabel.text = String(format: "%.4f", currency.rate) // 소수점 4자리까지 표시
+        
+        favoriteButton.currency = currency
+        favoriteButton.setButtonImage()
     }
 }
