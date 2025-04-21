@@ -44,10 +44,10 @@ final class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
-    private let increaseDecreaseLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16)
-        return label
+    private let increaseDecreaseImageView: UIImageView = {
+        let view = UIImageView()
+        view.tintColor = .systemBlue
+        return view
     }()
 
     private lazy var starButton: UIButton = {
@@ -77,7 +77,7 @@ final class ExchangeRateCell: UITableViewCell {
 
         countryLabel.text = nil
         currencyLabel.text = nil
-        increaseDecreaseLabel.text = nil
+        increaseDecreaseImageView.image = nil
         rateLabel.text = nil
     }
 
@@ -85,8 +85,16 @@ final class ExchangeRateCell: UITableViewCell {
         countryLabel.text = data.country
         currencyLabel.text = data.currency
         rateLabel.text = data.rate.formatted(toDecimalDigits: 4)
-        increaseDecreaseLabel.text = "🔼🔽"
         starButton.isSelected = data.isFavorite
+
+        switch data.fluctuation {
+        case .increase:
+            increaseDecreaseImageView.image = UIImage(systemName: "arrowtriangle.up.square.fill")
+        case .decrease:
+            increaseDecreaseImageView.image = UIImage(systemName: "arrowtriangle.down.square.fill")
+        case .same:
+            increaseDecreaseImageView.image = nil
+        }
     }
 }
 
@@ -103,7 +111,7 @@ private extension ExchangeRateCell {
 
     func setHierarchy() {
         labelStackView.addArrangedSubviews(views: currencyLabel, countryLabel)
-        self.contentView.addSubviews(views: labelStackView, rateLabel, increaseDecreaseLabel, starButton)
+        self.contentView.addSubviews(views: labelStackView, rateLabel, increaseDecreaseImageView, starButton)
     }
 
     func setConstraints() {
@@ -113,14 +121,15 @@ private extension ExchangeRateCell {
         }
 
         rateLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(increaseDecreaseLabel.snp.leading).offset(-16)
+            make.trailing.equalTo(increaseDecreaseImageView.snp.leading).offset(-16)
             make.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.equalTo(120)
         }
 
-        increaseDecreaseLabel.snp.makeConstraints { make in
+        increaseDecreaseImageView.snp.makeConstraints { make in
             make.trailing.equalTo(starButton.snp.leading).offset(-16)
+            make.size.equalTo(30)
             make.centerY.equalToSuperview()
         }
 
