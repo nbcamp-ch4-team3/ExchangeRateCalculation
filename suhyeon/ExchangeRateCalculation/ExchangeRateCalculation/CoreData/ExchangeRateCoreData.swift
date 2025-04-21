@@ -70,14 +70,15 @@ final class ExchangeRateCoreData {
 
         do {
             let result = try viewContext.fetch(fetchRequest)
-
-            result.forEach { $0.rate = data.rate; $0.nextUpdateDate = nextUpdateDate }
+            result.forEach {
+                $0.rate = data.rate
+                $0.nextUpdateDate = nextUpdateDate
+            }
             try viewContext.save()
         } catch {
             throw CoreDataError.deleteError(error)
         }
     }
-
 }
 
 extension ExchangeRateCoreData {

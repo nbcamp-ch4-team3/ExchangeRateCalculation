@@ -32,15 +32,7 @@ final class ExchangeRateRepository {
         if let nextUpdateDate = nextUpdateDate {
             if nextUpdateDate > Date() {
                 os_log("nextUpdateDate가 지나지 않아, 기존 데이터 사용", type: .debug)
-                cachedExchangeRates = try coreData.readAllData()
-                    .map {
-                        ExchangeRate(
-                            currency: $0.currency,
-                            rate: $0.rate,
-                            fluctuation: Fluctuation(fluctuation: $0.fluctuation),
-                            isFavorite: $0.isFavorite
-                        )
-                    }
+                try fetchCachedExchangeRates()
             } else { // updateDate가 지난 경우, 새로 데이터 가져오기
                 os_log("nextUpdateDate가 지나, 새로 데이터 가져오기", type: .debug)
                 let result = try await networkService.fetchExchangeRate()
@@ -54,13 +46,14 @@ final class ExchangeRateRepository {
                         return ExchangeRate(currency: currency, rate: rate, fluctuation: Fluctuation(prevRate: prevRate, rate: rate)) // DTO를 Entity로 변환
                     }
                 // CoreData에 update
-                for excahngeRate in cachedExchangeRates {
-                    try coreData.updateData(data: excahngeRate, nextUpdateDate: result.nextUpdateTimeUnix)
+                for exchangeRate in cachedExchangeRates {
+                    try coreData.updateData(data: exchangeRate, nextUpdateDate: result.nextUpdateTimeUnix)
                 }
             }
         } else { // 저장된 데이터가 없는 경우 mock 데이터 저장
             os_log("MockData 저장", type: .debug)
             coreData.saveMockData()
+            try fetchCachedExchangeRates()
         }
 
         return try syncExchangeRate() // CoreData에 저장된 즐겨찾기 목록 적용 후 업데이트
@@ -84,6 +77,19 @@ final class ExchangeRateRepository {
     func toggleFavoriteItem(with currency: String) throws -> ExchangeRates {
         try coreData.updateIsFavorite(currency: currency)
         return try syncExchangeRate() // CoreData에 저장된 즐겨찾기 목록 적용 후 업데이트
+    }
+
+    // CoreData에 저장된 데이터를 cachedExchangeRates에 저장
+    private func fetchCachedExchangeRates() throws {
+        cachedExchangeRates = try coreData.readAllData()
+            .map {
+                ExchangeRate(
+                    currency: $0.currency,
+                    rate: $0.rate,
+                    fluctuation: Fluctuation(fluctuation: $0.fluctuation),
+                    isFavorite: $0.isFavorite
+                )
+            }
     }
 
     // CoreData에 저장된 즐겨찾기 목록 적용 후 업데이트
