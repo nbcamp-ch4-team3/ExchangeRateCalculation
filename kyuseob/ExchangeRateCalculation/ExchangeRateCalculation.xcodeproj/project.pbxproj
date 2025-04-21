@@ -7,14 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		95305C662DB23FEB00A5D006 /* CurrencyEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95305C642DB23FEB00A5D006 /* CurrencyEntity+CoreDataClass.swift */; };
-		95305C672DB23FEB00A5D006 /* CurrencyEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95305C652DB23FEB00A5D006 /* CurrencyEntity+CoreDataProperties.swift */; };
 		95363AEF2DAE3B7500C4AEB3 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 95363AEE2DAE3B7500C4AEB3 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		95305C642DB23FEB00A5D006 /* CurrencyEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CurrencyEntity+CoreDataClass.swift"; path = "ExchangeRateCalculation/CoreData/CurrencyEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		95305C652DB23FEB00A5D006 /* CurrencyEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CurrencyEntity+CoreDataProperties.swift"; path = "ExchangeRateCalculation/CoreData/CurrencyEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		9572DE542DAE204F0077FFB3 /* ExchangeRateCalculation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExchangeRateCalculation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -54,8 +50,6 @@
 		9572DE4B2DAE204F0077FFB3 = {
 			isa = PBXGroup;
 			children = (
-				95305C642DB23FEB00A5D006 /* CurrencyEntity+CoreDataClass.swift */,
-				95305C652DB23FEB00A5D006 /* CurrencyEntity+CoreDataProperties.swift */,
 				9572DE912DAE28CB0077FFB3 /* ExchangeRateCalculation */,
 				9572DE552DAE204F0077FFB3 /* Products */,
 			);
@@ -147,8 +141,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				95305C662DB23FEB00A5D006 /* CurrencyEntity+CoreDataClass.swift in Sources */,
-				95305C672DB23FEB00A5D006 /* CurrencyEntity+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
