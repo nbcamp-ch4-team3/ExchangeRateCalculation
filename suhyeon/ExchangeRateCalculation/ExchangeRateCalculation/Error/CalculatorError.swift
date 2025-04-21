@@ -7,10 +7,12 @@
 
 import Foundation
 
-enum CalculatorError: LocalizedError {
+enum CalculatorError: AppErrorProtocol {
     case inputIsNotNumber(String)
     case inputIsEmpty
+}
 
+extension CalculatorError {
     var errorDescription: String? {
         switch self {
         case .inputIsNotNumber:
@@ -20,7 +22,7 @@ enum CalculatorError: LocalizedError {
         }
     }
 
-    var debugDesciption: String {
+    var debugDescription: String {
         switch self {
         case .inputIsNotNumber(let string):
             "CalculatorError - 입력된 데이터: \(string)"

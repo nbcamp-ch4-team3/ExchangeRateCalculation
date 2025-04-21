@@ -1,40 +1,27 @@
 //
-//  ExchangeRateStorage.swift
+//  ExchangeRate.swift
 //  ExchangeRateCalculation
 //
-//  Created by 이수현 on 4/16/25.
+//  Created by 이수현 on 4/15/25.
 //
 
 import Foundation
 
-final class ExchangeRateStorage {
-    // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
-    static let shared = ExchangeRateStorage()
+struct ExchangeRate {
+    let country: String
+    let currency: String
+    let rate: Double
+    private(set) var isFavorite: Bool
 
-    private var cachedExchangeRates = ExchangeRates()
-
-    private init() { }
-
-    // [String: Double] 딕셔너리를 받아 ExchangeRates 모델로 변환하는 역할
-    func saveExchangeRates(from rates: [String: Double]) {
-        cachedExchangeRates = rates
-            .sorted { $0.key < $1.key }
-            .compactMap { (currency, rate) in
-                guard let country = currencyToCountryMap[currency] else { return nil }
-                return ExchangeRate(country: country, currency: currency, rate: rate)
-            }
+    mutating func setIsFavorite(isFavorite: Bool) {
+        self.isFavorite = isFavorite
     }
 
-    func loadExchangeRates() -> ExchangeRates {
-        return cachedExchangeRates
-    }
-
-    func filterExchangeRates(with keyword: String) -> ExchangeRates {
-        let uppercasedKeyword = keyword.uppercased()
-
-        return cachedExchangeRates.filter {
-            $0.country.contains(uppercasedKeyword) || $0.currency.contains(uppercasedKeyword)
-        }
+    init(currency: String, rate: Double) {
+        self.country = currencyToCountryMap[currency] ?? ""
+        self.currency = currency
+        self.rate = rate
+        self.isFavorite = false
     }
 
     private let currencyToCountryMap = [
@@ -203,3 +190,5 @@ final class ExchangeRateStorage {
         "ZWL": "짐바브웨"
     ]
 }
+
+typealias ExchangeRates = [ExchangeRate]

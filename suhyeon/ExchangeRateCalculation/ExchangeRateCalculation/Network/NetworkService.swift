@@ -8,11 +8,11 @@
 import Foundation
 
 class NetworkService {
-    func fetchExchangeRate() async -> Result<ExchangeRateDTO, NetworkError> {
+    func fetchExchangeRate() async throws -> ExchangeRateDTO {
         let urlString = "https://open.er-api.com/v6/latest/USD"
 
         guard let url = URL(string: urlString) else {
-            return .failure(.invalidURL(url: urlString))
+            throw NetworkError.invalidURL(url: urlString)
         }
         let urlRequest = URLRequest(url: url)
 
@@ -21,24 +21,27 @@ class NetworkService {
 
             // reponse 확인
             guard let httpResponse = response as? HTTPURLResponse else {
-                return .failure(.invalidResponse)
+                throw NetworkError.invalidResponse
             }
 
             // 상태 코드 확인
             guard (200...299).contains(httpResponse.statusCode) else {
-                return .failure(.serverError(statusCode: httpResponse.statusCode))
+                throw NetworkError.serverError(statusCode: httpResponse.statusCode)
             }
 
             do {
                 // 디코딩
-                let result = try JSONDecoder().decode(ExchangeRateDTO.self, from: data)
-                return .success(result)
+                return try JSONDecoder().decode(ExchangeRateDTO.self, from: data)
             } catch {
                 // 디코딩 실패
-                return .failure(.decodingError(error: error))
+                throw NetworkError.decodingError(error: error)
             }
         } catch {
-            return .failure(.networkFailure(error: error))
+            if let networkError = error as? NetworkError {
+                throw networkError
+            }
+
+            throw NetworkError.networkFailure(error: error)
         }
     }
 }

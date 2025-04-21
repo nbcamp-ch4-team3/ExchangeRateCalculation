@@ -11,6 +11,7 @@ import os
 final class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel = MainViewModel()
+    private var isFirstAppear = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,8 @@ final class MainViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if !isFirstAppear { return }
+        isFirstAppear = false
         bindViewModel()
     }
 
@@ -36,16 +39,16 @@ final class MainViewController: UIViewController {
             self.mainView.reloadTableView()
         }
 
-        viewModel.state.handleNetworkError = {[weak self] error in
+        viewModel.state.handleError = { [weak self] error in
             self?.showErrorAlert(
-                type: .networkError,
+                type: error.alertType,
                 message: error.localizedDescription
             )
             os_log("%@", type: .error, error.debugDescription)
         }
     }
 }
-
+// UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -59,10 +62,12 @@ extension MainViewController: UITableViewDataSource {
 
         let dataSource = viewModel.state.exchangeRates
         cell.configure(with: dataSource[indexPath.row])
+        cell.delegate = self
         return cell
     }
 }
 
+// UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -75,12 +80,21 @@ extension MainViewController: UITableViewDelegate {
     }
 }
 
+// UISearchBarDelegate
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.action?(.filterExchangeRates(searchText))
     }
 }
 
+// ExchangeRateCellDelegate
+extension MainViewController: ExchangeRateCellDelegate {
+    func didTapStarButton(with currency: String) {
+        viewModel.action?(.toggleFavoriteItem(currency: currency))
+    }
+}
+
+// Configure
 private extension MainViewController {
     private func configure() {
         setNavigationBar(title: "환율 정보", isLargeTitle: true)
