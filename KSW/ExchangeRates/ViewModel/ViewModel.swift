@@ -5,8 +5,7 @@
 //  Created by 권순욱 on 4/15/25.
 //
 
-import UIKit
-import CoreData
+import Foundation
 
 protocol ViewModelDelegate: AnyObject {
     func viewModelDidLoadData()
@@ -18,16 +17,13 @@ final class ViewModel {
     weak var delegate: ViewModelDelegate?
     
     private let networkService: NetworkServiceProtocol
-    private var container: NSPersistentContainer!
+    private let dataManager = DataManager.shared
     
     private var currencies: [Currency] = []
     private(set) var filteredCurrencies: [Currency] = []
     
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        container = appDelegate.persistentContainer
     }
     
     func loadCurrencies() {
@@ -46,7 +42,7 @@ final class ViewModel {
                         currencies[index].rate = value
                         count += 1
                     } else {
-                        let currency = Currency(context: container.viewContext)
+                        let currency = Currency(context: dataManager.context)
                         currency.code = key
                         currency.country = countryCodes[key] ?? ""
                         currency.rate = value
@@ -59,7 +55,7 @@ final class ViewModel {
                 print("count: \(count)")
                 print("new: \(new)")
                 
-                saveContext()
+                dataManager.saveContext()
                 
                 filteredCurrencies = currencies
                 
@@ -114,7 +110,7 @@ final class ViewModel {
     func toggleFavorite(_ currency: Currency) {
         currency.isFavorite.toggle()
         
-        saveContext()
+        dataManager.saveContext()
         
         filteredCurrencies = currencies
         sortCurrencies()
@@ -122,22 +118,10 @@ final class ViewModel {
     
     func fetchCurrencies() {
         do {
-            currencies = try container.viewContext.fetch(Currency.fetchRequest())
+            currencies = try dataManager.context.fetch(Currency.fetchRequest())
             print("fetch count: \(currencies.count)")
         } catch {
             print("fetch error: \(error)")
-        }
-    }
-    
-    private func saveContext () {
-        let context = container.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
         }
     }
 }
