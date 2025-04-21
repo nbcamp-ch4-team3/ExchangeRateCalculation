@@ -1,7 +1,13 @@
 import UIKit
 
+protocol ExchangeRateCellDelegate: AnyObject {
+    func didTapFavoriteButton(currencyCode: String)
+}
+
 class ExchangeRateCell: UITableViewCell {
     static let identifier = "CurrencyRateCell"
+    private var currencyCode: String = ""
+    weak var delegate: ExchangeRateCellDelegate?
 
     private let labelStackView: UIStackView = {
         let stackView = UIStackView()
@@ -36,6 +42,14 @@ class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
+    private let favoriteButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "star"), for: .normal)
+        button.tintColor = .systemYellow
+
+        return button
+    }()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configure()
@@ -50,6 +64,12 @@ class ExchangeRateCell: UITableViewCell {
         self.currencyCodeLabel.text = with.code
         self.exchangeRateLabel.text = with.formattedRate
         self.countryLabel.text = with.country
+        self.currencyCode = with.code
+    }
+
+    func updateFavoriteButtonState(isFavorite: Bool) {
+        let imageName = isFavorite ? "star.fill" : "star"
+        favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
 }
 
@@ -58,6 +78,7 @@ private extension ExchangeRateCell {
         setLayout()
         setHierarchy()
         setConstraints()
+        setAction()
     }
 
     func setLayout() {
@@ -66,7 +87,7 @@ private extension ExchangeRateCell {
     }
 
     func setHierarchy() {
-        contentView.addSubViews(views: labelStackView, exchangeRateLabel)
+        contentView.addSubViews(views: labelStackView, exchangeRateLabel, favoriteButton)
         labelStackView.addArrangedSubViews(views: currencyCodeLabel, countryLabel)
     }
 
@@ -76,12 +97,25 @@ private extension ExchangeRateCell {
             make.centerY.equalToSuperview()
         }
 
+        favoriteButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(32)
+        }
+
         exchangeRateLabel.snp.makeConstraints { make in
             make.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.trailing.equalTo(favoriteButton.snp.leading).offset(-16)
             make.centerY.equalToSuperview()
             make.width.equalTo(120)
         }
+    }
 
+    func setAction() {
+        favoriteButton.addTarget(self, action: #selector(didTapFavoriteButton), for: .touchUpInside)
+    }
+
+    @objc private func didTapFavoriteButton() {
+        delegate?.didTapFavoriteButton(currencyCode: currencyCode)
     }
 }

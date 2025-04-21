@@ -7,6 +7,12 @@ protocol MainViewModelProtocol {
     func fetchData() async throws
     func filterCurrencyItems(by searchText: String)
     func resetFilteredItems()
+
+    func fetchFavoriteCurrencies() throws
+    func addToFavorites(currencyCode: String) throws
+    func removeFromFavorites(currencyCode: String) throws
+    func toggleFavorite(currencyCode: String) throws
+    func isFavorite(currencyCode: String) -> Bool
 }
 
 class MainViewModel: MainViewModelProtocol {
@@ -14,6 +20,8 @@ class MainViewModel: MainViewModelProtocol {
     private(set) var currencyItems: [CurrencyInfo] = []
     private(set) var filteredItems: [CurrencyInfo] = []
     private let currencyCountryInfo = CurrencyCountryMap().infoList
+    private var favoriteCurrencyCodes = [String]()
+    private let coreDataStack = CoreDataStack.shared
 
     init(service: DataServiceProtocol = DataService()) {
         self.service = service
@@ -33,6 +41,7 @@ class MainViewModel: MainViewModelProtocol {
 
             self.currencyItems = items.sorted { $0.code < $1.code }
             self.filteredItems = self.currencyItems
+            sortItemsWithFavoritesOnTop()
         } catch {
             throw error
         }
@@ -47,10 +56,74 @@ class MainViewModel: MainViewModelProtocol {
         } else {
             filteredItems = currencyItems
         }
+        sortItemsWithFavoritesOnTop()
     }
 
     func resetFilteredItems() {
         filteredItems = currencyItems
     }
 
+}
+
+extension MainViewModel {
+    func fetchFavoriteCurrencies() throws {
+        do {
+            let favoriteEntities = try coreDataStack.fetchAllFavoriteCurrencies()
+            favoriteCurrencyCodes.removeAll()
+            favoriteEntities.forEach {
+                guard let currencyCode = $0.currencyCode else { return }
+                favoriteCurrencyCodes.append(currencyCode)
+            }
+        } catch {
+            throw error
+        }
+    }
+
+    func addToFavorites(currencyCode: String) throws {
+        if !favoriteCurrencyCodes.contains(currencyCode) {
+            do {
+                try coreDataStack.addFavorite(with: currencyCode)
+                favoriteCurrencyCodes.append(currencyCode)
+            } catch {
+                throw error
+            }
+        }
+    }
+
+    func removeFromFavorites(currencyCode: String) throws {
+        do {
+            try coreDataStack.removeFavorite(with: currencyCode)
+            if let index = favoriteCurrencyCodes.firstIndex(of: currencyCode) {
+                favoriteCurrencyCodes.remove(at: index)
+            }
+        } catch {
+            throw error
+        }
+    }
+
+    func toggleFavorite(currencyCode: String) throws {
+        if isFavorite(currencyCode: currencyCode) {
+            try removeFromFavorites(currencyCode: currencyCode)
+        } else {
+            try addToFavorites(currencyCode: currencyCode)
+        }
+        sortItemsWithFavoritesOnTop()
+    }
+
+    func isFavorite(currencyCode: String) -> Bool {
+        return favoriteCurrencyCodes.contains(currencyCode)
+    }
+
+    func sortItemsWithFavoritesOnTop() {
+        filteredItems.sort { item1, item2 in
+            let isFavorite1 = isFavorite(currencyCode: item1.code)
+            let isFavorite2 = isFavorite(currencyCode: item2.code)
+
+            if isFavorite1 == isFavorite2 { // 즐겨찾기 여부가 같은 경우 code 알파벳 순으로 정렬
+                return item1.code < item2.code
+            }
+
+            return isFavorite1 && !isFavorite2
+        }
+    }
 }

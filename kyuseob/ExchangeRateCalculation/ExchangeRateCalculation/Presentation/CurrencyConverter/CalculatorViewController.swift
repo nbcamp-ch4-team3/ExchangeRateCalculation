@@ -44,6 +44,4 @@ extension CalculatorViewController: CalculatorViewDelegate {
 
         return "\(base)\(result)\(code)"
     }
-
-
 }
