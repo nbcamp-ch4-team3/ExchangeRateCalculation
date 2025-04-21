@@ -9,8 +9,6 @@ protocol MainViewModelProtocol {
     func resetFilteredItems()
 
     func fetchFavoriteCurrencies() throws
-    func addToFavorites(currencyCode: String) throws
-    func removeFromFavorites(currencyCode: String) throws
     func toggleFavorite(currencyCode: String) throws
     func isFavorite(currencyCode: String) -> Bool
 }
@@ -29,19 +27,33 @@ final class MainViewModel: MainViewModelProtocol {
 
     func fetchData() async throws {
         do {
-            let exchangeData = try await service.fetchExchangeRateData()
+            let prevCurrencies = try fetchPrevCurrencies()
 
-            var items: [CurrencyInfo] = []
-            for (code, rate) in exchangeData.rates {
-                if let country = currencyCountryInfo[code] {
-                    let item = CurrencyInfo(code: code, country: country, rate: rate)
-                    items.append(item)
+            if let lastUpdated = prevCurrencies.first?.updatedDate {
+                // 오늘 이미 업데이트 된 경우
+                if isUpdatedToday(date: lastUpdated) {
+                    currencyItems = convertEntityToModel(from: prevCurrencies)
+                } else {
+                    // 오늘 처음 업데이트 하는 경우
+                    let exchangeData = try await service.fetchExchangeRateData()
+                    currencyItems = compareAndConvertToModel(old: prevCurrencies, new: exchangeData.rates, updatedDate: exchangeData.lastUpdatedDate)
                 }
+            } else {
+                // 처음 데이터를 불러오는 경우
+                let exchangeData = try await service.fetchExchangeRateData()
+                var items: [CurrencyInfo] = []
+                for (code, rate) in exchangeData.rates {
+                    if let country = currencyCountryInfo[code] {
+                        let item = CurrencyInfo(code: code, country: country, rate: rate, trendString: "new", updatedDate: exchangeData.lastUpdatedDate)
+                        items.append(item)
+                    }
+                }
+                currencyItems = items
             }
 
-            self.currencyItems = items.sorted { $0.code < $1.code }
             self.filteredItems = self.currencyItems
             sortItemsWithFavoritesOnTop()
+            try saveCurrentCurrencies(with: currencyItems)
         } catch {
             throw error
         }
@@ -65,6 +77,7 @@ final class MainViewModel: MainViewModelProtocol {
 
 }
 
+// MARK: - 즐겨찾기 Favorite 관련 메서드
 extension MainViewModel {
     func fetchFavoriteCurrencies() throws {
         do {
@@ -126,4 +139,81 @@ extension MainViewModel {
             return isFavorite1 && !isFavorite2
         }
     }
+}
+
+// MARK: - Core Data에서 관리하는 Currency에 관한 메서드
+extension MainViewModel {
+    func fetchPrevCurrencies() throws -> [CurrencyEntity] {
+        do {
+            return try coreDataStack.fetchAllCurrencies()
+        } catch {
+            throw error
+        }
+    }
+
+    func isUpdatedToday(date: Date) -> Bool {
+        return Calendar.current.isDateInToday(date)
+    }
+}
+
+// MARK: - CurrencyEntity, CurrencyInfo에 관한 메서드
+extension MainViewModel {
+    func convertEntityToModel(from: [CurrencyEntity]) -> [CurrencyInfo] { // 기존 코어 데이터 내 엔티티를 CurrencyInfo로 변환 (업데이트가 필요 없을 때)
+        var currenciesInfo = [CurrencyInfo]()
+
+        from.forEach { currencyEntity in
+            let rate = currencyEntity.rate
+            guard let code = currencyEntity.code,
+                  let country = currencyEntity.country,
+                  let trendString = currencyEntity.trend,
+                  let updatedDate = currencyEntity.updatedDate else { return }
+            let currencyInfo = CurrencyInfo(code: code, country: country, rate: rate, trendString: trendString, updatedDate: updatedDate)
+            currenciesInfo.append(currencyInfo)
+        }
+
+        return currenciesInfo
+    }
+
+    // 새롭게 받아온 데이터를 기준으로 기존 데이터 비교해 업데이트 및 변환
+    func compareAndConvertToModel(old: [CurrencyEntity], new: [String: Double], updatedDate: Date) -> [CurrencyInfo] {
+        var result = [CurrencyInfo]()
+
+        old.forEach { oldEntity in // 기존에 있던 통화에 대한 처리
+            guard let code = oldEntity.code, let country = oldEntity.country else { return }
+
+            if let newRate = new[code] {
+                let trendString: String
+                if oldEntity.rate > newRate { trendString = "down" }
+                else if oldEntity.rate < newRate { trendString = "up" }
+                else { trendString = "unchanged" }
+
+                let info = CurrencyInfo(code: code, country: country, rate: newRate, trendString: trendString, updatedDate: updatedDate)
+                result.append(info)
+            }
+        }
+
+        for (code, rate) in new {
+            if !old.contains(where: { $0.code == code }) {
+                if let country = currencyCountryInfo[code] {
+                    let info = CurrencyInfo(code: code, country: country, rate: rate, trendString: "new", updatedDate: updatedDate)
+                    result.append(info)
+                }
+            }
+        }
+
+        return result
+    }
+
+    func saveCurrentCurrencies(with: [CurrencyInfo]) throws {
+        for currencyInfo in with {
+            try coreDataStack.addCurrency(
+                code: currencyInfo.code,
+                country: currencyInfo.country,
+                rate: currencyInfo.rate,
+                trend: currencyInfo.trendString,
+                updatedDate: currencyInfo.updatedDate
+            )
+        }
+    }
+
 }
