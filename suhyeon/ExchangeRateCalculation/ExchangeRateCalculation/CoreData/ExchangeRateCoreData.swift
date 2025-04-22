@@ -70,13 +70,15 @@ final class ExchangeRateCoreData {
 
         do {
             let result = try viewContext.fetch(fetchRequest)
+            guard result.isEmpty else { return }
             result.forEach {
                 $0.rate = data.rate
+                $0.fluctuation = data.fluctuation.rawValue
                 $0.nextUpdateDate = nextUpdateDate
             }
             try viewContext.save()
         } catch {
-            throw CoreDataError.deleteError(error)
+            throw CoreDataError.updateError(error)
         }
     }
 }

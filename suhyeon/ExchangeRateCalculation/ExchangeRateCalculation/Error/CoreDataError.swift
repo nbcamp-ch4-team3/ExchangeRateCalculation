@@ -10,6 +10,7 @@ import Foundation
 enum CoreDataError: AppErrorProtocol {
     case readError(Error)
     case saveError(Error)
+    case updateError(Error)
     case deleteError(Error)
 }
 
@@ -24,6 +25,8 @@ extension CoreDataError {
             "CoreDataError - readError: \(error.localizedDescription)"
         case .saveError(let error):
             "CoreDataError - saveError: \(error.localizedDescription)"
+        case .updateError(let error):
+            "CoreDataError - updateError: \(error.localizedDescription)"
         case .deleteError(let error):
             "CoreDataError - deleteError: \(error.localizedDescription)"
         }

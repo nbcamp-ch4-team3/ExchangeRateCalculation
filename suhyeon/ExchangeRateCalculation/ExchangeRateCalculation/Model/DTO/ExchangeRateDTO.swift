@@ -9,20 +9,20 @@ import Foundation
 
 struct ExchangeRateDTO: Codable {
     let result: String
-    let nextUpdateTimeUnix: Date
+    let nextUpdateTime: Date
     let rates: [String: Double]
 
     enum CodingKeys: String, CodingKey {
         case result
-        case nextUpdateTimeUnix = "time_next_update_unix"
+        case nextUpdateTime = "time_next_update_unix"
         case rates
     }
 
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.result = try container.decode(String.self, forKey: .result)
-        let nextUpdateTimeUnixInt = try container.decode(Int.self, forKey: .nextUpdateTimeUnix)
-        self.nextUpdateTimeUnix = Date(timeIntervalSince1970: TimeInterval(nextUpdateTimeUnixInt))
+        let nextUpdateTimeUnix = try container.decode(Int.self, forKey: .nextUpdateTime)
+        self.nextUpdateTime = Date(timeIntervalSince1970: TimeInterval(nextUpdateTimeUnix))
         self.rates = try container.decode([String : Double].self, forKey: .rates)
     }
 }

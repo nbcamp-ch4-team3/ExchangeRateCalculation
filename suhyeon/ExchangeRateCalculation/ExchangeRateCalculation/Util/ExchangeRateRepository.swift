@@ -33,7 +33,7 @@ final class ExchangeRateRepository {
             if nextUpdateDate > Date() {
                 os_log("nextUpdateDate가 지나지 않아, 기존 데이터 사용", type: .debug)
                 try fetchCachedExchangeRates()
-            } else { // updateDate가 지난 경우, 새로 데이터 가져오기
+            } else {
                 os_log("nextUpdateDate가 지나, 새로 데이터 가져오기", type: .debug)
                 let result = try await networkService.fetchExchangeRate()
                 let prevData = try coreData.readAllData()
@@ -41,13 +41,14 @@ final class ExchangeRateRepository {
                 cachedExchangeRates = result.rates
                     .compactMap { (currency, rate) in
                         guard let prevRate = prevData.first(where: { $0.currency == currency })?.rate else {
+                            print("\(currency) nil")
                             return nil
                         }
                         return ExchangeRate(currency: currency, rate: rate, fluctuation: Fluctuation(prevRate: prevRate, rate: rate)) // DTO를 Entity로 변환
                     }
                 // CoreData에 update
                 for exchangeRate in cachedExchangeRates {
-                    try coreData.updateData(data: exchangeRate, nextUpdateDate: result.nextUpdateTimeUnix)
+                    try coreData.updateData(data: exchangeRate, nextUpdateDate: result.nextUpdateTime)
                 }
             }
         } else { // 저장된 데이터가 없는 경우 mock 데이터 저장
