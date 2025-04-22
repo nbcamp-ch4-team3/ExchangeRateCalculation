@@ -132,3 +132,50 @@ final class CoreDataStack {
     }
 
 }
+
+// MARK: - Last State feature
+extension CoreDataStack {
+    func saveLastPage(identifier: String, params: [String: Any]?) {
+        deleteAllPages()
+
+        let lastPageEntity = LastPageEntity(context: viewContext)
+        lastPageEntity.identifier = identifier
+        lastPageEntity.timestamp = Date()
+        if let params {
+            lastPageEntity.paramsData = try? NSKeyedArchiver.archivedData(
+                withRootObject: params,
+                requiringSecureCoding: false
+            )
+        }
+
+        try? viewContext.save()
+    }
+
+    func fetchLastPage() -> LastPageEntity? {
+        let fetchRequest: NSFetchRequest<LastPageEntity> = LastPageEntity.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        fetchRequest.fetchLimit = 1
+        return try? viewContext.fetch(fetchRequest).first
+    }
+
+    private func deleteAllPages() {
+        let fetchRequest: NSFetchRequest<LastPageEntity> = LastPageEntity.fetchRequest()
+
+        if let entities = try? viewContext.fetch(fetchRequest) {
+            for entity in entities {
+                viewContext.delete(entity)
+            }
+            try? viewContext.save()
+        }
+    }
+}
+
+extension LastPageEntity {
+    func getParams() -> [String: Any]? {
+        guard let paramsData = self.paramsData else {
+            return nil
+        }
+
+        return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(paramsData) as? [String: Any]
+    }
+}
