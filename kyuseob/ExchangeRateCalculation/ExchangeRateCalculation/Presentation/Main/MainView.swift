@@ -44,13 +44,22 @@ final class MainView: UIView {
     }
 
     func reloadTableView() {
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 
     func showEmptyView(_ show: Bool) {
         emptyView.isHidden = !show
     }
 
+    func searchText() -> String? {
+        return searchBar.text
+    }
+
+    func setSearchText(to searchText: String) {
+        searchBar.text = searchText
+    }
 }
 
 private extension MainView {
