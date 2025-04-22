@@ -1,5 +1,5 @@
 //
-//  DataService.swift
+//  NetworkService.swift
 //  ExchangeRates
 //
 //  Created by 권순욱 on 4/15/25.
@@ -7,18 +7,18 @@
 
 import Foundation
 
-protocol DataServiceProtocol {
-    func fetchData(from url: URL, completion: @escaping (Result<[Currency], Error>) -> Void)
+protocol NetworkServiceProtocol {
+    func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, Error>) -> Void)
 }
 
-final class DataService: DataServiceProtocol {
+final class NetworkService: NetworkServiceProtocol {
     enum DataError: Error {
         case noData
         case responseFailed
         case parsingFailed
     }
     
-    func fetchData(from url: URL, completion: @escaping (Result<[Currency], Error>) -> Void) {
+    func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, Error>) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error {
                 completion(.failure(error))
@@ -40,15 +40,7 @@ final class DataService: DataServiceProtocol {
             
             do {
                 let response = try JSONDecoder().decode(CurrencyResponse.self, from: data)
-                var currencies: [Currency] = []
-                
-                // 파싱한 데이터 딕셔너리(rates)의 키와 밸류를 각각 코드(예: USD)와 환율(예: 1.0000)에 넣고, 국가명을 매핑(예: 미국)
-                for (key, value) in response.rates {
-                    let currency = Currency(code: key, country: countryCodes[key] ?? "", rate: value)
-                    currencies.append(currency)
-                }
-                
-                completion(.success(currencies))
+                completion(.success(response))
             } catch {
                 completion(.failure(DataError.parsingFailed))
             }
