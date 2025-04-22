@@ -42,6 +42,13 @@ final class ExchangeRateCell: UITableViewCell {
         return label
     }()
 
+    private let trendLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14)
+
+        return label
+    }()
+
     private let favoriteButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
@@ -65,6 +72,18 @@ final class ExchangeRateCell: UITableViewCell {
         self.exchangeRateLabel.text = with.formattedRate
         self.countryLabel.text = with.country
         self.currencyCode = with.code
+        self.trendLabel.text = {
+            switch with.trend {
+            case .up:
+                return "🔼"
+            case .down:
+                return "🔽"
+            case .unchanged:
+                return "⏸️"
+            case .new:
+                return "🆕"
+            }
+        }()
     }
 
     func updateFavoriteButtonState(isFavorite: Bool) {
@@ -87,7 +106,7 @@ private extension ExchangeRateCell {
     }
 
     func setHierarchy() {
-        contentView.addSubViews(views: labelStackView, exchangeRateLabel, favoriteButton)
+        contentView.addSubViews(views: labelStackView, exchangeRateLabel, trendLabel, favoriteButton)
         labelStackView.addArrangedSubViews(views: currencyCodeLabel, countryLabel)
     }
 
@@ -103,9 +122,14 @@ private extension ExchangeRateCell {
             make.size.equalTo(32)
         }
 
+        trendLabel.snp.makeConstraints { make in
+            make.trailing.equalTo(favoriteButton.snp.leading).offset(-20)
+            make.centerY.equalToSuperview()
+        }
+
         exchangeRateLabel.snp.makeConstraints { make in
             make.leading.greaterThanOrEqualTo(labelStackView.snp.trailing).offset(16)
-            make.trailing.equalTo(favoriteButton.snp.leading).offset(-16)
+            make.trailing.equalTo(trendLabel.snp.leading).offset(-16)
             make.centerY.equalToSuperview()
             make.width.equalTo(120)
         }
