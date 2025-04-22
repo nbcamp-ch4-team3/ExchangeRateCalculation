@@ -10,4 +10,9 @@
     <entity name="FavoriteCurrency" representedClassName="FavoriteCurrency" syncable="YES" codeGenerationType="class">
         <attribute name="currencyCode" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="LastPageEntity" representedClassName="LastPageEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="paramsData" optional="YES" attributeType="Binary"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
 </model>
