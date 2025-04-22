@@ -9,7 +9,7 @@ import Foundation
 
 final class ExchangeRateViewModel: ViewModelProtocol {
     private let neworkService: NetworkService
-    private let currencyCodeStorage: CurrencyCodeStorage
+    private let currencyCodeStorage: CurrencyCodeStorageService
     
     enum Action {
         case fetch
@@ -32,7 +32,7 @@ final class ExchangeRateViewModel: ViewModelProtocol {
     }
     var onStateChanged: ((State) -> Void)?
     
-    init(networkService: NetworkService, currencyCodeStorage: CurrencyCodeStorage) {
+    init(networkService: NetworkService, currencyCodeStorage: CurrencyCodeStorageService) {
         self.neworkService = networkService
         self.currencyCodeStorage = currencyCodeStorage
         self.state = State()
@@ -57,20 +57,36 @@ final class ExchangeRateViewModel: ViewModelProtocol {
             
             do {
                 let fetchedRates = try await self.neworkService.getExchangeRate(nation: "USD").toModel()
-                let selectedCurrencyCodes = self.currencyCodeStorage.getCodeAll()
+                let savedCodes = try self.currencyCodeStorage.fetchAllData()
                 
-                let updatedRates = fetchedRates.map { rate in
+                if savedCodes.isEmpty {
+                    try fetchedRates.forEach { currency in
+                        try self.currencyCodeStorage.saveData(
+                            currency.currencyCode,
+                            currency.rate,
+                            currency.isBookmark
+                        )
+                    }
+                }
+
+                let updatedRates = /*try */fetchedRates.map { rate in
                     var newRate = rate
-                    if selectedCurrencyCodes.contains(rate.currencyCode) {
-                        newRate.isSelected = true
+                    if let index = savedCodes.firstIndex(where: { $0.code == rate.currencyCode }) {
+                        newRate.isBookmark = savedCodes[index].isBookmark
+                        newRate.isFluctuation = self.checkIsFluctuation(rate.rate, savedCodes[index].exchangeRate)
+//                        try self.currencyCodeStorage.updateExchangeRate(rate.currencyCode, newRate.rate)
                     }
                     return newRate
-                }.sorted { $0.isSelected && !$1.isSelected }
+                }.sorted { $0.isBookmark && !$1.isBookmark }
                 
                 await MainActor.run {
                     self.state.exchangeRates = updatedRates
                 }
             } catch let error as NetworkError {
+                await MainActor.run {
+                    self.state.errorMessage = error.description
+                }
+            } catch let error as CoreDataError {
                 await MainActor.run {
                     self.state.errorMessage = error.description
                 }
@@ -104,14 +120,30 @@ final class ExchangeRateViewModel: ViewModelProtocol {
             return
         }
         
-        state.exchangeRates[index].isSelected = isSelected
+        state.exchangeRates[index].isBookmark = isSelected
         state.exchangeRates.sort { $0.currencyCode < $1.currencyCode }
-        state.exchangeRates.sort { $0.isSelected && !$1.isSelected }
+        state.exchangeRates.sort { $0.isBookmark && !$1.isBookmark }
         
-        if isSelected {
-            currencyCodeStorage.saveCode(code)
+        do {
+            if isSelected {
+                try currencyCodeStorage.updateIsBookmarked(code, isSelected)
+            } else {
+                try currencyCodeStorage.removeData(code)
+            }
+        } catch let error as CoreDataError {
+            state.errorMessage = error.description
+        } catch {
+            state.errorMessage = error.localizedDescription
+        }
+    }
+    
+    private func checkIsFluctuation(_ newRate: Double, _ oldRate: Double) -> fluctuationType {
+        if newRate-oldRate > 0 {
+            return .up
+        } else if newRate-oldRate < 0 {
+            return .down
         } else {
-            currencyCodeStorage.removeCode(code)
+            return .equal
         }
     }
 }
