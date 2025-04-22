@@ -24,7 +24,7 @@ final class MainView: UIView {
     private let emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "검색 결과 없음"
-        label.textColor = .lightGray
+        label.textColor = .secondaryText
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .medium)
         return label
@@ -69,7 +69,7 @@ private extension MainView {
     }
 
     func setLayout() {
-        self.backgroundColor = .white
+        self.backgroundColor = .background
     }
 
     func setHierarchy(){
@@ -84,7 +84,8 @@ private extension MainView {
 
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom)
-            make.directionalHorizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+            make.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
     }
 }

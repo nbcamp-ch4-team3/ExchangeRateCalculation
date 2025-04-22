@@ -26,13 +26,14 @@ final class CalculatorView: UIView {
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.textColor = .text
         return label
     }()
 
     private let countryLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)
-        label.textColor = .gray
+        label.textColor = .secondaryText
         return label
     }()
 
@@ -49,7 +50,7 @@ final class CalculatorView: UIView {
     // 변환 버튼
     private lazy var convertButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .button
         button.setTitle("환율 계산", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -64,6 +65,7 @@ final class CalculatorView: UIView {
         label.text = "계산 결과가 여기에 표시됩니다"
         label.font = .systemFont(ofSize: 20, weight: .medium)
         label.textAlignment = .center
+        label.textColor = .text
         label.numberOfLines = 0
         return label
     }()
@@ -101,7 +103,7 @@ private extension CalculatorView {
     }
 
     func setLayout() {
-        self.backgroundColor = .white
+        self.backgroundColor = .background
     }
 
     func setHierarchy(){
