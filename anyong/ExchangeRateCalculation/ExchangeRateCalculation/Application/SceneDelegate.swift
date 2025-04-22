@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vc = ExchangeRateViewController(
             viewModel: ExchangeRateViewModel(
                 networkService: NetworkService(),
-                currencyCodeStorage: CurrencyCodeStorage()
+                currencyCodeStorage: CurrencyCodeStorageService()
             )
         )
         window?.rootViewController = UINavigationController(rootViewController: vc)
