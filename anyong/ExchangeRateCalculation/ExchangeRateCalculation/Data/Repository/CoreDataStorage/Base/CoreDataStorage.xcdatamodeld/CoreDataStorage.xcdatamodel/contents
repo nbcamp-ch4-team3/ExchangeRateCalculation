@@ -2,5 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23231" systemVersion="24A348" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="CurrencyCode" representedClassName="CurrencyCode" syncable="YES">
         <attribute name="code" optional="YES" attributeType="String"/>
+        <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
+        <attribute name="isBookmark" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
 </model>
