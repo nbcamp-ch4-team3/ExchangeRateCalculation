@@ -7,24 +7,55 @@
 
 import Foundation
 
+enum Fluctuation: String, CaseIterable {
+    case increase
+    case decrease
+    case same
+
+    init(fluctuation: String) {
+        switch fluctuation {
+        case "increase": self = .increase
+        case "decrease": self = .decrease
+        default: self = .same
+        }
+    }
+
+    init(prevRate: Double, rate: Double) {
+        if abs(rate - prevRate) <= 0.01 {
+            self = .same
+        } else if rate - prevRate > 0 {
+            self = .increase
+        } else {
+            self = .decrease
+        }
+    }
+}
+
 struct ExchangeRate {
     let country: String
     let currency: String
     let rate: Double
+    private(set) var fluctuation: Fluctuation
     private(set) var isFavorite: Bool
 
     mutating func setIsFavorite(isFavorite: Bool) {
         self.isFavorite = isFavorite
     }
 
-    init(currency: String, rate: Double) {
-        self.country = currencyToCountryMap[currency] ?? ""
+    init(currency: String, rate: Double, fluctuation: Fluctuation, isFavorite: Bool = false) {
+        self.country = ExchangeRate.currencyToCountryMap[currency] ?? ""
         self.currency = currency
         self.rate = rate
-        self.isFavorite = false
+        self.fluctuation = fluctuation
+        self.isFavorite = isFavorite
     }
+}
 
-    private let currencyToCountryMap = [
+typealias ExchangeRates = [ExchangeRate]
+
+
+extension ExchangeRate {
+    static let currencyToCountryMap = [
         "USD": "미국",
         "AED": "아랍에미리트",
         "AFN": "아프가니스탄",
@@ -189,6 +220,170 @@ struct ExchangeRate {
         "ZMW": "잠비아",
         "ZWL": "짐바브웨"
     ]
-}
 
-typealias ExchangeRates = [ExchangeRate]
+    static let mockExchangeRates: [ExchangeRate] = [
+        ExchangeRate(currency: "USD", rate: 1.0, fluctuation: .increase),
+        ExchangeRate(currency: "AED", rate: 3.6725, fluctuation: .same),
+        ExchangeRate(currency: "AFN", rate: 72.0735, fluctuation: .increase),
+        ExchangeRate(currency: "ALL", rate: 86.8215, fluctuation: .decrease),
+        ExchangeRate(currency: "AMD", rate: 390.9911, fluctuation: .decrease),
+        ExchangeRate(currency: "ANG", rate: 1.7822, fluctuation: .decrease),
+        ExchangeRate(currency: "AOA", rate: 918.3832, fluctuation: .decrease),
+        ExchangeRate(currency: "ARS", rate: 1172.7765, fluctuation: .decrease),
+        ExchangeRate(currency: "AUD", rate: 1.6245, fluctuation: .increase),
+        ExchangeRate(currency: "AWG", rate: 1.8521, fluctuation: .increase),
+        ExchangeRate(currency: "AZN", rate: 1.7089, fluctuation: .increase),
+        ExchangeRate(currency: "BAM", rate: 1.7562, fluctuation: .increase),
+        ExchangeRate(currency: "BBD", rate: 2.0913, fluctuation: .increase),
+        ExchangeRate(currency: "BDT", rate: 121.5483, fluctuation: .same),
+        ExchangeRate(currency: "BGN", rate: 1.7569, fluctuation: .increase),
+        ExchangeRate(currency: "BHD", rate: 0.3817, fluctuation: .increase),
+        ExchangeRate(currency: "BIF", rate: 2970.5862, fluctuation: .decrease),
+        ExchangeRate(currency: "BMD", rate: 1.0872, fluctuation: .increase),
+        ExchangeRate(currency: "BND", rate: 1.3147, fluctuation: .increase),
+        ExchangeRate(currency: "BOB", rate: 6.9221, fluctuation: .decrease),
+        ExchangeRate(currency: "BRL", rate: 5.8937, fluctuation: .increase),
+        ExchangeRate(currency: "BSD", rate: 0.9921, fluctuation: .decrease),
+        ExchangeRate(currency: "BTN", rate: 85.4723, fluctuation: .decrease),
+        ExchangeRate(currency: "BWP", rate: 13.7994, fluctuation: .increase),
+        ExchangeRate(currency: "BYN", rate: 3.0908, fluctuation: .decrease),
+        ExchangeRate(currency: "BZD", rate: 2.0783, fluctuation: .increase),
+        ExchangeRate(currency: "CAD", rate: 1.4589, fluctuation: .increase),
+        ExchangeRate(currency: "CDF", rate: 2916.9372, fluctuation: .increase),
+        ExchangeRate(currency: "CHF", rate: 0.8213, fluctuation: .increase),
+        ExchangeRate(currency: "CLP", rate: 967.3012, fluctuation: .decrease),
+        ExchangeRate(currency: "CNY", rate: 7.3627, fluctuation: .increase),
+        ExchangeRate(currency: "COP", rate: 4316.0582, fluctuation: .decrease),
+        ExchangeRate(currency: "CRC", rate: 502.1237, fluctuation: .decrease),
+        ExchangeRate(currency: "CUP", rate: 24.0572, fluctuation: .increase),
+        ExchangeRate(currency: "CVE", rate: 96.4872, fluctuation: .decrease),
+        ExchangeRate(currency: "CZK", rate: 22.0124, fluctuation: .increase),
+        ExchangeRate(currency: "DJF", rate: 177.6812, fluctuation: .decrease),
+        ExchangeRate(currency: "DKK", rate: 6.6085, fluctuation: .increase),
+        ExchangeRate(currency: "DOP", rate: 60.1249, fluctuation: .increase),
+        ExchangeRate(currency: "DZD", rate: 132.3812, fluctuation: .decrease),
+        ExchangeRate(currency: "EGP", rate: 51.0723, fluctuation: .decrease),
+        ExchangeRate(currency: "ERN", rate: 15.0823, fluctuation: .increase),
+        ExchangeRate(currency: "ETB", rate: 133.3896, fluctuation: .increase),
+        ExchangeRate(currency: "EUR", rate: 0.8843, fluctuation: .increase),
+        ExchangeRate(currency: "FJD", rate: 2.2947, fluctuation: .increase),
+        ExchangeRate(currency: "FKP", rate: 0.7568, fluctuation: .increase),
+        ExchangeRate(currency: "FOK", rate: 6.5371, fluctuation: .decrease),
+        ExchangeRate(currency: "GBP", rate: 0.7521, fluctuation: .decrease),
+        ExchangeRate(currency: "GEL", rate: 2.7564, fluctuation: .increase),
+        ExchangeRate(currency: "GGP", rate: 0.7491, fluctuation: .decrease),
+        ExchangeRate(currency: "GHS", rate: 15.4982, fluctuation: .increase),
+        ExchangeRate(currency: "GIP", rate: 0.7594, fluctuation: .increase),
+        ExchangeRate(currency: "GMD", rate: 72.7721, fluctuation: .increase),
+        ExchangeRate(currency: "GNF", rate: 8739.1246, fluctuation: .decrease),
+        ExchangeRate(currency: "GTQ", rate: 7.7068, fluctuation: .decrease),
+        ExchangeRate(currency: "GYD", rate: 209.9092, fluctuation: .increase),
+        ExchangeRate(currency: "HKD", rate: 7.7712, fluctuation: .increase),
+        ExchangeRate(currency: "HNL", rate: 25.8921, fluctuation: .decrease),
+        ExchangeRate(currency: "HRK", rate: 6.6021, fluctuation: .increase),
+        ExchangeRate(currency: "HTG", rate: 130.8245, fluctuation: .increase),
+        ExchangeRate(currency: "HUF", rate: 357.0912, fluctuation: .decrease),
+        ExchangeRate(currency: "IDR", rate: 16856.5721, fluctuation: .increase),
+        ExchangeRate(currency: "ILS", rate: 3.6737, fluctuation: .decrease),
+        ExchangeRate(currency: "IMP", rate: 0.7498, fluctuation: .decrease),
+        ExchangeRate(currency: "INR", rate: 85.6081, fluctuation: .increase),
+        ExchangeRate(currency: "IQD", rate: 1310.2945, fluctuation: .decrease),
+        ExchangeRate(currency: "IRR", rate: 42011.4912, fluctuation: .decrease),
+        ExchangeRate(currency: "ISK", rate: 127.7216, fluctuation: .increase),
+        ExchangeRate(currency: "JEP", rate: 0.7492, fluctuation: .decrease),
+        ExchangeRate(currency: "JMD", rate: 157.8921, fluctuation: .decrease),
+        ExchangeRate(currency: "JOD", rate: 0.7179, fluctuation: .increase),
+        ExchangeRate(currency: "JPY", rate: 141.8243, fluctuation: .increase),
+        ExchangeRate(currency: "KES", rate: 129.7212, fluctuation: .increase),
+        ExchangeRate(currency: "KGS", rate: 87.2152, fluctuation: .decrease),
+        ExchangeRate(currency: "KHR", rate: 3983.9271, fluctuation: .increase),
+        ExchangeRate(currency: "KID", rate: 1.5731, fluctuation: .increase),
+        ExchangeRate(currency: "KMF", rate: 430.5921, fluctuation: .decrease),
+        ExchangeRate(currency: "KRW", rate: 1422.1742, fluctuation: .increase),
+        ExchangeRate(currency: "KWD", rate: 0.3102, fluctuation: .increase),
+        ExchangeRate(currency: "KYD", rate: 0.8392, fluctuation: .increase),
+        ExchangeRate(currency: "KZT", rate: 522.6721, fluctuation: .increase),
+        ExchangeRate(currency: "LAK", rate: 21758.3921, fluctuation: .decrease),
+        ExchangeRate(currency: "LBP", rate: 89499.7831, fluctuation: .decrease),
+        ExchangeRate(currency: "LKR", rate: 298.5723, fluctuation: .decrease),
+        ExchangeRate(currency: "LRD", rate: 200.0782, fluctuation: .increase),
+        ExchangeRate(currency: "LSL", rate: 18.7982, fluctuation: .decrease),
+        ExchangeRate(currency: "LYD", rate: 5.4832, fluctuation: .increase),
+        ExchangeRate(currency: "MAD", rate: 9.2751, fluctuation: .decrease),
+        ExchangeRate(currency: "MDL", rate: 17.2912, fluctuation: .decrease),
+        ExchangeRate(currency: "MGA", rate: 4573.4721, fluctuation: .decrease),
+        ExchangeRate(currency: "MKD", rate: 54.1892, fluctuation: .increase),
+        ExchangeRate(currency: "MMK", rate: 2099.9214, fluctuation: .increase),
+        ExchangeRate(currency: "MNT", rate: 3560.7213, fluctuation: .increase),
+        ExchangeRate(currency: "MOP", rate: 7.9982, fluctuation: .increase),
+        ExchangeRate(currency: "MRU", rate: 39.6982, fluctuation: .increase),
+        ExchangeRate(currency: "MUR", rate: 45.0823, fluctuation: .increase),
+        ExchangeRate(currency: "MVR", rate: 15.4682, fluctuation: .increase),
+        ExchangeRate(currency: "MWK", rate: 1735.1245, fluctuation: .increase),
+        ExchangeRate(currency: "MXN", rate: 19.7921, fluctuation: .increase),
+        ExchangeRate(currency: "MYR", rate: 4.4237, fluctuation: .increase),
+        ExchangeRate(currency: "MZN", rate: 63.7245, fluctuation: .increase),
+        ExchangeRate(currency: "NAD", rate: 18.8912, fluctuation: .increase),
+        ExchangeRate(currency: "NGN", rate: 1604.7215, fluctuation: .increase),
+        ExchangeRate(currency: "NIO", rate: 36.8245, fluctuation: .increase),
+        ExchangeRate(currency: "NOK", rate: 10.4672, fluctuation: .increase),
+        ExchangeRate(currency: "NPR", rate: 136.7924, fluctuation: .decrease),
+        ExchangeRate(currency: "NZD", rate: 1.6921, fluctuation: .increase),
+        ExchangeRate(currency: "OMR", rate: 0.3892, fluctuation: .increase),
+        ExchangeRate(currency: "PAB", rate: 1.0214, fluctuation: .increase),
+        ExchangeRate(currency: "PEN", rate: 3.7521, fluctuation: .increase),
+        ExchangeRate(currency: "PGK", rate: 4.1421, fluctuation: .increase),
+        ExchangeRate(currency: "PHP", rate: 56.7852, fluctuation: .increase),
+        ExchangeRate(currency: "PKR", rate: 280.2981, fluctuation: .decrease),
+        ExchangeRate(currency: "PLN", rate: 3.7592, fluctuation: .increase),
+        ExchangeRate(currency: "PYG", rate: 8032.1783, fluctuation: .decrease),
+        ExchangeRate(currency: "QAR", rate: 3.6492, fluctuation: .increase),
+        ExchangeRate(currency: "RON", rate: 4.3872, fluctuation: .increase),
+        ExchangeRate(currency: "RSD", rate: 103.0982, fluctuation: .decrease),
+        ExchangeRate(currency: "RUB", rate: 82.0673, fluctuation: .increase),
+        ExchangeRate(currency: "RWF", rate: 1448.0782, fluctuation: .decrease),
+        ExchangeRate(currency: "SAR", rate: 3.7621, fluctuation: .increase),
+        ExchangeRate(currency: "SBD", rate: 8.5482, fluctuation: .decrease),
+        ExchangeRate(currency: "SCR", rate: 14.2982, fluctuation: .increase),
+        ExchangeRate(currency: "SDG", rate: 458.6721, fluctuation: .increase),
+        ExchangeRate(currency: "SEK", rate: 9.5983, fluctuation: .increase),
+        ExchangeRate(currency: "SGD", rate: 1.3121, fluctuation: .increase),
+        ExchangeRate(currency: "SHP", rate: 0.7583, fluctuation: .increase),
+        ExchangeRate(currency: "SLE", rate: 22.7921, fluctuation: .increase),
+        ExchangeRate(currency: "SLL", rate: 22781.9273, fluctuation: .increase),
+        ExchangeRate(currency: "SOS", rate: 572.0872, fluctuation: .increase),
+        ExchangeRate(currency: "SRD", rate: 36.8983, fluctuation: .increase),
+        ExchangeRate(currency: "SSP", rate: 4528.3921, fluctuation: .increase),
+        ExchangeRate(currency: "STN", rate: 21.4572, fluctuation: .increase),
+        ExchangeRate(currency: "SYP", rate: 12887.9153, fluctuation: .increase),
+        ExchangeRate(currency: "SZL", rate: 18.8392, fluctuation: .increase),
+        ExchangeRate(currency: "THB", rate: 33.3721, fluctuation: .increase),
+        ExchangeRate(currency: "TJS", rate: 10.8752, fluctuation: .increase),
+        ExchangeRate(currency: "TMT", rate: 3.5092, fluctuation: .increase),
+        ExchangeRate(currency: "TND", rate: 2.9921, fluctuation: .increase),
+        ExchangeRate(currency: "TOP", rate: 2.3921, fluctuation: .increase),
+        ExchangeRate(currency: "TRY", rate: 38.1891, fluctuation: .increase),
+        ExchangeRate(currency: "TTD", rate: 6.7921, fluctuation: .increase),
+        ExchangeRate(currency: "TVD", rate: 1.5721, fluctuation: .increase),
+        ExchangeRate(currency: "TWD", rate: 32.5092, fluctuation: .increase),
+        ExchangeRate(currency: "TZS", rate: 2689.0721, fluctuation: .increase),
+        ExchangeRate(currency: "UAH", rate: 41.4125, fluctuation: .increase),
+        ExchangeRate(currency: "UGX", rate: 3653.6217, fluctuation: .increase),
+        ExchangeRate(currency: "UYU", rate: 42.2819, fluctuation: .increase),
+        ExchangeRate(currency: "UZS", rate: 12975.0253, fluctuation: .increase),
+        ExchangeRate(currency: "VES", rate: 81.0217, fluctuation: .increase),
+        ExchangeRate(currency: "VND", rate: 25935.6735, fluctuation: .increase),
+        ExchangeRate(currency: "VUV", rate: 120.3952, fluctuation: .increase),
+        ExchangeRate(currency: "WST", rate: 2.7821, fluctuation: .increase),
+        ExchangeRate(currency: "XAF", rate: 574.2871, fluctuation: .increase),
+        ExchangeRate(currency: "XCD", rate: 2.7082, fluctuation: .increase),
+        ExchangeRate(currency: "XCG", rate: 1.7982, fluctuation: .increase),
+        ExchangeRate(currency: "XDR", rate: 0.7421, fluctuation: .increase),
+        ExchangeRate(currency: "XOF", rate: 574.2531, fluctuation: .increase),
+        ExchangeRate(currency: "XPF", rate: 104.5217, fluctuation: .increase),
+        ExchangeRate(currency: "YER", rate: 245.2437, fluctuation: .increase),
+        ExchangeRate(currency: "ZAR", rate: 18.8273, fluctuation: .increase),
+        ExchangeRate(currency: "ZMW", rate: 28.6125, fluctuation: .increase),
+        ExchangeRate(currency: "ZWL", rate: 26.8235, fluctuation: .increase)
+    ]
+}

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CDExchangeRate" representedClassName="CDExchangeRate" syncable="YES">
+        <attribute name="currency" attributeType="String"/>
+        <attribute name="fluctuation" optional="YES" attributeType="String"/>
+        <attribute name="isFavorite" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="nextUpdateDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="rate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+    </entity>
     <entity name="Currency" representedClassName="Currency" syncable="YES">
         <attribute name="currency" attributeType="String"/>
     </entity>
