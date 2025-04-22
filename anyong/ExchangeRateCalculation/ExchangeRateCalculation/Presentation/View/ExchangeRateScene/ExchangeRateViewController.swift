@@ -109,7 +109,8 @@ extension ExchangeRateViewController: UITableViewDataSource {
             currencyCode: exchangeRate.currencyCode,
             nation: exchangeRate.nation,
             rate: exchangeRate.rate,
-            isSelected: exchangeRate.isSelected
+            isSelected: exchangeRate.isBookmark,
+            isFluctuation: exchangeRate.isFluctuation
         )
         cell.delegate = self
         
