@@ -109,13 +109,13 @@ extension ExchangeRateCell {
         nation: String,
         rate: Double,
         isSelected: Bool,
-        isFluctuation: fluctuationType
+        fluctuationType: fluctuationType
     ) {
         currencyCodeLabel.text = currencyCode
         nationLabel.text = nation
         rateLabel.text = String(format: "%.4f", rate)
         starButton.isSelected = isSelected
-        switch isFluctuation {
+        switch fluctuationType {
         case .up:
             fluctuationLabel.text = "🔼"
         case .down:
