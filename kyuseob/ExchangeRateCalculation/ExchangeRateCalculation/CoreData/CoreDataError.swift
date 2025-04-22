@@ -8,6 +8,7 @@ enum CoreDataError: LocalizedError {
 
     case fetchCurrenciesFailed(error: Error?)
     case saveCurrencyFailed(error: Error?)
+    case addCurrencyFailed(error: Error?)
 
     var errorDescription: String? {
         switch self {
@@ -23,6 +24,8 @@ enum CoreDataError: LocalizedError {
             return "환율 데이터를 불러오는 데에 실패했습니다."
         case .saveCurrencyFailed:
             return "환율 데이터를 저장하는 데에 실패했습니다."
+        case .addCurrencyFailed:
+            return "환율 데이터를 추가하는 데에 실패했습니다."
         }
     }
 
@@ -40,6 +43,8 @@ enum CoreDataError: LocalizedError {
             return "CoreData 환율 데이터 가져오기 실패: \(error?.localizedDescription ?? "알 수 없는 오류")"
         case .saveCurrencyFailed(let error):
             return "CoreData 환율 데이터 저장 실패: \(error?.localizedDescription ?? "알 수 없는 오류")"
+        case .addCurrencyFailed(let error):
+            return "CoreData 환율 데이터 추가 실패: \(error?.localizedDescription ?? "알 수 없는 오류")"
         }
     }
 }
