@@ -84,9 +84,15 @@ class ViewController: UIViewController {
 
 // MARK: - View Model Delegate
 extension ViewController: ViewModelDelegate {
-    func viewModelDidLoadData() {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
+    func viewModelDidLoadData(currency: Currency?) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+            
+            if let currency {
+                let viewModel = DetailViewModel(currency: currency)
+                let viewController = DetailViewController(viewModel: viewModel)
+                self?.navigationController?.pushViewController(viewController, animated: true)
+            }
         }
     }
     
