@@ -29,7 +29,7 @@ final class CalculatorView: UIView {
     private let countryLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)
-        label.textColor = .gray
+        label.textColor = .systemGray
         label.text = "임시국가명"
 
         return label
