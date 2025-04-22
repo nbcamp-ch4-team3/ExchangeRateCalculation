@@ -73,6 +73,7 @@ final class MainViewModel: MainViewModelProtocol {
 
     func resetFilteredItems() {
         filteredItems = currencyItems
+        sortItemsWithFavoritesOnTop()
     }
 
 }
