@@ -27,42 +27,16 @@ final class ViewModel {
     }
     
     func loadCurrencies() {
-        fetchCurrencies() // core data 로드
+        fetchCurrencies() // 환율 정보 core data 로드
         
+        // 환율 정보 API 수신
         let url = URL(string: "https://open.er-api.com/v6/latest/USD")!
         networkService.fetchData(from: url) { [weak self] result in
             guard let self else { return }
             
             switch result {
             case .success(let response):
-                let responseDate = Date(timeIntervalSince1970: TimeInterval(response.timestamp))
-                
-                for (key, value) in response.rates {
-                    if let index = currencies.firstIndex(where: { $0.code == key }) {
-                        
-                        // core data에 저장되어 있던 업데이트 일시 확인
-                        let currencyDate: Date? = currencies[index].timestamp == 0.0 ? nil : Date(timeIntervalSince1970: TimeInterval(currencies[index].timestamp))
-                        
-                        // 기존 데이터 자료 업데이트
-                        if let currencyDate, currencyDate < responseDate {
-                            currencies[index].previousRate = currencies[index].rate
-                            currencies[index].rate = value
-                            currencies[index].timestamp = response.timestamp
-                        }
-                    } else {
-                        // core data 저장 데이터가 없으면 새로 생성
-                        let currency = Currency(context: dataManager.context)
-                        currency.code = key
-                        currency.country = countryCodes[key] ?? ""
-                        currency.rate = value
-                        currency.isFavorite = false
-                        currency.timestamp = 0.0
-                        currency.previousRate = 0.0
-                        currencies.append(currency)
-                    }
-                }
-                
-                dataManager.saveContext()
+                updateCurrencies(to: response) // 환율 정보 업데이트
                 
                 filteredCurrencies = currencies
                 sortCurrencies()
@@ -73,6 +47,46 @@ final class ViewModel {
                 delegate?.viewModel(didFailWithError: error)
             }
         }
+    }
+    
+    private func fetchCurrencies() {
+        do {
+            currencies = try dataManager.context.fetch(Currency.fetchRequest())
+        } catch {
+            print("fetch error: \(error)")
+        }
+    }
+    
+    private func updateCurrencies(to response: CurrencyResponse) {
+        let responseDate = Date(timeIntervalSince1970: TimeInterval(response.timestamp))
+        
+        for (key, value) in response.rates {
+            if let index = currencies.firstIndex(where: { $0.code == key }) {
+                
+                // 기존 업데이트 일시 확인
+                let currencyDate = Date(timeIntervalSince1970: TimeInterval(currencies[index].timestamp))
+                
+                // (업데이트가 필요하면) 기존 데이터 업데이트
+                if currencyDate < responseDate {
+                    currencies[index].previousRate = currencies[index].rate
+                    currencies[index].rate = value
+                    currencies[index].timestamp = response.timestamp
+                }
+                
+            } else {
+                // 기존 데이터 없으면 새로 생성
+                let currency = Currency(context: dataManager.context)
+                currency.code = key
+                currency.country = countryCodes[key] ?? ""
+                currency.rate = value
+                currency.isFavorite = false
+                currency.timestamp = response.timestamp
+                currency.previousRate = 0.0
+                currencies.append(currency)
+            }
+        }
+        
+        dataManager.saveContext()
     }
     
     func filterCurrencies(searchText: String) {
@@ -120,13 +134,5 @@ final class ViewModel {
         
         filteredCurrencies = currencies
         sortCurrencies()
-    }
-    
-    private func fetchCurrencies() {
-        do {
-            currencies = try dataManager.context.fetch(Currency.fetchRequest())
-        } catch {
-            print("fetch error: \(error)")
-        }
     }
 }
