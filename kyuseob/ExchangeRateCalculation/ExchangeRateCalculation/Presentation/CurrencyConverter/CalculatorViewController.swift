@@ -1,6 +1,6 @@
 import UIKit
 
-class CalculatorViewController: UIViewController {
+final class CalculatorViewController: UIViewController {
     private let calculatorView = CalculatorView()
     private let viewModel: CalculatorViewModelProtocol
 

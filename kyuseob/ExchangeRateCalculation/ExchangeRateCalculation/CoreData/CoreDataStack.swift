@@ -1,6 +1,6 @@
 import CoreData
 
-class CoreDataStack {
+final class CoreDataStack {
     static let shared = CoreDataStack()
 
     private init() {}
@@ -21,13 +21,12 @@ class CoreDataStack {
 
     // MARK: - Core Data CRUD Method
 
-    func saveContext () {
+    func saveContext() {
         if viewContext.hasChanges {
             do {
                 try viewContext.save()
             } catch {
-                let nserror = error as NSError
-                fatalError("저장 실패: \(nserror), \(nserror.userInfo)")
+                print("CoreData 저장 실패: \(error.localizedDescription)")
             }
         }
     }
@@ -64,6 +63,68 @@ class CoreDataStack {
             for match in matches {
                 viewContext.delete(match)
             }
+            try viewContext.save()
+        } catch {
+            throw CoreDataError.deleteFavoriteFailed(error: error)
+        }
+    }
+
+    func fetchAllCurrencies() throws -> [CurrencyEntity] {
+        let request = CurrencyEntity.fetchRequest()
+
+        do {
+            let currencies = try viewContext.fetch(request)
+            return currencies
+        } catch {
+            throw CoreDataError.fetchCurrenciesFailed(error: error)
+        }
+    }
+
+    func addCurrency(code: String, country: String, rate: Double, trend: String, updatedDate: Date) {
+        // background context 생성
+        let context = persistentContainer.newBackgroundContext()
+
+        context.perform {
+            // nil 체크
+            guard !code.isEmpty, !country.isEmpty, !trend.isEmpty else {
+                print("Core Data Error: 필수 값이 비어 있습니다")
+                return
+            }
+
+            let fetchRequest: NSFetchRequest<CurrencyEntity> = CurrencyEntity.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "code == %@", code)
+
+            do {
+                let matches = try context.fetch(fetchRequest)
+                if let existingCurrency = matches.first {
+                    existingCurrency.code = code
+                    existingCurrency.country = country
+                    existingCurrency.rate = rate
+                    existingCurrency.trend = trend
+                    existingCurrency.updatedDate = updatedDate
+                } else {
+                    let newCurrency = CurrencyEntity(context: context)
+                    newCurrency.code = code
+                    newCurrency.country = country
+                    newCurrency.rate = rate
+                    newCurrency.trend = trend
+                    newCurrency.updatedDate = updatedDate
+                }
+
+                try context.save()
+            } catch {
+                print("CoreData addCurrency 실패: \(error.localizedDescription)")
+            }
+        }
+    }
+
+
+    func deleteAllCurrencies() throws {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CurrencyEntity.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        do {
+            try persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: viewContext)
             try viewContext.save()
         } catch {
             throw CoreDataError.deleteFavoriteFailed(error: error)

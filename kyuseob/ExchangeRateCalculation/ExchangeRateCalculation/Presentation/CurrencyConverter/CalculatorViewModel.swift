@@ -7,7 +7,7 @@ protocol CalculatorViewModelProtocol {
     func convert(from: Double) -> Double
 }
 
-class CalculatorViewModel: CalculatorViewModelProtocol {
+final class CalculatorViewModel: CalculatorViewModelProtocol {
     private(set) var currencyInfo: CurrencyInfo? = nil
 
     func setCurrencyInfo(to: CurrencyInfo) {

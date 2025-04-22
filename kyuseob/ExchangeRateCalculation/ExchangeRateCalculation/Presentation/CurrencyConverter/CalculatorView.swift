@@ -6,7 +6,7 @@ protocol CalculatorViewDelegate: AnyObject {
     func showError(message: String)
 }
 
-class CalculatorView: UIView {
+final class CalculatorView: UIView {
     weak var delegate: CalculatorViewDelegate?
 
     private let labelStackView: UIStackView = {

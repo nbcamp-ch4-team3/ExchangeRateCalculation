@@ -4,7 +4,7 @@ protocol DataServiceProtocol {
     func fetchExchangeRateData() async throws -> ExchangeRateResponse
 }
 
-class DataService: DataServiceProtocol {
+final class DataService: DataServiceProtocol {
     func fetchExchangeRateData() async throws -> ExchangeRateResponse {
         let urlString = "https://open.er-api.com/v6/latest/USD"
 

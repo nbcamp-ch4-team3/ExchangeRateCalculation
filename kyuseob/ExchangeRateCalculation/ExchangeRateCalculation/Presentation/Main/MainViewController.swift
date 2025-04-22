@@ -1,6 +1,6 @@
 import UIKit
 
-class MainViewController: UIViewController {
+final class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel: MainViewModelProtocol
 
@@ -21,8 +21,13 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
 
         configure()
-        Task {
-            await fetchData()
+        loadData()
+    }
+
+    private func loadData() {
+        Task { [weak self] in
+            guard let self else { return }
+            await self.fetchData()
         }
     }
 
