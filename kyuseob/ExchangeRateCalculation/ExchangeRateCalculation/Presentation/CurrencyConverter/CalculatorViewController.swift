@@ -1,6 +1,8 @@
 import UIKit
 
-final class CalculatorViewController: UIViewController {
+final class CalculatorViewController: UIViewController, StateManageable {
+    var identifier: String = "CalculatorVC"
+
     private let calculatorView = CalculatorView()
     private let viewModel: CalculatorViewModelProtocol
 
@@ -28,6 +30,40 @@ final class CalculatorViewController: UIViewController {
         calculatorView.configure(with: with)
     }
 
+    func getStateParams() -> [String : Any]? {
+        var params: [String: Any] = [:]
+
+        if let currencyInfo = viewModel.currencyInfo {
+            params["currencyCode"] = currencyInfo.code
+            params["currencyCountry"] = currencyInfo.country
+            params["currencyRate"] = currencyInfo.rate
+            params["currencyTrend"] = currencyInfo.trendString
+            params["currencyUpdatedDate"] = currencyInfo.updatedDate
+        }
+
+        return params
+    }
+
+    func restoreState(with params: [String : Any]?) {
+        guard let params else { return }
+
+        if let code = params["currencyCode"] as? String,
+           let country = params["currencyCountry"] as? String,
+           let rate = params["currencyRate"] as? Double,
+           let trend = params["currencyTrend"] as? String,
+           let updatedDate = params["currencyUpdatedDate"] as? Date {
+            let currencyInfo = CurrencyInfo(
+                code: code,
+                country: country,
+                rate: rate,
+                trendString: trend,
+                updatedDate: updatedDate
+            )
+
+            viewModel.setCurrencyInfo(to: currencyInfo)
+            calculatorView.configure(with: currencyInfo)
+        }
+    }
 }
 
 extension CalculatorViewController: CalculatorViewDelegate {

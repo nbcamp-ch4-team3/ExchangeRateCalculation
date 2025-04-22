@@ -1,8 +1,11 @@
 import UIKit
 
-final class MainViewController: UIViewController {
+final class MainViewController: UIViewController, StateManageable {
+    var identifier: String = "MainVC"
+
     private let mainView = MainView()
     private let viewModel: MainViewModelProtocol
+    private var pendingRestoreSearchText: String? = nil
 
     override func loadView() {
         view = mainView
@@ -36,6 +39,9 @@ final class MainViewController: UIViewController {
             try viewModel.fetchFavoriteCurrencies()
             try await viewModel.fetchData()
             await MainActor.run {
+                if let searchText = pendingRestoreSearchText {
+                    applyRestoredState(with: searchText)
+                }
                 mainView.reloadTableView()
             }
         } catch  {
@@ -48,6 +54,31 @@ final class MainViewController: UIViewController {
     private func navigationControllerSetting() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.topItem?.title = "환율 정보"
+    }
+
+    func getStateParams() -> [String : Any]? {
+        if let searchText = mainView.searchText() {
+            return ["searchText" : searchText]
+        } else {
+            return nil
+        }
+    }
+
+    func setPendingRestoreParams(_ searchText: String?) {
+        pendingRestoreSearchText = searchText
+    }
+
+    func restoreState(with params: [String : Any]?) {
+        guard let params else { return }
+        if let searchText = params["searchText"] as? String {
+            setPendingRestoreParams(searchText)
+        }
+    }
+
+    private func applyRestoredState(with searchText: String) {
+        mainView.setSearchText(to: searchText)
+        viewModel.filterCurrencyItems(by: searchText)
+        self.mainView.reloadTableView()
     }
 }
 
