@@ -11,5 +11,12 @@ struct ExchangeRate {
     let currencyCode: String
     let rate: Double
     let nation: String
-    var isSelected: Bool = false
+    var isBookmark: Bool = false
+    var isFluctuation: fluctuationType = .equal
+}
+
+enum fluctuationType {
+    case up
+    case down
+    case equal
 }
