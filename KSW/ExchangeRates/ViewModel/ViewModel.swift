@@ -17,6 +17,7 @@ final class ViewModel {
     weak var delegate: ViewModelDelegate?
     
     private let networkService: NetworkServiceProtocol
+    private let mokDataProvider: NetworkServiceProtocol
     private let dataManager = DataManager.shared
     
     private var currencies: [Currency] = []
@@ -24,6 +25,21 @@ final class ViewModel {
     
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
+        
+        // 목 데이터 구성(4월 22일 기준 환율 제공)
+        self.mokDataProvider = MokDataProvider()
+        mokDataProvider.fetchData(from: URL(string: "https://open.er-api.com/v6/latest/USD")!) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+                case .success(let response):
+                fetchCurrencies()
+                updateCurrencies(to: response)
+                
+            case .failure(let error):
+                print("Mok API error: \(error)")
+            }
+        }
     }
     
     func loadCurrencies() {

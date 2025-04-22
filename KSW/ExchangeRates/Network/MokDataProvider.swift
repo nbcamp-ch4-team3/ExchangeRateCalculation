@@ -1,5 +1,5 @@
 //
-//  MokNetworkService.swift
+//  MokDataProvider.swift
 //  ExchangeRates
 //
 //  Created by 권순욱 on 4/22/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MokNetworkService: NetworkServiceProtocol {
+class MokDataProvider: NetworkServiceProtocol {
     func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, any Error>) -> Void) {
         let response: CurrencyResponse = load("response.json")
         completion(.success(response))

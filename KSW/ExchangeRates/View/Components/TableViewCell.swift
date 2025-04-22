@@ -42,6 +42,13 @@ class TableViewCell: UITableViewCell {
         return label
     }()
     
+    // 환율 등락 표시(예: 🔼)
+    private let rateIconLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        return label
+    }()
+    
     // 즐겨찾기 버튼
     let favoriteButton = FavoriteButton()
     
@@ -58,7 +65,7 @@ class TableViewCell: UITableViewCell {
             labelStackView.addArrangedSubview($0)
         }
         
-        [labelStackView, rateLabel, favoriteButton].forEach {
+        [labelStackView, rateLabel, rateIconLabel, favoriteButton].forEach {
             contentView.addSubview($0)
         }
         
@@ -73,9 +80,15 @@ class TableViewCell: UITableViewCell {
             $0.width.equalTo(120)
         }
         
+        rateIconLabel.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalTo(rateLabel.snp.trailing).offset(4)
+            $0.width.equalTo(24)
+        }
+        
         favoriteButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
-            $0.leading.equalTo(rateLabel.snp.trailing).offset(16)
+            $0.leading.equalTo(rateIconLabel.snp.trailing).offset(16)
             $0.trailing.equalToSuperview().offset(-16)
         }
     }
@@ -87,7 +100,9 @@ class TableViewCell: UITableViewCell {
     func configureUI(currency: Currency) {
         currencyLabel.text = currency.code
         countryLabel.text = currency.country
-        rateLabel.text = "\(String(format: "%.4f", currency.rate)) \(currency.rateIcon)" // 소수점 4자리까지 표시
+        
+        rateLabel.text = String(format: "%.4f", currency.rate) // 소수점 4자리까지 표시
+        rateIconLabel.text = currency.rateIcon
         
         favoriteButton.currency = currency
         favoriteButton.setButtonImage()

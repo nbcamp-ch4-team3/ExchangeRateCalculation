@@ -23,8 +23,9 @@ extension Currency {
 }
 
 extension Currency {
+    // 환율 등락 표시
     var rateIcon: String {
-        guard previousRate != 0 else { return "  " }
+        guard previousRate != 0.0 else { return "" } // 목 데이터 없는 경우, 최초 실행 시 기존 환율정보 0.0임.
         
         let difference = abs(rate - previousRate)
         
@@ -33,7 +34,7 @@ extension Currency {
         } else if difference > 0.01, rate < previousRate {
             return "🔼"
         } else {
-            return "  "
+            return ""
         }
     }
 }
