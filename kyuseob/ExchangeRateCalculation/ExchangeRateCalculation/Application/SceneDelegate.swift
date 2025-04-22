@@ -17,10 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
         window?.backgroundColor = .systemBackground
-        let mockDateService = MockDataService() // 일부 통화가 저장되어 있는 목데이터
-        let dataService = DataService()
+        let viewModel = MainViewModel(service: DataService())
+//        let viewModel = MainViewModel(service: MockDataService()) // 일부 통화가 저장되어 있는 목데이터
         let mainNavigationController = UINavigationController(
-            rootViewController: MainViewController(viewModel: MainViewModel(service: mockDateService))
+            rootViewController: MainViewController(viewModel: viewModel)
         )
         window?.rootViewController = mainNavigationController
         window?.makeKeyAndVisible()
