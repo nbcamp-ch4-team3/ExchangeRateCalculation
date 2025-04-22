@@ -22,7 +22,7 @@ class TableViewCell: UITableViewCell {
     private let countryLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.textColor = .gray
+        label.textColor = .secondaryText
         return label
     }()
     

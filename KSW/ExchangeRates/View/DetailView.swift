@@ -20,7 +20,7 @@ class DetailView: UIView {
     let countryLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)
-        label.textColor = .gray
+        label.textColor = .secondaryText
         return label
     }()
     
@@ -48,7 +48,7 @@ class DetailView: UIView {
         button.setTitle("환율 계산", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
+        button.backgroundColor = .button
         button.layer.cornerRadius = 8
         return button
     }()
@@ -74,7 +74,7 @@ class DetailView: UIView {
     }
     
     private func configureUI() {
-        backgroundColor = .white
+        backgroundColor = .background
         
         [currencyLabel, countryLabel].forEach {
             labelStackView.addArrangedSubview($0)

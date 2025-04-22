@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         
         navigationItem.title = "환율 정보"
         navigationController?.navigationBar.prefersLargeTitles = true

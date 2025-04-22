@@ -13,7 +13,7 @@ class NoResultsLabel: UILabel {
         super.init(frame: frame)
         
         text = "검색 결과 없음"
-        textColor = .gray
+        textColor = .secondaryText
         textAlignment = .center
     }
     
