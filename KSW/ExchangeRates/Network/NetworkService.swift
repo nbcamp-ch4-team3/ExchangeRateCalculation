@@ -40,14 +40,6 @@ final class NetworkService: NetworkServiceProtocol {
             
             do {
                 let response = try JSONDecoder().decode(CurrencyResponse.self, from: data)
-//                var currencies: [Currency] = []
-//                
-//                // 파싱한 데이터 딕셔너리(rates)의 키와 밸류를 각각 코드(예: USD)와 환율(예: 1.0000)에 넣고, 국가명을 매핑(예: 미국)
-//                for (key, value) in response.rates {
-//                    let currency = Currency(code: key, country: countryCodes[key] ?? "", rate: value)
-//                    currencies.append(currency)
-//                }
-                
                 completion(.success(response))
             } catch {
                 completion(.failure(DataError.parsingFailed))

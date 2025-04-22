@@ -27,7 +27,7 @@ final class ViewModel {
     }
     
     func loadCurrencies() {
-        fetchCurrencies()
+        fetchCurrencies() // core data 로드
         
         let url = URL(string: "https://open.er-api.com/v6/latest/USD")!
         networkService.fetchData(from: url) { [weak self] result in
@@ -35,30 +35,36 @@ final class ViewModel {
             
             switch result {
             case .success(let response):
-                var count = 0
-                var new = 0
+                let responseDate = Date(timeIntervalSince1970: TimeInterval(response.timestamp))
+                
                 for (key, value) in response.rates {
                     if let index = currencies.firstIndex(where: { $0.code == key }) {
-                        currencies[index].rate = value
-                        count += 1
+                        
+                        // core data에 저장되어 있던 업데이트 일시 확인
+                        let currencyDate: Date? = currencies[index].timestamp == 0.0 ? nil : Date(timeIntervalSince1970: TimeInterval(currencies[index].timestamp))
+                        
+                        // 기존 데이터 자료 업데이트
+                        if let currencyDate, currencyDate < responseDate {
+                            currencies[index].previousRate = currencies[index].rate
+                            currencies[index].rate = value
+                            currencies[index].timestamp = response.timestamp
+                        }
                     } else {
+                        // core data 저장 데이터가 없으면 새로 생성
                         let currency = Currency(context: dataManager.context)
                         currency.code = key
                         currency.country = countryCodes[key] ?? ""
                         currency.rate = value
                         currency.isFavorite = false
+                        currency.timestamp = 0.0
+                        currency.previousRate = 0.0
                         currencies.append(currency)
-                        
-                        new += 1
                     }
                 }
-                print("count: \(count)")
-                print("new: \(new)")
                 
                 dataManager.saveContext()
                 
                 filteredCurrencies = currencies
-                
                 sortCurrencies()
                 
                 delegate?.viewModelDidLoadData()
@@ -116,10 +122,9 @@ final class ViewModel {
         sortCurrencies()
     }
     
-    func fetchCurrencies() {
+    private func fetchCurrencies() {
         do {
             currencies = try dataManager.context.fetch(Currency.fetchRequest())
-            print("fetch count: \(currencies.count)")
         } catch {
             print("fetch error: \(error)")
         }
