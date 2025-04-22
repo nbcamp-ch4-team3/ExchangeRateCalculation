@@ -16,7 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
 
-        let mainVC = MainViewController()
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        let coreData = LastScreenCoreData(container: appDelegate.persistentContainer)
+        let lastScreenRepository = LastScreenRepository(coreData: coreData)
+        let mainViewModel = MainViewModel(repository: lastScreenRepository)
+        let mainVC = MainViewController(viewModel: mainViewModel)
         window?.rootViewController = UINavigationController(rootViewController: mainVC)
         window?.makeKeyAndVisible()
     }

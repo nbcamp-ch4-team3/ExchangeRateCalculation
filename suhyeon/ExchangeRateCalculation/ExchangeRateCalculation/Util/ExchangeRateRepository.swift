@@ -21,7 +21,15 @@ final class ExchangeRateRepository {
         //TODO: 클린 아키텍처로 리팩토링 시 import UIKit 제거
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         self.coreData = ExchangeRateCoreData(container: appDelegate.persistentContainer)
-//        coreData.saveMockData()
+    }
+
+    func readData(with currency: String) throws -> ExchangeRate {
+        let result = try coreData.readData(with: currency)
+        return ExchangeRate(
+            currency: result.currency,
+            rate: result.rate,
+            fluctuation: Fluctuation(fluctuation: result.fluctuation)
+        )
     }
 
     // NetworkService를 통해 환율 정보 받아오는 메서드
@@ -53,6 +61,7 @@ final class ExchangeRateRepository {
             }
         } else { // 저장된 데이터가 없는 경우 mock 데이터 저장
             os_log("MockData 저장", type: .debug)
+            try coreData.deleteAllData()
             coreData.saveMockData()
             try fetchCachedExchangeRates()
         }

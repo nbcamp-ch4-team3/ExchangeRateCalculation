@@ -16,11 +16,14 @@ protocol ViewModelProtocol {
 }
 
 final class MainViewModel: ViewModelProtocol {
+    private let repository: LastScreenRepository
 
     var action: ((Action) -> Void)?
     var state = State()
 
     enum Action {
+        case restoreLastVisitedScreen
+        case saveLastScreen(screen: Screen, currency: String?)
         case loadExchangeRates
         case filterExchangeRates(String)
         case toggleFavoriteItem(currency: String)
@@ -29,15 +32,22 @@ final class MainViewModel: ViewModelProtocol {
     struct State {
         fileprivate(set) var exchangeRates: ExchangeRates = []
 
+        var navigateToCalculator: ((ExchangeRate) -> Void)?
         var updateExchangeRates: (() -> Void)?
         var handleError: ((AppError) -> Void)?
     }
 
-    init() {
+    init(repository: LastScreenRepository) {
+        self.repository = repository
+        
         self.action = {[weak self] action in
             guard let self else { return }
 
             switch action {
+            case .restoreLastVisitedScreen:
+                self.restoreLastVisitedScreen()
+            case .saveLastScreen(let screen, let currency):
+                self.saveLastScreen(screen: screen, currency: currency)
             case .loadExchangeRates:
                 self.loadExchangeRates()
             case .filterExchangeRates(let keyword):
@@ -45,6 +55,30 @@ final class MainViewModel: ViewModelProtocol {
             case .toggleFavoriteItem(let currency):
                 self.toggleFavoriteItem(with: currency)
             }
+        }
+    }
+
+    private func restoreLastVisitedScreen() {
+        do {
+            let lastScreen = try repository.readLastScreen()
+            guard let lastScreen, let currency = lastScreen.currency else { return }
+            switch lastScreen.screenName {
+            case Screen.calculator.rawValue:
+                let result = try ExchangeRateRepository.shared.readData(with: currency)
+                state.navigateToCalculator?(result)
+            default:
+                return
+            }
+        } catch {
+            state.handleError?(AppError(error))
+        }
+    }
+
+    private func saveLastScreen(screen: Screen, currency: String?) {
+        do {
+            try repository.saveLastScreen(screen: screen, currency: currency)
+        } catch {
+            state.handleError?(AppError(error))
         }
     }
 

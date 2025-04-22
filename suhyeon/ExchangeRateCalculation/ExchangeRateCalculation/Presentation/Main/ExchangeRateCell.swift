@@ -49,7 +49,7 @@ final class ExchangeRateCell: UITableViewCell {
 
     private let increaseDecreaseImageView: UIImageView = {
         let view = UIImageView()
-        view.tintColor = .systemBlue
+        view.tintColor = .systemCyan
         return view
     }()
 

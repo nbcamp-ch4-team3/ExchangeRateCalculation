@@ -17,11 +17,22 @@ final class ExchangeRateCoreData {
         self.viewContext = container.viewContext
     }
 
+    func readData(with currency: String) throws -> CDExchangeRate {
+        let fetchReuqest = CDExchangeRate.fetchRequest()
+        fetchReuqest.predicate = NSPredicate(format: "currency == %@", currency)
+        do {
+            let result = try viewContext.fetch(fetchReuqest)
+            return result.first!
+        }
+    }
+
     // nextUpdateDate 불러오기
     func readNextUpdateDate() throws -> Date? {
         do {
             let result = try viewContext.fetch(CDExchangeRate.fetchRequest())
             return result.first?.nextUpdateDate
+        } catch {
+            throw CoreDataError.readError(error)
         }
     }
 
