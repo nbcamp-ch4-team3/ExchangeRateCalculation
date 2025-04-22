@@ -24,6 +24,8 @@ extension Currency {
 
 extension Currency {
     var rateIcon: String {
+        guard previousRate != 0 else { return "  " }
+        
         let difference = abs(rate - previousRate)
         
         if difference > 0.01, rate > previousRate {
