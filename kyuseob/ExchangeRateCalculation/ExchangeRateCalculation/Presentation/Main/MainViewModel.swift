@@ -21,7 +21,7 @@ final class MainViewModel: MainViewModelProtocol {
     private var favoriteCurrencyCodes: Set<String> = []
     private let coreDataStack = CoreDataStack.shared
 
-    init(service: DataServiceProtocol = DataService()) {
+    init(service: DataServiceProtocol) {
         self.service = service
     }
 
@@ -204,15 +204,23 @@ extension MainViewModel {
         return result
     }
 
-    func saveCurrentCurrencies(with: [CurrencyInfo]) throws {
-        for currencyInfo in with {
-            try coreDataStack.addCurrency(
-                code: currencyInfo.code,
-                country: currencyInfo.country,
-                rate: currencyInfo.rate,
-                trend: currencyInfo.trendString,
-                updatedDate: currencyInfo.updatedDate
-            )
+    func saveCurrentCurrencies(with currencyInfos: [CurrencyInfo]) throws {
+        do {
+            // 기존 데이터 모두 삭제
+            try coreDataStack.deleteAllCurrencies()
+
+            // 새 데이터 추가
+            for currencyInfo in currencyInfos {
+                try coreDataStack.addCurrency(
+                    code: currencyInfo.code,
+                    country: currencyInfo.country,
+                    rate: currencyInfo.rate,
+                    trend: currencyInfo.trendString,
+                    updatedDate: currencyInfo.updatedDate
+                )
+            }
+        } catch {
+            throw error
         }
     }
 

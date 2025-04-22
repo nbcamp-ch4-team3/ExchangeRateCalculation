@@ -80,20 +80,44 @@ final class CoreDataStack {
         }
     }
 
-    func addCurrency(code: String, country: String, rate: Double, trend: String, updatedDate: Date) throws {
-        do {
-            let newCurrency = CurrencyEntity(context: viewContext)
-            newCurrency.code = code
-            newCurrency.country = country
-            newCurrency.rate = rate
-            newCurrency.trend = trend
-            newCurrency.updatedDate = updatedDate
+    func addCurrency(code: String, country: String, rate: Double, trend: String, updatedDate: Date) {
+        // background context 생성
+        let context = persistentContainer.newBackgroundContext()
 
-            try viewContext.save()
-        } catch {
-            throw CoreDataError.addFavoriteFailed(error: error)
+        context.perform {
+            // nil 체크
+            guard !code.isEmpty, !country.isEmpty, !trend.isEmpty else {
+                print("Core Data Error: 필수 값이 비어 있습니다")
+                return
+            }
+
+            let fetchRequest: NSFetchRequest<CurrencyEntity> = CurrencyEntity.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "code == %@", code)
+
+            do {
+                let matches = try context.fetch(fetchRequest)
+                if let existingCurrency = matches.first {
+                    existingCurrency.code = code
+                    existingCurrency.country = country
+                    existingCurrency.rate = rate
+                    existingCurrency.trend = trend
+                    existingCurrency.updatedDate = updatedDate
+                } else {
+                    let newCurrency = CurrencyEntity(context: context)
+                    newCurrency.code = code
+                    newCurrency.country = country
+                    newCurrency.rate = rate
+                    newCurrency.trend = trend
+                    newCurrency.updatedDate = updatedDate
+                }
+
+                try context.save()
+            } catch {
+                print("CoreData addCurrency 실패: \(error.localizedDescription)")
+            }
         }
     }
+
 
     func deleteAllCurrencies() throws {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CurrencyEntity.fetchRequest()
