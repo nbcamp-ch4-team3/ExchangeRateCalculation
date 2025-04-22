@@ -19,7 +19,7 @@ extension Currency {
     @NSManaged public var rate: Double // 환율(예: 1.000)
     @NSManaged public var isFavorite: Bool
     @NSManaged public var timestamp: TimeInterval // 업데이트 일시
-    @NSManaged public var previousRate: Double // 이전 환율 정보(매일 업데이트 시 어제 기준)
+    @NSManaged public var previousRate: Double // 이전 환율 정보(매일 업데이트 시 어제 기준 정보)
 }
 
 extension Currency {
@@ -27,9 +27,9 @@ extension Currency {
         let difference = abs(rate - previousRate)
         
         if difference > 0.01, rate > previousRate {
-            return "🔼"
-        } else if difference > 0.01, rate < previousRate {
             return "🔽"
+        } else if difference > 0.01, rate < previousRate {
+            return "🔼"
         } else {
             return "  "
         }

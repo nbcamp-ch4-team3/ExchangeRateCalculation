@@ -82,6 +82,7 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - View Model Delegate
 extension ViewController: ViewModelDelegate {
     func viewModelDidLoadData() {
         DispatchQueue.main.async {
@@ -109,6 +110,7 @@ extension ViewController: ViewModelDelegate {
     }
 }
 
+// MARK: - Table View DataSource, Delegate
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.filteredCurrencies.count
@@ -145,6 +147,7 @@ extension ViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - Search Bar Delegate
 extension ViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.filterCurrencies(searchText: searchText)
