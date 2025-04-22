@@ -16,7 +16,7 @@ final class ExchangeRateView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .systemBackground
+        backgroundColor = .background
         
         setStyle()
         setUI()
