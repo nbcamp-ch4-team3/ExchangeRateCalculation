@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import OSLog
+import os
 
 protocol ExchangeRateRepositoryProtocol {
     func exchangeRate(with currency: String) throws -> ExchangeRate

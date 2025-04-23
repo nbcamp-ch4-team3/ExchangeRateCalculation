@@ -8,7 +8,8 @@
 import Foundation
 
 final class CalculatorViewModel: ViewModelProtocol {
-    let exchangeRate: ExchangeRate
+//    let exchangeRate: ExchangeRate
+    private let useCase: CalculatorUseCaseProtocol
 
     var action: ((Action) -> Void)?
     var state = State()
@@ -18,12 +19,15 @@ final class CalculatorViewModel: ViewModelProtocol {
     }
 
     struct State {
+        var exchangeRate: ExchangeRate?
+
         var success: ((CalculationResult) -> Void)?
-        var failure: ((CalculatorError) -> Void)?
+        var failure: ((AppError) -> Void)?
     }
 
-    init(exchangeRate: ExchangeRate) {
-        self.exchangeRate = exchangeRate
+    init(useCase: CalculatorUseCaseProtocol) {
+        self.useCase = useCase
+        loadExchangeRate()
 
         action = {[weak self] action in
             guard let self else { return }
@@ -35,21 +39,16 @@ final class CalculatorViewModel: ViewModelProtocol {
         }
     }
 
+    private func loadExchangeRate() {
+        state.exchangeRate = useCase.loadExchangeRate()
+    }
+
     private func calculate(input: String?) {
-        guard let text = input, !text.isEmpty else {
-            state.failure?(.inputIsEmpty)
-            return
+        do {
+            let result = try useCase.calculate(input: input)
+            state.success?(result)
+        } catch {
+            state.failure?(AppError(error))
         }
-
-        guard let amount = Double(text) else {
-            state.failure?(.inputIsNotNumber(text))
-            return
-        }
-
-        let result = CalculationResult(
-            calculatedAmount: amount * exchangeRate.rate,
-            currency: exchangeRate.currency
-        )
-        state.success?(result)
     }
 }
