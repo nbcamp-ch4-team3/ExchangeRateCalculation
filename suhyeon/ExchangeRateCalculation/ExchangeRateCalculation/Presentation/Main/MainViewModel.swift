@@ -16,7 +16,7 @@ protocol ViewModelProtocol {
 }
 
 final class MainViewModel: ViewModelProtocol {
-    private let repository: LastScreenRepository
+    private let lastScreenUseCase: LastScreenUseCaseProtocol
     private let exchangeRateUseCase: ExchangeRateUseCaseProtocol
 
     var action: ((Action) -> Void)?
@@ -38,8 +38,8 @@ final class MainViewModel: ViewModelProtocol {
         var handleError: ((AppError) -> Void)?
     }
 
-    init(repository: LastScreenRepository, exchangeRateUseCase: ExchangeRateUseCaseProtocol) {
-        self.repository = repository
+    init(lastScreenUseCase: LastScreenUseCaseProtocol, exchangeRateUseCase: ExchangeRateUseCaseProtocol) {
+        self.lastScreenUseCase = lastScreenUseCase
         self.exchangeRateUseCase = exchangeRateUseCase
 
         self.action = {[weak self] action in
@@ -62,7 +62,7 @@ final class MainViewModel: ViewModelProtocol {
 
     private func restoreLastVisitedScreen() {
         do {
-            let lastScreen = try repository.readLastScreen()
+            let lastScreen = try lastScreenUseCase.readLastScreen()
             guard let lastScreen, let currency = lastScreen.currency else { return }
             switch lastScreen.screenName {
             case Screen.calculator.rawValue:
@@ -78,7 +78,7 @@ final class MainViewModel: ViewModelProtocol {
 
     private func saveLastScreen(screen: Screen, currency: String?) {
         do {
-            try repository.saveLastScreen(screen: screen, currency: currency)
+            try lastScreenUseCase.saveLastScreen(screen: screen, currency: currency)
         } catch {
             state.handleError?(AppError(error))
         }

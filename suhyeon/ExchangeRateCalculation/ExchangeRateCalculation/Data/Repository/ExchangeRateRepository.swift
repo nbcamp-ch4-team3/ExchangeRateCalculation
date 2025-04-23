@@ -5,7 +5,7 @@
 //  Created by 이수현 on 4/16/25.
 //
 
-import UIKit
+import Foundation
 import OSLog
 
 protocol ExchangeRateRepositoryProtocol {
@@ -17,10 +17,6 @@ protocol ExchangeRateRepositoryProtocol {
 }
 
 final class ExchangeRateRepository: ExchangeRateRepositoryProtocol {
-
-    // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
-//    static let shared = ExchangeRateRepository()
-
     private let networkService: NetworkService
     private let coreData: ExchangeRateCoreData
 
@@ -30,11 +26,6 @@ final class ExchangeRateRepository: ExchangeRateRepositoryProtocol {
         self.networkService = networkService
         self.coreData = coreData
     }
-//    init(coreData: ExchangeRateCoreData, network: NetworkService) {
-//        //TODO: 클린 아키텍처로 리팩토링 시 import UIKit 제거
-//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-//        self.coreData = ExchangeRateCoreData(container: appDelegate.persistentContainer)
-//    }
 
     func exchangeRate(with currency: String) throws -> ExchangeRate {
         let result = try coreData.readData(with: currency)

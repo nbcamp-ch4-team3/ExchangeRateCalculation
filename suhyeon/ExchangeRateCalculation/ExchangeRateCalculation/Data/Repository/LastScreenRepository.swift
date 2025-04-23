@@ -8,7 +8,12 @@
 import Foundation
 import CoreData
 
-final class LastScreenRepository {
+protocol LastScreenRepositoryProtocol {
+    func readLastScreen() throws -> LastScreen?
+    func saveLastScreen(screen: Screen, currency: String?) throws
+}
+
+final class LastScreenRepository: LastScreenRepositoryProtocol {
     private let coreData: LastScreenCoreData
 
     init(coreData: LastScreenCoreData) {
