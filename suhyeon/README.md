@@ -521,7 +521,12 @@ Presentation
 
 ## 메모리 누수 디버깅
 ### 현재 코드에서는 메모리 누수가 발견되지 않았다
+### Debug Memory Graph
 https://github.com/user-attachments/assets/3231e9dd-27d9-4b01-afe2-73a52a62bfe5
+
+### Instruments - Leaks
+https://github.com/user-attachments/assets/918bf740-0f89-4b29-b848-5ebefa101965
+
 
 ### 메모리 누수 실험을 위해 클로저에서 강한 참조를 만듦
 ![Image](https://github.com/user-attachments/assets/7f93cc20-d670-4555-87fe-d095a14cac81)
