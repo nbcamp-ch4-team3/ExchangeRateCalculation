@@ -13,7 +13,7 @@ import CoreData
 extension CurrencyCode {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CurrencyCode> {
-        return NSFetchRequest<CurrencyCode>(entityName: "CurrencyCode")
+        return NSFetchRequest<CurrencyCode>(entityName: CurrencyCode.entityName)
     }
 
     @NSManaged public var code: String?

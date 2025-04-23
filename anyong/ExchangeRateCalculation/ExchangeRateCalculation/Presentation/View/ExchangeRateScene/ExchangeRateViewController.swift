@@ -32,6 +32,7 @@ final class ExchangeRateViewController: UIViewController {
         rootView.searchBarConfigure(delegate: self)
         setNavigationBar()
         bind()
+        rootView.setSearchBarText(viewModel.state.searchText)
         viewModel.action?(.fetch)
     }
     
@@ -110,14 +111,13 @@ extension ExchangeRateViewController: UITableViewDataSource {
             nation: exchangeRate.nation,
             rate: exchangeRate.rate,
             isSelected: exchangeRate.isBookmark,
-            isFluctuation: exchangeRate.isFluctuation
+            fluctuationType: exchangeRate.fluctuationType
         )
         cell.delegate = self
         
         return cell
     }
 }
-
 
 extension ExchangeRateViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -128,5 +128,13 @@ extension ExchangeRateViewController: UISearchBarDelegate {
 extension ExchangeRateViewController: ExchangeRateCellDelegate {
     func didTapStarButton(_ code: String, _ selected: Bool) {
         viewModel.action?(.didTapStar(code: code, isSelected: selected))
+    }
+}
+
+extension ExchangeRateViewController {
+    func getState() -> [String: String] {
+        let searchText = viewModel.state.searchText
+        print(searchText)
+        return ["searchText" : searchText]
     }
 }

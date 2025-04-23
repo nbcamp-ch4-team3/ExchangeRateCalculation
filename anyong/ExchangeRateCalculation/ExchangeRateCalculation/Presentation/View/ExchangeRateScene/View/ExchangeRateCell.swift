@@ -36,13 +36,16 @@ final class ExchangeRateCell: UITableViewCell {
     }
     
     private func setStyle() {
+        contentView.backgroundColor = .background
+        
         currencyCodeLabel.do {
             $0.font = .systemFont(ofSize: 16, weight: .medium)
+            $0.textColor = .text
         }
         
         nationLabel.do {
             $0.font = .systemFont(ofSize: 14)
-            $0.textColor = .gray
+            $0.textColor = .secondaryText
         }
         
         labelStackView.do {
@@ -52,6 +55,7 @@ final class ExchangeRateCell: UITableViewCell {
         
         rateLabel.do {
             $0.font = .systemFont(ofSize: 16)
+            $0.textColor = .text
             $0.textAlignment = .right
         }
         
@@ -62,7 +66,7 @@ final class ExchangeRateCell: UITableViewCell {
         starButton.do {
             $0.setImage(.init(systemName: "star"), for: .normal)
             $0.setImage(.init(systemName: "star.fill"), for: .selected)
-            $0.tintColor = .systemYellow            
+            $0.tintColor = .bookmark
             $0.addTarget(self, action: #selector(didTapStarButton), for: .touchUpInside)
         }
     }
@@ -105,13 +109,13 @@ extension ExchangeRateCell {
         nation: String,
         rate: Double,
         isSelected: Bool,
-        isFluctuation: fluctuationType
+        fluctuationType: fluctuationType
     ) {
         currencyCodeLabel.text = currencyCode
         nationLabel.text = nation
         rateLabel.text = String(format: "%.4f", rate)
         starButton.isSelected = isSelected
-        switch isFluctuation {
+        switch fluctuationType {
         case .up:
             fluctuationLabel.text = "🔼"
         case .down:

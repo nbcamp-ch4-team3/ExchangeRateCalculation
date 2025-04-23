@@ -10,6 +10,7 @@ import Foundation
 
 protocol CurrencyCodeStorageProtocol {
     func fetchAllData() throws -> [CoreDataCurrency]
+    func fetchData(_ code: String) -> CoreDataCurrency?
     func saveData(_ code: String, _ exchangeRate: Double, _ isBookmark: Bool) throws
     func updateExchangeRate(_ code: String, _ exchangeRate: Double) throws
     func updateIsBookmarked(_ code: String, _ isBookmarked: Bool) throws
@@ -21,30 +22,47 @@ final class CurrencyCodeStorageService: CurrencyCodeStorageProtocol {
     
     func fetchAllData() throws -> [CoreDataCurrency] {
         do {
-            var currencyCodes: [CoreDataCurrency] = []
+            let context = self.coreDataStorage.backgroundContext
+            var result: [CoreDataCurrency] = []
             
-            let codes = try self.coreDataStorage.persistentContainer.viewContext.fetch(
-                CurrencyCode.fetchRequest()
-            )
-            
-            for code in codes as [NSManagedObject] {
-                if let cureencyCode = code.value(forKey: CurrencyCode.Key.code) as? String,
-                   let exchangeRate = code.value(forKey: CurrencyCode.Key.exchangeRate) as? Double,
-                   let isBookmark = code.value(forKey: CurrencyCode.Key.isBookmark) as? Bool {
-                   
-                    let coreDataCurrency = CoreDataCurrency(
-                        code: cureencyCode,
-                        exchangeRate: exchangeRate,
-                        isBookmark: isBookmark
+            try context.performAndWait {
+                let codes = try context.fetch(CurrencyCode.fetchRequest()) as? [CurrencyCode] ?? []
+                
+                result = codes.compactMap {
+                    CoreDataCurrency(
+                        code: $0.code ?? "",
+                        exchangeRate: $0.exchangeRate,
+                        isBookmark: $0.isBookmark
                     )
-                    
-                    currencyCodes.append(coreDataCurrency)
                 }
             }
             
-            return currencyCodes
+            return result
         } catch {
             throw CoreDataError.fetchFailed
+        }
+    }
+    
+    func fetchData(_ code: String) -> CoreDataCurrency? {
+        let fetchRequest = CurrencyCode.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "code == %@", code)
+        
+        do {
+            let result = try coreDataStorage.persistentContainer.viewContext.fetch(fetchRequest) as [CurrencyCode]
+            
+            if result.isEmpty {
+                return nil
+            }
+            
+            let currency = CoreDataCurrency(
+                code: result[0].code ?? "",
+                exchangeRate: result[0].exchangeRate,
+                isBookmark: result[0].isBookmark
+            )
+            
+            return currency
+        } catch {
+            return nil
         }
     }
     

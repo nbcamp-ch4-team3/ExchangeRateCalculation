@@ -26,7 +26,7 @@ final class CalculatorView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .systemBackground
+        backgroundColor = .background
         
         setStyle()
         setUI()
@@ -40,12 +40,12 @@ final class CalculatorView: UIView {
     private func setStyle() {
         currencyCodeLabel.do {
             $0.font = .systemFont(ofSize: 24, weight: .bold)
-            $0.textColor = .black
+            $0.textColor = .text
         }
         
         nationLabel.do {
             $0.font = .systemFont(ofSize: 16)
-            $0.textColor = .gray
+            $0.textColor = .secondaryText
         }
         
         labelStackView.do {
@@ -56,6 +56,7 @@ final class CalculatorView: UIView {
         
         amountTextField.do {
             $0.placeholder = "금액을 입력하세요"
+            $0.textColor = .secondaryText
             $0.keyboardType = .decimalPad
             $0.textAlignment = .center
             $0.borderStyle = .roundedRect
@@ -65,7 +66,7 @@ final class CalculatorView: UIView {
             $0.setTitle("환율 계산", for: .normal)
             $0.setTitleColor(.white, for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-            $0.backgroundColor = .systemBlue
+            $0.backgroundColor = .button
             $0.layer.cornerRadius = 8
             $0.addTarget(self, action: #selector(didTabConvertButton), for: .touchUpInside)
         }
@@ -73,6 +74,7 @@ final class CalculatorView: UIView {
         resultLabel.do {
             $0.font = .systemFont(ofSize: 20, weight: .medium)
             $0.textAlignment = .center
+            $0.textColor = .text
             $0.numberOfLines = 0
         }
     }

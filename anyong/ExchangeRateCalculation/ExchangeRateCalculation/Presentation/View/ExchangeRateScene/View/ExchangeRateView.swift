@@ -16,7 +16,7 @@ final class ExchangeRateView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .systemBackground
+        backgroundColor = .background
         
         setStyle()
         setUI()
@@ -69,6 +69,10 @@ extension ExchangeRateView {
     
     func tableViewReloadData() {
         tableView.reloadData()
+    }
+    
+    func setSearchBarText(_ text: String) {
+        searchBar.text = text
     }
     
     func updateBackgroundView(_ isEmpty: Bool) {

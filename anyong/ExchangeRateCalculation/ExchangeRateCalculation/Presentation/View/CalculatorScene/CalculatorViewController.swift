@@ -78,3 +78,10 @@ extension CalculatorViewController: CalculatorViewDelegate {
         viewModel.action?(.convert(input: input))
     }
 }
+
+extension CalculatorViewController {
+    func getState() -> [String: String] {
+        let code = viewModel.state.currencyCode
+        return ["code": code]
+    }
+}

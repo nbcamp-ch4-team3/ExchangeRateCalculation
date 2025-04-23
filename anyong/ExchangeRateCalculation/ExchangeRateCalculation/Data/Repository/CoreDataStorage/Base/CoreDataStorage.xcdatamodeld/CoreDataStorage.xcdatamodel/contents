@@ -5,4 +5,9 @@
         <attribute name="exchangeRate" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO"/>
         <attribute name="isBookmark" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
+    <entity name="LastSceneData" representedClassName="LastSceneData" syncable="YES">
+        <attribute name="code" optional="YES" attributeType="String"/>
+        <attribute name="scene" attributeType="String"/>
+        <attribute name="searchText" optional="YES" attributeType="String"/>
+    </entity>
 </model>
