@@ -16,7 +16,6 @@ enum AppError: AppErrorProtocol {
     case network(NetworkError)
     case coreData(CoreDataError)
     case calculator(CalculatorError)
-    case repository(RepositoryError)
     case unKnown(Error)
 
     init(_ error: Error) {
@@ -27,8 +26,6 @@ enum AppError: AppErrorProtocol {
             self = .coreData(error)
         case let error as CalculatorError:
             self = .calculator(error)
-        case let error as RepositoryError:
-            self = .repository(error)
         default:
             self = .unKnown(error)
         }
@@ -44,8 +41,6 @@ extension AppError {
             coreDataError.errorDescription
         case .calculator(let calculatorError):
             calculatorError.errorDescription
-        case .repository(let repositoryError):
-            repositoryError.errorDescription
         case .unKnown:
             "알 수 없는 오류가 발생했습니다"
         }
@@ -59,8 +54,6 @@ extension AppError {
             coreDataError.debugDescription
         case .calculator(let calculatorError):
             calculatorError.debugDescription
-        case .repository(let repositoryError):
-            repositoryError.debugDescription
         case .unKnown(let error):
             "알 수 없는 에러 발생: \(error.localizedDescription)"
         }

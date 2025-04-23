@@ -17,9 +17,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        let coreData = LastScreenCoreData(container: appDelegate.persistentContainer)
-        let lastScreenRepository = LastScreenRepository(coreData: coreData)
-        let mainViewModel = MainViewModel(repository: lastScreenRepository)
+        let lastScreenCoreData = LastScreenCoreData(container: appDelegate.persistentContainer)
+        let exchangeRateCoreData = ExchangeRateCoreData(container: appDelegate.persistentContainer)
+        let lastScreenRepository = LastScreenRepository(coreData: lastScreenCoreData)
+        let exchangeRateRepository = ExchangeRateRepository(networkService: NetworkService(), coreData: exchangeRateCoreData)
+        let useCase = ExchangeRateUseCase(repository: exchangeRateRepository)
+        let mainViewModel = MainViewModel(repository: lastScreenRepository, exchangeRateUseCase: useCase)
         let mainVC = MainViewController(viewModel: mainViewModel)
         window?.rootViewController = UINavigationController(rootViewController: mainVC)
         window?.makeKeyAndVisible()

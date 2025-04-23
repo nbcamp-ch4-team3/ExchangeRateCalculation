@@ -14,7 +14,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        _ = ExchangeRateRepository.shared // 메인 스레드에서 강제 초기화
         return true
     }
     

@@ -17,6 +17,7 @@ protocol ViewModelProtocol {
 
 final class MainViewModel: ViewModelProtocol {
     private let repository: LastScreenRepository
+    private let exchangeRateUseCase: ExchangeRateUseCaseProtocol
 
     var action: ((Action) -> Void)?
     var state = State()
@@ -37,9 +38,10 @@ final class MainViewModel: ViewModelProtocol {
         var handleError: ((AppError) -> Void)?
     }
 
-    init(repository: LastScreenRepository) {
+    init(repository: LastScreenRepository, exchangeRateUseCase: ExchangeRateUseCaseProtocol) {
         self.repository = repository
-        
+        self.exchangeRateUseCase = exchangeRateUseCase
+
         self.action = {[weak self] action in
             guard let self else { return }
 
@@ -64,7 +66,7 @@ final class MainViewModel: ViewModelProtocol {
             guard let lastScreen, let currency = lastScreen.currency else { return }
             switch lastScreen.screenName {
             case Screen.calculator.rawValue:
-                let result = try ExchangeRateRepository.shared.readData(with: currency)
+                let result = try exchangeRateUseCase.exchangeRate(with: currency)
                 state.navigateToCalculator?(result)
             default:
                 return
@@ -86,7 +88,7 @@ final class MainViewModel: ViewModelProtocol {
     private func loadExchangeRates() {
         Task {
             do {
-                let result = try await ExchangeRateRepository.shared.fetchExchangeRate()
+                let result = try await exchangeRateUseCase.fetchExchangeRates()
                 await MainActor.run {
                     state.exchangeRates = result
                     state.updateExchangeRates?()
@@ -103,8 +105,8 @@ final class MainViewModel: ViewModelProtocol {
     private func filterExchangeRates(with keyword: String) {
         // 검색어를 모두 지웠을 때는 다시 전체 데이터로 변환
         state.exchangeRates = keyword.isEmpty
-            ? ExchangeRateRepository.shared.loadExchangeRates()
-            : ExchangeRateRepository.shared.filterExchangeRates(with: keyword)
+            ? exchangeRateUseCase.loadExchangeRates()
+            : exchangeRateUseCase.filterExchangeRates(with: keyword)
 
         state.updateExchangeRates?()
     }
@@ -112,7 +114,7 @@ final class MainViewModel: ViewModelProtocol {
     // 즐겨찾기 추가 / 삭제 메서드
     private func toggleFavoriteItem(with currency: String) {
         do {
-            let result = try ExchangeRateRepository.shared.toggleFavoriteItem(with: currency)
+            let result = try exchangeRateUseCase.toggleFavoriteItem(with: currency)
             state.exchangeRates = result
             state.updateExchangeRates?()
         }
