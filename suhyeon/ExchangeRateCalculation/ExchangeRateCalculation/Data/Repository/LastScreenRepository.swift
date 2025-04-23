@@ -14,7 +14,7 @@ protocol LastScreenRepositoryProtocol {
 }
 
 final class LastScreenRepository: LastScreenRepositoryProtocol {
-    private let coreData: LastScreenCoreData
+    private let coreData: LastScreenCoreDataProtocol
 
     init(coreData: LastScreenCoreData) {
         self.coreData = coreData

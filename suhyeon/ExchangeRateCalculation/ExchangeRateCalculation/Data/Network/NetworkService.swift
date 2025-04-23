@@ -7,7 +7,11 @@
 
 import Foundation
 
-class NetworkService {
+protocol NetworkServiceProtocol {
+    func fetchExchangeRate() async throws -> ExchangeRateDTO
+}
+
+final class NetworkService: NetworkServiceProtocol {
     func fetchExchangeRate() async throws -> ExchangeRateDTO {
         let urlString = "https://open.er-api.com/v6/latest/USD"
 

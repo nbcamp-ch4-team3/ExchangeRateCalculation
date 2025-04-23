@@ -13,7 +13,12 @@ enum Screen: String {
     case calculator
 }
 
-final class LastScreenCoreData {
+protocol LastScreenCoreDataProtocol {
+    func readLastScreen() throws -> LastScreen?
+    func saveLastScreen(screen: Screen, currency: String?) throws
+}
+
+final class LastScreenCoreData: LastScreenCoreDataProtocol {
     private let container: NSPersistentContainer
     private let viewContext: NSManagedObjectContext
 

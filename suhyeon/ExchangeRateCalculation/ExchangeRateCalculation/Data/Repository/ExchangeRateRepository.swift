@@ -17,8 +17,8 @@ protocol ExchangeRateRepositoryProtocol {
 }
 
 final class ExchangeRateRepository: ExchangeRateRepositoryProtocol {
-    private let networkService: NetworkService
-    private let coreData: ExchangeRateCoreData
+    private let networkService: NetworkServiceProtocol
+    private let coreData: ExchangeRateCoreDataProtocol
 
     private var cachedExchangeRates = ExchangeRates()
 
