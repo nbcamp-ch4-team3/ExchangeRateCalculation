@@ -57,10 +57,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let viewController = navigationController?.topViewController as? DetailViewController
         let currency = viewController?.viewModel.currency
         
+        // 백그라운드 진입 전 마지막 화면이 디테일 뷰면, 해당 환율정보의 코드를 저장
+        // 디테일 뷰가 아니면(즉, 메인 뷰면) nil을 저장
         if let currency {
-            UserDefaults.standard.set(currency.code, forKey: UserDefaultsKey.lastScreen)
+            UserDefaults.standard.set(currency.code, forKey: UserDefaultsKey.lastDetailView)
         } else {
-            UserDefaults.standard.set(nil, forKey: UserDefaultsKey.lastScreen)
+            UserDefaults.standard.set(nil, forKey: UserDefaultsKey.lastDetailView)
         }
     }
 

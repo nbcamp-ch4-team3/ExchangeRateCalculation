@@ -8,5 +8,5 @@
 import Foundation
 
 struct UserDefaultsKey {
-    static let lastScreen = "lastScreen"
+    static let lastDetailView = "lastDetailView"
 }

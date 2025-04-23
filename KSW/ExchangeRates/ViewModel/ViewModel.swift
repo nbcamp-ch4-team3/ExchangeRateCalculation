@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ViewModelDelegate: AnyObject {
-    func viewModelDidLoadData(currency: Currency?)
+    func viewModelDidLoadData(willMoveTo currency: Currency?)
     func viewModel(didFailWithError error: Error)
     func viewModelDidFilterData()
 }
@@ -58,10 +58,10 @@ final class ViewModel {
                 sortCurrencies()
                 
                 // 마지막 화면 정보가 있으면 뷰 컨트롤러로 해당 환율정보 송신
-                let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastScreen)
+                let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastDetailView)
                 let currency = currencies.filter { $0.code == currencyCode }.first
                 
-                delegate?.viewModelDidLoadData(currency: currency)
+                delegate?.viewModelDidLoadData(willMoveTo: currency)
                 
             case .failure(let error):
                 delegate?.viewModel(didFailWithError: error)
