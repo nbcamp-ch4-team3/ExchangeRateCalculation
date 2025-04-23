@@ -9,7 +9,7 @@ import Foundation
 
 protocol LastScreenUseCaseProtocol {
     func readLastScreen() throws -> LastScreen?
-    func saveLastScreen(screen: Screen, currency: String?) throws
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws
 }
 
 final class LastScreenUseCase: LastScreenUseCaseProtocol {
@@ -23,7 +23,7 @@ final class LastScreenUseCase: LastScreenUseCaseProtocol {
         try repository.readLastScreen()
     }
 
-    func saveLastScreen(screen: Screen, currency: String?) throws {
-        try repository.saveLastScreen(screen: screen, currency: currency)
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws {
+        try repository.saveLastScreen(screen: screen, exchangeRate: exchangeRate)
     }
 }

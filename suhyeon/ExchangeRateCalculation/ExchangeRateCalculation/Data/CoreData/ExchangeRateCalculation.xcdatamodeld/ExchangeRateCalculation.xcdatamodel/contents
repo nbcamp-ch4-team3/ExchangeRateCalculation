@@ -6,9 +6,10 @@
         <attribute name="isFavorite" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="nextUpdateDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="rate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LastScreen" inverseName="cdExchangeRate" inverseEntity="LastScreen"/>
     </entity>
     <entity name="LastScreen" representedClassName="LastScreen" syncable="YES">
-        <attribute name="currency" optional="YES" attributeType="String"/>
         <attribute name="screenName" attributeType="String"/>
+        <relationship name="cdExchangeRate" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CDExchangeRate" inverseName="relationship" inverseEntity="CDExchangeRate"/>
     </entity>
 </model>

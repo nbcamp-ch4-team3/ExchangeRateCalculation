@@ -10,7 +10,7 @@ import CoreData
 
 protocol LastScreenRepositoryProtocol {
     func readLastScreen() throws -> LastScreen?
-    func saveLastScreen(screen: Screen, currency: String?) throws
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws
 }
 
 final class LastScreenRepository: LastScreenRepositoryProtocol {
@@ -24,7 +24,7 @@ final class LastScreenRepository: LastScreenRepositoryProtocol {
         return try coreData.readLastScreen()
     }
 
-    func saveLastScreen(screen: Screen, currency: String?) throws {
-        return try coreData.saveLastScreen(screen: screen, currency: currency)
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws {
+        return try coreData.saveLastScreen(screen: screen, exchangeRate: exchangeRate)
     }
 }

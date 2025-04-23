@@ -15,7 +15,7 @@ enum Screen: String {
 
 protocol LastScreenCoreDataProtocol {
     func readLastScreen() throws -> LastScreen?
-    func saveLastScreen(screen: Screen, currency: String?) throws
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws
 }
 
 final class LastScreenCoreData: LastScreenCoreDataProtocol {
@@ -36,17 +36,21 @@ final class LastScreenCoreData: LastScreenCoreDataProtocol {
         }
     }
 
-    func saveLastScreen(screen: Screen, currency: String?) throws {
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws {
         do {
-            let result = try viewContext.fetch(LastScreen.fetchRequest())
-            if let existing = result.first {
-                existing.screenName = screen.rawValue
-                existing.currency = currency
-            } else {
-                let object = LastScreen(context: viewContext)
-                object.screenName = screen.rawValue
-                object.currency = currency
-            }
+            let lastScreen = try viewContext.fetch(LastScreen.fetchRequest())
+                .first ?? LastScreen(context: viewContext)
+            lastScreen.screenName = screen.rawValue
+
+            if let exchangeRate {
+                 let cdRate = lastScreen.cdExchangeRate ?? CDExchangeRate(context: viewContext)
+                 cdRate.currency = exchangeRate.currency
+                 cdRate.fluctuation = exchangeRate.fluctuation.rawValue
+                 cdRate.isFavorite = exchangeRate.isFavorite
+                 cdRate.rate = exchangeRate.rate
+                 cdRate.nextUpdateDate = Date()
+                 lastScreen.cdExchangeRate = cdRate
+             }
 
             try viewContext.save()
         } catch {

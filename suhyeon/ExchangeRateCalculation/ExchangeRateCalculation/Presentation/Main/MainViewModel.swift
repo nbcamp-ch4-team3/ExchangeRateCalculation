@@ -24,7 +24,7 @@ final class MainViewModel: ViewModelProtocol {
 
     enum Action {
         case restoreLastVisitedScreen
-        case saveLastScreen(screen: Screen, currency: String?)
+        case saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?)
         case loadExchangeRates
         case filterExchangeRates(String)
         case toggleFavoriteItem(currency: String)
@@ -48,8 +48,8 @@ final class MainViewModel: ViewModelProtocol {
             switch action {
             case .restoreLastVisitedScreen:
                 self.restoreLastVisitedScreen()
-            case .saveLastScreen(let screen, let currency):
-                self.saveLastScreen(screen: screen, currency: currency)
+            case .saveLastScreen(let screen, let exchangeRate):
+                self.saveLastScreen(screen: screen, exchangeRate: exchangeRate)
             case .loadExchangeRates:
                 self.loadExchangeRates()
             case .filterExchangeRates(let keyword):
@@ -63,11 +63,16 @@ final class MainViewModel: ViewModelProtocol {
     private func restoreLastVisitedScreen() {
         do {
             let lastScreen = try lastScreenUseCase.readLastScreen()
-            guard let lastScreen, let currency = lastScreen.currency else { return }
+            guard let lastScreen,
+                  let cdExchangeRate = lastScreen.cdExchangeRate else { return }
             switch lastScreen.screenName {
             case Screen.calculator.rawValue:
-                let result = try exchangeRateUseCase.exchangeRate(with: currency)
-                state.navigateToCalculator?(result)
+                let exchangeRate = ExchangeRate(
+                    currency: cdExchangeRate.currency,
+                    rate: cdExchangeRate.rate,
+                    fluctuation: Fluctuation(fluctuation: cdExchangeRate.fluctuation)
+                )
+                state.navigateToCalculator?(exchangeRate)
             default:
                 return
             }
@@ -76,9 +81,9 @@ final class MainViewModel: ViewModelProtocol {
         }
     }
 
-    private func saveLastScreen(screen: Screen, currency: String?) {
+    private func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) {
         do {
-            try lastScreenUseCase.saveLastScreen(screen: screen, currency: currency)
+            try lastScreenUseCase.saveLastScreen(screen: screen, exchangeRate: exchangeRate)
         } catch {
             state.handleError?(AppError(error))
         }
