@@ -8,8 +8,8 @@
 import Foundation
 import CoreData
 
-final class LastScreenRepository {
-    private let coreData: LastScreenCoreData
+final class LastScreenRepository: LastScreenRepositoryProtocol {
+    private let coreData: LastScreenCoreDataProtocol
 
     init(coreData: LastScreenCoreData) {
         self.coreData = coreData
@@ -19,7 +19,7 @@ final class LastScreenRepository {
         return try coreData.readLastScreen()
     }
 
-    func saveLastScreen(screen: Screen, currency: String?) throws {
-        return try coreData.saveLastScreen(screen: screen, currency: currency)
+    func saveLastScreen(screen: Screen, exchangeRate: ExchangeRate?) throws {
+        return try coreData.saveLastScreen(screen: screen, exchangeRate: exchangeRate)
     }
 }

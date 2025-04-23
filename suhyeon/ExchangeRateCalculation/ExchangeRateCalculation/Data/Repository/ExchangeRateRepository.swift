@@ -5,25 +5,21 @@
 //  Created by 이수현 on 4/16/25.
 //
 
-import UIKit
-import OSLog
+import Foundation
+import os
 
-final class ExchangeRateRepository {
-    // 환율 정보, 환율 계산 VC에서 사용하므로 데이터 무결성을 위해 싱글턴 패턴 사용
-    static let shared = ExchangeRateRepository()
-
-    private let networkService = NetworkService()
-    private let coreData: ExchangeRateCoreData
+final class ExchangeRateRepository: ExchangeRateRepositoryProtocol {
+    private let networkService: NetworkServiceProtocol
+    private let coreData: ExchangeRateCoreDataProtocol
 
     private var cachedExchangeRates = ExchangeRates()
 
-    private init() {
-        //TODO: 클린 아키텍처로 리팩토링 시 import UIKit 제거
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        self.coreData = ExchangeRateCoreData(container: appDelegate.persistentContainer)
+    init(networkService: NetworkService, coreData: ExchangeRateCoreData) {
+        self.networkService = networkService
+        self.coreData = coreData
     }
 
-    func readData(with currency: String) throws -> ExchangeRate {
+    func exchangeRate(with currency: String) throws -> ExchangeRate {
         let result = try coreData.readData(with: currency)
         return ExchangeRate(
             currency: result.currency,
@@ -33,7 +29,7 @@ final class ExchangeRateRepository {
     }
 
     // NetworkService를 통해 환율 정보 받아오는 메서드
-    func fetchExchangeRate() async throws -> ExchangeRates {
+    func fetchExchangeRates() async throws -> ExchangeRates {
         // TODO: updateDate를 받아와서 현재 시간이랑 비교 후 안 지났으면 캐시 데이터, 지났으면 패치
         let nextUpdateDate = try coreData.readNextUpdateDate()
         // 저장된 데이터가 있고, updateDate가 지나지 않은 경우, 저장된 데이터 반환

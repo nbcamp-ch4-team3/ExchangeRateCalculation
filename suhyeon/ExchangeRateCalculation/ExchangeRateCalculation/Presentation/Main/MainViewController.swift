@@ -37,7 +37,7 @@ final class MainViewController: UIViewController {
             return
         }
 
-        viewModel.action?(.saveLastScreen(screen: .main, currency: nil))
+        viewModel.action?(.saveLastScreen(screen: .main, exchangeRate: nil))
     }
 
     private func bindViewModel() {
@@ -69,7 +69,7 @@ final class MainViewController: UIViewController {
     }
 
     private func navigateToCalculator(with exchangeRate: ExchangeRate) {
-        viewModel.action?(.saveLastScreen(screen: .calculator, currency: exchangeRate.currency))
+        viewModel.action?(.saveLastScreen(screen: .calculator, exchangeRate: exchangeRate))
         let nextVC = CalculatorViewController(exchangeRate: exchangeRate)
         self.navigationController?.pushViewController(nextVC, animated: true)
     }

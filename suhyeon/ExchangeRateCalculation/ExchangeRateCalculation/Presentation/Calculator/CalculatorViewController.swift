@@ -13,7 +13,9 @@ final class CalculatorViewController: UIViewController {
     private let viewModel: CalculatorViewModel
 
     init(exchangeRate: ExchangeRate) {
-        self.viewModel = CalculatorViewModel(exchangeRate: exchangeRate)
+        let repository = CalculatorRepository(exchangeRate: exchangeRate)
+        let useCase = CalculatorUseCase(repository: repository)
+        self.viewModel = CalculatorViewModel(useCase: useCase)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -39,7 +41,7 @@ final class CalculatorViewController: UIViewController {
 
         viewModel.state.failure = {[weak self] error in
             guard let self else { return }
-            showErrorAlert(type: .defaultError, message: error.localizedDescription)
+            showErrorAlert(type: error.alertType, message: error.localizedDescription)
             os_log(.error, "%@", error.debugDescription)
         }
     }
@@ -58,6 +60,7 @@ private extension CalculatorViewController {
     func configure() {
         calculatorView.delegate = self
         setNavigationBar(title: "환율 계산기", isLargeTitle: true)
-        calculatorView.configure(with: viewModel.exchangeRate)
+        guard let exchangeRate = viewModel.state.exchangeRate else { return }
+        calculatorView.configure(with: exchangeRate)
     }
 }

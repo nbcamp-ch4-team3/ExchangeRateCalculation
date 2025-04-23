@@ -8,7 +8,18 @@
 import UIKit
 import CoreData
 
-final class ExchangeRateCoreData {
+protocol ExchangeRateCoreDataProtocol {
+    func readData(with currency: String) throws -> CDExchangeRate
+    func readNextUpdateDate() throws -> Date?
+    func readAllData() throws -> [CDExchangeRate]
+    func saveData(data: ExchangeRate, nextUpdateDate: Date) throws
+    func updateIsFavorite(currency: String) throws
+    func updateData(data: ExchangeRate, nextUpdateDate: Date) throws
+    func saveMockData()
+    func deleteAllData() throws
+}
+
+final class ExchangeRateCoreData: ExchangeRateCoreDataProtocol {
     private let container: NSPersistentContainer
     private let viewContext: NSManagedObjectContext
 
@@ -60,7 +71,6 @@ final class ExchangeRateCoreData {
         }
     }
 
-    //TODO: (updateDate, rate), isFavorite 업데이트 메서드 구현하기
     func updateIsFavorite(currency: String) throws {
         let fetchRequest: NSFetchRequest<CDExchangeRate> = CDExchangeRate.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "currency == %@", currency)
@@ -113,19 +123,6 @@ extension ExchangeRateCoreData {
             try viewContext.save()
         } catch {
             print(error.localizedDescription)
-        }
-    }
-
-    func deleteData(currency: String) throws {
-        let fetchRequest: NSFetchRequest<CDExchangeRate> = CDExchangeRate.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "currency == %@", currency)
-
-        do {
-            let result = try viewContext.fetch(fetchRequest)
-            result.forEach { viewContext.delete($0) }
-            try viewContext.save()
-        } catch {
-            throw CoreDataError.deleteError(error)
         }
     }
 
