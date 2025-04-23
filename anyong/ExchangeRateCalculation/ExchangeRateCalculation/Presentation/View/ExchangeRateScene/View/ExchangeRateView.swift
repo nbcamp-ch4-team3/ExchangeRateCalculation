@@ -71,6 +71,10 @@ extension ExchangeRateView {
         tableView.reloadData()
     }
     
+    func setSearchBarText(_ text: String) {
+        searchBar.text = text
+    }
+    
     func updateBackgroundView(_ isEmpty: Bool) {
         if isEmpty {
             let label = UILabel()
