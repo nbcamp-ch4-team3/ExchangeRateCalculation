@@ -7,7 +7,8 @@
         <attribute name="nextUpdateDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="rate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
-    <entity name="Currency" representedClassName="Currency" syncable="YES">
-        <attribute name="currency" attributeType="String"/>
+    <entity name="LastScreen" representedClassName="LastScreen" syncable="YES">
+        <attribute name="currency" optional="YES" attributeType="String"/>
+        <attribute name="screenName" attributeType="String"/>
     </entity>
 </model>

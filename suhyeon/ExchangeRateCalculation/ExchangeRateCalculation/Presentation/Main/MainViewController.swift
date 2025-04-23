@@ -10,9 +10,18 @@ import os
 
 final class MainViewController: UIViewController {
     private let mainView = MainView()
-    private let viewModel = MainViewModel()
+    private let viewModel: MainViewModel
     private var isFirstAppear = true
 
+    init(viewModel: MainViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
@@ -22,13 +31,20 @@ final class MainViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if !isFirstAppear { return }
-        isFirstAppear = false
-        bindViewModel()
+        if isFirstAppear {
+            bindViewModel()
+            isFirstAppear = false
+            return
+        }
+
+        viewModel.action?(.saveLastScreen(screen: .main, currency: nil))
     }
 
     private func bindViewModel() {
-        viewModel.action?(.loadExchangeRates)
+        viewModel.state.navigateToCalculator = {[weak self] exchangeRate in
+            guard let self else { return }
+            self.navigateToCalculator(with: exchangeRate)
+        }
 
         viewModel.state.updateExchangeRates = {[weak self] in
             guard let self else { return }
@@ -46,6 +62,16 @@ final class MainViewController: UIViewController {
             )
             os_log("%@", type: .error, error.debugDescription)
         }
+
+        viewModel.action?(.restoreLastVisitedScreen)
+        viewModel.action?(.loadExchangeRates)
+
+    }
+
+    private func navigateToCalculator(with exchangeRate: ExchangeRate) {
+        viewModel.action?(.saveLastScreen(screen: .calculator, currency: exchangeRate.currency))
+        let nextVC = CalculatorViewController(exchangeRate: exchangeRate)
+        self.navigationController?.pushViewController(nextVC, animated: true)
     }
 }
 // UITableViewDataSource
@@ -75,8 +101,7 @@ extension MainViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let dataSource = viewModel.state.exchangeRates
-        let nextVC = CalculatorViewController(exchangeRate: dataSource[indexPath.row])
-        self.navigationController?.pushViewController(nextVC, animated: true)
+        navigateToCalculator(with: dataSource[indexPath.row])
     }
 }
 

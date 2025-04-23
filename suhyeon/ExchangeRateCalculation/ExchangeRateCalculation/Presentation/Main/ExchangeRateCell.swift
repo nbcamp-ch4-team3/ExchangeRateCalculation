@@ -26,12 +26,14 @@ final class ExchangeRateCell: UITableViewCell {
     private let currencyLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textColor = .text
         return label
     }()
 
     private let countryLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
+        label.textColor = .secondaryText
         return label
     }()
 
@@ -41,12 +43,13 @@ final class ExchangeRateCell: UITableViewCell {
         label.textColor = .gray
         label.font = .systemFont(ofSize: 16)
         label.textAlignment = .right
+        label.textColor = .text
         return label
     }()
 
     private let increaseDecreaseImageView: UIImageView = {
         let view = UIImageView()
-        view.tintColor = .systemBlue
+        view.tintColor = .systemCyan
         return view
     }()
 
@@ -54,7 +57,7 @@ final class ExchangeRateCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star"), for: .normal)
         button.setImage(UIImage(systemName: "star.fill"), for: .selected)
-        button.tintColor = .systemYellow
+        button.tintColor = .favorite
         button.isEnabled = true
 
         button.addTarget(self, action: #selector(touchUpInsideStarButton), for: .touchUpInside)
@@ -106,7 +109,7 @@ private extension ExchangeRateCell {
     }
 
     func setLayout() {
-        self.backgroundColor = .white
+        self.backgroundColor = .cellBackground
     }
 
     func setHierarchy() {

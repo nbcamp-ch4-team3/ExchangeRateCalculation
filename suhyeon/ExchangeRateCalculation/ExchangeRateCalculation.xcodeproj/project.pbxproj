@@ -8,18 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		CB05C7902DADE46400A866CD /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CB05C78F2DADE46400A866CD /* SnapKit */; };
-		CB05C81F2DB113A100A866CD /* Currency+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C81E2DB113A100A866CD /* Currency+CoreDataProperties.swift */; };
-		CB05C8202DB113A100A866CD /* Currency+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C81D2DB113A100A866CD /* Currency+CoreDataClass.swift */; };
 		CB05C8F62DB5E75D00A866CD /* CDExchangeRate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C8F52DB5E75D00A866CD /* CDExchangeRate+CoreDataProperties.swift */; };
 		CB05C8F72DB5E75D00A866CD /* CDExchangeRate+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C8F42DB5E75D00A866CD /* CDExchangeRate+CoreDataClass.swift */; };
+		CB05C9DE2DB765A100A866CD /* LastScreen+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C9DC2DB765A100A866CD /* LastScreen+CoreDataClass.swift */; };
+		CB05C9DF2DB765A100A866CD /* LastScreen+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB05C9DD2DB765A100A866CD /* LastScreen+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CB05C7652DAD2C1200A866CD /* ExchangeRateCalculation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExchangeRateCalculation.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CB05C81D2DB113A100A866CD /* Currency+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+CoreDataClass.swift"; sourceTree = "<group>"; };
-		CB05C81E2DB113A100A866CD /* Currency+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CB05C8F42DB5E75D00A866CD /* CDExchangeRate+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDExchangeRate+CoreDataClass.swift"; sourceTree = "<group>"; };
 		CB05C8F52DB5E75D00A866CD /* CDExchangeRate+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDExchangeRate+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		CB05C9DC2DB765A100A866CD /* LastScreen+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LastScreen+CoreDataClass.swift"; sourceTree = "<group>"; };
+		CB05C9DD2DB765A100A866CD /* LastScreen+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LastScreen+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -58,10 +58,10 @@
 		CB05C75C2DAD2C1200A866CD = {
 			isa = PBXGroup;
 			children = (
+				CB05C9DC2DB765A100A866CD /* LastScreen+CoreDataClass.swift */,
+				CB05C9DD2DB765A100A866CD /* LastScreen+CoreDataProperties.swift */,
 				CB05C8F42DB5E75D00A866CD /* CDExchangeRate+CoreDataClass.swift */,
 				CB05C8F52DB5E75D00A866CD /* CDExchangeRate+CoreDataProperties.swift */,
-				CB05C81D2DB113A100A866CD /* Currency+CoreDataClass.swift */,
-				CB05C81E2DB113A100A866CD /* Currency+CoreDataProperties.swift */,
 				CB05C7672DAD2C1200A866CD /* ExchangeRateCalculation */,
 				CB05C7662DAD2C1200A866CD /* Products */,
 			);
@@ -153,8 +153,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CB05C81F2DB113A100A866CD /* Currency+CoreDataProperties.swift in Sources */,
-				CB05C8202DB113A100A866CD /* Currency+CoreDataClass.swift in Sources */,
+				CB05C9DE2DB765A100A866CD /* LastScreen+CoreDataClass.swift in Sources */,
+				CB05C9DF2DB765A100A866CD /* LastScreen+CoreDataProperties.swift in Sources */,
 				CB05C8F62DB5E75D00A866CD /* CDExchangeRate+CoreDataProperties.swift in Sources */,
 				CB05C8F72DB5E75D00A866CD /* CDExchangeRate+CoreDataClass.swift in Sources */,
 			);
