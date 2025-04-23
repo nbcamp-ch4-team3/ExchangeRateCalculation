@@ -7,11 +7,6 @@
 
 import Foundation
 
-protocol CalculatorRepositoryProtocol {
-    func loadExchangeRate() -> ExchangeRate
-    func calculate(input: String?) throws -> CalculationResult
-}
-
 final class CalculatorRepository: CalculatorRepositoryProtocol {
     private let exchangeRate: ExchangeRate
 

@@ -8,14 +8,6 @@
 import Foundation
 import os
 
-protocol ExchangeRateRepositoryProtocol {
-    func exchangeRate(with currency: String) throws -> ExchangeRate
-    func fetchExchangeRates() async throws -> ExchangeRates
-    func loadExchangeRates() -> ExchangeRates
-    func filterExchangeRates(with keyword: String) -> ExchangeRates
-    func toggleFavoriteItem(with currency: String) throws -> ExchangeRates
-}
-
 final class ExchangeRateRepository: ExchangeRateRepositoryProtocol {
     private let networkService: NetworkServiceProtocol
     private let coreData: ExchangeRateCoreDataProtocol
