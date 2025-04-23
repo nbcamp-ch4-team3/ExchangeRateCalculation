@@ -6,12 +6,15 @@
 //
 
 import Foundation
+import Alamofire
 
 class MockDataProvider: NetworkServiceProtocol {
     func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, any Error>) -> Void) {
         let response: CurrencyResponse = load("response.json")
         completion(.success(response))
     }
+    
+    func fetchDataByAlamofire(from url: URL, completion: @escaping (Result<CurrencyResponse, Alamofire.AFError>) -> Void) {}
     
     func load<T: Decodable>(_ filename: String) -> T {
         let data: Data

@@ -67,6 +67,24 @@ final class ViewModel {
                 delegate?.viewModel(didFailWithError: error)
             }
         }
+        
+        // 환율 정보 API 수신(Alamofire 적용)
+//        networkService.fetchDataByAlamofire(from: url) { [weak self] result in
+//            guard let self else { return }
+//            
+//            switch result {
+//            case .success(let response):
+//                updateCurrencies(to: response)
+//                filteredCurrencies = currencies
+//                sortCurrencies()
+//                let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastDetailView)
+//                let currency = currencies.filter { $0.code == currencyCode }.first
+//                delegate?.viewModelDidLoadData(navigationDestination: currency)
+//                
+//            case .failure(let error):
+//                delegate?.viewModel(didFailWithError: error)
+//            }
+//        }
     }
     
     private func fetchCurrencies() {

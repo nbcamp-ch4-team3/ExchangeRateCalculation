@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Alamofire
 
 protocol NetworkServiceProtocol {
     func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, Error>) -> Void)
+    func fetchDataByAlamofire(from url: URL, completion: @escaping (Result<CurrencyResponse, AFError>) -> Void)
 }
 
 final class NetworkService: NetworkServiceProtocol {
@@ -47,5 +49,17 @@ final class NetworkService: NetworkServiceProtocol {
         }
         
         task.resume()
+    }
+    
+    // Alamofire 사용
+    func fetchDataByAlamofire(from url: URL, completion: @escaping (Result<CurrencyResponse, AFError>) -> Void) {
+        AF.request(url).validate().responseDecodable(of: CurrencyResponse.self) { response in
+            switch response.result {
+            case .success(let value):
+                completion(.success(value))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
 }
