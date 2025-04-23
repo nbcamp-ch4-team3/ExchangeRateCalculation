@@ -25,7 +25,7 @@ extension Currency {
 extension Currency {
     // 환율 등락 표시
     var rateIcon: String {
-        // 목 데이터 없는 경우, 최초 실행 시 기존 환율정보 0.0이므로 환율 등락 없음
+        // 목 데이터 없는 경우, 최초 실행 시 기존 환율정보 0.0이므로 환율 등락 없으므로 "" 리턴
         guard previousRate != 0.0 else { return "" }
         
         let difference = abs(rate - previousRate)

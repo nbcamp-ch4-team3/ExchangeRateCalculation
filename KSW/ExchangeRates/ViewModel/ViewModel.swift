@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ViewModelDelegate: AnyObject {
-    func viewModelDidLoadData(willMoveTo currency: Currency?)
+    func viewModelDidLoadData(navigationDestination currency: Currency?)
     func viewModel(didFailWithError error: Error)
     func viewModelDidFilterData()
 }
@@ -61,7 +61,7 @@ final class ViewModel {
                 let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastDetailView)
                 let currency = currencies.filter { $0.code == currencyCode }.first
                 
-                delegate?.viewModelDidLoadData(willMoveTo: currency)
+                delegate?.viewModelDidLoadData(navigationDestination: currency)
                 
             case .failure(let error):
                 delegate?.viewModel(didFailWithError: error)
