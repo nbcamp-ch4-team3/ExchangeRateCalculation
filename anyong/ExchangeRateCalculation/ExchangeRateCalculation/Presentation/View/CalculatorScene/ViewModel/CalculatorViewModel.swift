@@ -8,7 +8,7 @@
 import Foundation
 
 final class CalculatorViewModel: ViewModelProtocol {
-    let exchangeRate: ExchangeRate
+    var exchangeRate: ExchangeRate
     
     enum Action {
         case convert(input: String)
