@@ -21,6 +21,10 @@ final class CoreDataStorage {
         return container
     }()
     
+    var backgroundContext: NSManagedObjectContext {
+        return persistentContainer.newBackgroundContext()
+    }
+    
     // MARK: - Core Data Saving support
     
     func saveContext () {
