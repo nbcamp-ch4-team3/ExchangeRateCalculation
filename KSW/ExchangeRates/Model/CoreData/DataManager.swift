@@ -20,7 +20,7 @@ final class DataManager {
         context = container.viewContext
     }
     
-    func saveContext () {
+    func saveContext() {
         let context = container.viewContext
         if context.hasChanges {
             do {

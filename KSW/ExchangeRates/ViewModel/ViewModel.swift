@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ViewModelDelegate: AnyObject {
-    func viewModelDidLoadData()
+    func viewModelDidLoadData(navigationDestination currency: Currency?)
     func viewModel(didFailWithError error: Error)
     func viewModelDidFilterData()
 }
@@ -17,6 +17,7 @@ final class ViewModel {
     weak var delegate: ViewModelDelegate?
     
     private let networkService: NetworkServiceProtocol
+    private let mockDataProvider: NetworkServiceProtocol
     private let dataManager = DataManager.shared
     
     private var currencies: [Currency] = []
@@ -24,6 +25,21 @@ final class ViewModel {
     
     init(networkService: NetworkServiceProtocol = NetworkService()) {
         self.networkService = networkService
+        
+        // 목 데이터 구성(4월 22일 기준 환율 제공)
+        self.mockDataProvider = MockDataProvider()
+        mockDataProvider.fetchData(from: URL(string: "https://open.er-api.com/v6/latest/USD")!) { [weak self] result in
+            guard let self else { return }
+            
+            switch result {
+                case .success(let response):
+                fetchCurrencies()
+                updateCurrencies(to: response)
+                
+            case .failure(let error):
+                print("Mok API error: \(error)")
+            }
+        }
     }
     
     func loadCurrencies() {
@@ -41,12 +57,34 @@ final class ViewModel {
                 filteredCurrencies = currencies
                 sortCurrencies()
                 
-                delegate?.viewModelDidLoadData()
+                // 마지막 화면 정보가 있으면 뷰 컨트롤러로 해당 환율정보 송신
+                let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastDetailView)
+                let currency = currencies.filter { $0.code == currencyCode }.first
+                
+                delegate?.viewModelDidLoadData(navigationDestination: currency)
                 
             case .failure(let error):
                 delegate?.viewModel(didFailWithError: error)
             }
         }
+        
+        // 환율 정보 API 수신(Alamofire 적용)
+//        networkService.fetchDataByAlamofire(from: url) { [weak self] result in
+//            guard let self else { return }
+//            
+//            switch result {
+//            case .success(let response):
+//                updateCurrencies(to: response)
+//                filteredCurrencies = currencies
+//                sortCurrencies()
+//                let currencyCode = UserDefaults.standard.string(forKey: UserDefaultsKey.lastDetailView)
+//                let currency = currencies.filter { $0.code == currencyCode }.first
+//                delegate?.viewModelDidLoadData(navigationDestination: currency)
+//                
+//            case .failure(let error):
+//                delegate?.viewModel(didFailWithError: error)
+//            }
+//        }
     }
     
     private func fetchCurrencies() {

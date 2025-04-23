@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         
         navigationItem.title = "환율 정보"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -84,9 +84,16 @@ class ViewController: UIViewController {
 
 // MARK: - View Model Delegate
 extension ViewController: ViewModelDelegate {
-    func viewModelDidLoadData() {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
+    func viewModelDidLoadData(navigationDestination currency: Currency?) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+            
+            // 수신한 환율 정보가 있으면 테이블 뷰 로드 완료 후 해당 디테일 뷰로 이동
+            if let currency {
+                let viewModel = DetailViewModel(currency: currency)
+                let viewController = DetailViewController(viewModel: viewModel)
+                self?.navigationController?.pushViewController(viewController, animated: true)
+            }
         }
     }
     

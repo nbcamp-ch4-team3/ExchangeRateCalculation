@@ -1,17 +1,20 @@
 //
-//  MokNetworkService.swift
+//  MockDataProvider.swift
 //  ExchangeRates
 //
 //  Created by 권순욱 on 4/22/25.
 //
 
 import Foundation
+import Alamofire
 
-class MokNetworkService: NetworkServiceProtocol {
+class MockDataProvider: NetworkServiceProtocol {
     func fetchData(from url: URL, completion: @escaping (Result<CurrencyResponse, any Error>) -> Void) {
         let response: CurrencyResponse = load("response.json")
         completion(.success(response))
     }
+    
+    func fetchDataByAlamofire(from url: URL, completion: @escaping (Result<CurrencyResponse, Alamofire.AFError>) -> Void) {}
     
     func load<T: Decodable>(_ filename: String) -> T {
         let data: Data
