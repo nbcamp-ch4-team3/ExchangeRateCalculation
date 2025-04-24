@@ -180,3 +180,7 @@ Presentation
 ## 트러블슈팅
 
 [서치바 관련 트러블슈팅](https://subkyu-ios.tistory.com/42)
+
+## 디버깅 시 참고 사항
+
+SceneDelegate에서 mockDataService, DataService를 바꿔넣을 수 있는데, 맨 처음 디버깅 전에 mockDataService로 설정해주신 다음에 다음 디버깅에서 DataService로 설정해주시면 상승 여부 반영에 대해 보실 수 있습니다.
