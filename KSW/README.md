@@ -62,6 +62,7 @@ git clone https://github.com/nbcamp-ch4-team3/ExchangeRateCalculation.git
 
 # [6] Troubleshooting
 - https://wittie.tistory.com/42
+- https://wittie.tistory.com/44
 >
 
 ## Level 11 메모리 이슈 디버깅
