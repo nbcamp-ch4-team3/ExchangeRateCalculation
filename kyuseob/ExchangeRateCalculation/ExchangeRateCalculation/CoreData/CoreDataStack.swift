@@ -80,40 +80,52 @@ final class CoreDataStack {
         }
     }
 
-    func addCurrency(code: String, country: String, rate: Double, trend: String, updatedDate: Date) {
-        // background context 생성
+    func addCurrencies(with: [CurrencyInfo]) {
         let context = persistentContainer.newBackgroundContext()
 
         context.perform {
-            // nil 체크
-            guard !code.isEmpty, !country.isEmpty, !trend.isEmpty else {
-                print("Core Data Error: 필수 값이 비어 있습니다")
-                return
-            }
+            for currencyInfo in with {
+                let code = currencyInfo.code
+                let country = currencyInfo.country
+                let rate = currencyInfo.rate
+                let trend = currencyInfo.trendString
+                let updatedDate = currencyInfo.updatedDate
 
-            let fetchRequest: NSFetchRequest<CurrencyEntity> = CurrencyEntity.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "code == %@", code)
 
-            do {
-                let matches = try context.fetch(fetchRequest)
-                if let existingCurrency = matches.first {
-                    existingCurrency.code = code
-                    existingCurrency.country = country
-                    existingCurrency.rate = rate
-                    existingCurrency.trend = trend
-                    existingCurrency.updatedDate = updatedDate
-                } else {
-                    let newCurrency = CurrencyEntity(context: context)
-                    newCurrency.code = code
-                    newCurrency.country = country
-                    newCurrency.rate = rate
-                    newCurrency.trend = trend
-                    newCurrency.updatedDate = updatedDate
+                guard !code.isEmpty, !country.isEmpty, !trend.isEmpty else {
+                    print("Core Data Error: 필수 값이 비어 있습니다")
+                    return
                 }
 
+                let request: NSFetchRequest<CurrencyEntity> = CurrencyEntity.fetchRequest()
+                let predicate = NSPredicate(format: "code == %@", code)
+                request.predicate = predicate
+
+                do {
+                    let matches = try context.fetch(request)
+                    if let existingCurrency = matches.first {
+                        existingCurrency.code = code
+                        existingCurrency.country = country
+                        existingCurrency.rate = rate
+                        existingCurrency.trend = trend
+                        existingCurrency.updatedDate = updatedDate
+                    } else {
+                        let newCurrency = CurrencyEntity(context: context)
+                        newCurrency.code = code
+                        newCurrency.country = country
+                        newCurrency.rate = rate
+                        newCurrency.trend = trend
+                        newCurrency.updatedDate = updatedDate
+                    }
+                } catch {
+                    print("Coredata fetch 실패: \(error.localizedDescription)")
+                }
+            }
+
+            do {
                 try context.save()
             } catch {
-                print("CoreData addCurrency 실패: \(error.localizedDescription)")
+                print("Coredata addCurrencies 저장 실패: \(error.localizedDescription)")
             }
         }
     }
